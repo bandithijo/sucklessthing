@@ -1,0 +1,42 @@
+diff --git a/config.def.h b/config.def.h
+index 1c0b587..4e97092 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -61,13 +61,13 @@ static const char *termcmd[]  = { "st", NULL };
+ 
+ static Key keys[] = {
+ 	/* modifier                     key        function        argument */
+-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
++	{ MODKEY,                       XK_d,      spawn,          SHCMD("j4-dmenu-desktop --dmenu=\"dmenu -i -m 0 -fn 'FuraCode Nerd Font:size=8' -nb '#262626' -nf '#bbbbbb' -sb '#c22424' -sf '#eeeeee'\"") },
+ 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
+ 	{ MODKEY,                       XK_b,      togglebar,      {0} },
+ 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
+ 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
+ 	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
+-	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
++	{ MODKEY|ShiftMask,             XK_i,      incnmaster,     {.i = -1 } },
+ 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
+ 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
+ 	{ MODKEY,                       XK_Return, zoom,           {0} },
+@@ -94,6 +94,21 @@ static Key keys[] = {
+ 	TAGKEYS(                        XK_8,                      7)
+ 	TAGKEYS(                        XK_9,                      8)
+ 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
++
++    // Custom Keys
++	/* modifier             key             function        argument */
++	{ MODKEY|ControlMask,   XK_Return,      spawn,          SHCMD("xfce4-terminal -T 'Terminal+'") },
++    { MODKEY,               XK_F12,         spawn,          SHCMD("polybar-tray off; polybar-tray on") },
++    { MODKEY|ShiftMask,     XK_F12,         spawn,          SHCMD("polybar-tray off") },
++    { MODKEY|ShiftMask,     XK_End,         spawn,          SHCMD("/usr/local/bin/rofi-power 'killall dwm'") },
++	{ MODKEY,               XK_Print,       spawn,          SHCMD("scrot 'Screenshot_%Y-%m-%d_%H-%M-%S.png' -e 'mv *.png ~/pic/ScreenShots/'; notify-send 'Scrot' 'Screen has been captured!'") },
++	{ MODKEY|ControlMask,   XK_Print,       spawn,          SHCMD("scrot -d 5 'Screenshot_%Y-%m-%d_%H-%M-%S.png' -e 'mv *.png ~/pic/ScreenShots/'; notify-send 'Scrot' 'Screen has been captured!'") },
++	{ MODKEY|ShiftMask,     XK_Print,       spawn,          SHCMD("flameshot gui") },
++    { MODKEY|ShiftMask,     XK_x,           spawn,          SHCMD("/usr/local/bin/lock-dark") },
++    { MODKEY,               XK_F7,          spawn,          SHCMD("/usr/local/bin/arandr") },
++    { MODKEY,               XK_F10,         spawn,          SHCMD("/usr/local/bin/keybind-helper") },
++    { 0,                    0x1008ff13,     spawn,          SHCMD("mixer vol +5") },
++    { 0,                    0x1008ff11,     spawn,          SHCMD("mixer vol -5") },
+ };
+ 
+ /* button definitions */
