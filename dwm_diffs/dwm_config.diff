@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..2f28d64 100644
+index 1c0b587..78a768f 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -2,20 +2,20 @@
@@ -20,7 +20,7 @@ index 1c0b587..2f28d64 100644
  static const char col_gray3[]       = "#bbbbbb";
  static const char col_gray4[]       = "#eeeeee";
 -static const char col_cyan[]        = "#005577";
-+static const char col_red[]         = "#c22424";
++static const char col_red[]         = "#bf2323";
  static const char *colors[][3]      = {
  	/*               fg         bg         border   */
  	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
@@ -62,7 +62,7 @@ index 1c0b587..2f28d64 100644
  static Key keys[] = {
  	/* modifier                     key        function        argument */
 -	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-+	{ MODKEY,                       XK_d,      spawn,          SHCMD("j4-dmenu-desktop --dmenu=\"dmenu -i -m 0 -fn 'FuraCode Nerd Font:size=8' -nb '#262626' -nf '#bbbbbb' -sb '#c22424' -sf '#eeeeee'\"") },
++	{ MODKEY,                       XK_d,      spawn,          SHCMD("j4-dmenu-desktop --dmenu=\"dmenu -i -m 0 -fn 'FuraCode Nerd Font:size=8' -nb '#262626' -nf '#bbbbbb' -sb '#bf2323' -sf '#eeeeee'\"") },
  	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
  	{ MODKEY,                       XK_b,      togglebar,      {0} },
  	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
