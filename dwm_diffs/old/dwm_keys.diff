@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..44d6df4 100644
+index 1c0b587..fc0cd6c 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -2,20 +2,20 @@
@@ -61,7 +61,7 @@ index 1c0b587..44d6df4 100644
  static Key keys[] = {
  	/* modifier                     key        function        argument */
 -	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-+	{ MODKEY,                       XK_d,      spawn,          SHCMD("j4-dmenu-desktop --dmenu=\"dmenu -i -m 0 -fn 'FuraCode Nerd Font:size=8' -nb '#262626' -nf '#bbbbbb' -sb '#bf2323' -sf '#eeeeee' -p 'Run:'\"") },
++	{ MODKEY,                       XK_d,      spawn,          SHCMD("j4-dmenu-desktop --dmenu=\"dmenu -i -m 0 -fn 'FuraCode Nerd Font:size=8' -nb '#262626' -nf '#bbbbbb' -sb '#bf2323' -sf '#eeeeee' -p 'RUN:'\"") },
  	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
  	{ MODKEY,                       XK_b,      togglebar,      {0} },
  	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
@@ -72,7 +72,7 @@ index 1c0b587..44d6df4 100644
  	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
  	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
  	{ MODKEY,                       XK_Return, zoom,           {0} },
-@@ -94,6 +94,21 @@ static Key keys[] = {
+@@ -94,6 +94,23 @@ static Key keys[] = {
  	TAGKEYS(                        XK_8,                      7)
  	TAGKEYS(                        XK_9,                      8)
  	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
@@ -89,6 +89,8 @@ index 1c0b587..44d6df4 100644
 +    { MODKEY|ShiftMask,     XK_x,           spawn,          SHCMD("/usr/local/bin/lock-dark") },
 +    { MODKEY,               XK_F7,          spawn,          SHCMD("/usr/local/bin/arandr") },
 +    { MODKEY,               XK_F10,         spawn,          SHCMD("/usr/local/bin/keybind-helper") },
++    { MODKEY,               XK_p,           spawn,          SHCMD("/usr/local/bin/clipmenu") },
++    { MODKEY|ShiftMask,     XK_p,           spawn,          SHCMD("/usr/local/bin/clipdel -d '.*';kill -9 $(pkill -f bash /usr/local/bin/clipmenud); clipmenud &") },
 +    { 0,                    0x1008ff13,     spawn,          SHCMD("mixer vol +5") },
 +    { 0,                    0x1008ff11,     spawn,          SHCMD("mixer vol -5") },
  };
