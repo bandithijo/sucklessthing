@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..761792e 100644
+index 1c0b587..e529762 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -61,13 +61,13 @@ static const char *termcmd[]  = { "st", NULL };
@@ -7,7 +7,7 @@ index 1c0b587..761792e 100644
  static Key keys[] = {
  	/* modifier                     key        function        argument */
 -	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-+	{ MODKEY,                       XK_d,      spawn,          SHCMD("j4-dmenu-desktop --dmenu=\"dmenu -i -m 0 -fn 'FuraCode Nerd Font:size=8' -nb '#262626' -nf '#bbbbbb' -sb '#bf2323' -sf '#eeeeee'\"") },
++	{ MODKEY,                       XK_d,      spawn,          SHCMD("j4-dmenu-desktop --dmenu=\"dmenu -i -m 0 -fn 'FuraCode Nerd Font:size=8' -nb '#262626' -nf '#bbbbbb' -sb '#bf2323' -sf '#eeeeee' -p 'Run:'\"") },
  	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
  	{ MODKEY,                       XK_b,      togglebar,      {0} },
  	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
