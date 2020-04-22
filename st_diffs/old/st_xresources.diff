@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 0895a1f..8060747 100644
+index 0895a1f..1f31505 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -152,6 +152,42 @@ static unsigned int mousebg = 0;
@@ -27,9 +27,9 @@ index 0895a1f..8060747 100644
 +		{ "color13",      STRING,  &colorname[13] },
 +		{ "color14",      STRING,  &colorname[14] },
 +		{ "color15",      STRING,  &colorname[15] },
-+		{ "background",   STRING,  &colorname[256] },
-+		{ "foreground",   STRING,  &colorname[257] },
-+		{ "cursorColor",  STRING,  &colorname[258] },
++		{ "background",   STRING,  &colorname[0] },
++		{ "foreground",   STRING,  &colorname[5] },
++		{ "cursorColor",  STRING,  &colorname[5] },
 +		{ "termname",     STRING,  &termname },
 +		{ "shell",        STRING,  &shell },
 +		{ "xfps",         INTEGER, &xfps },

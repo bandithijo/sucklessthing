@@ -440,7 +440,7 @@ index 0000000..7890500
 +	/* U+2571 - U+2573: unsupported (diagonals) */
 +};
 diff --git a/config.def.h b/config.def.h
-index 0895a1f..bf6718b 100644
+index 0895a1f..f467ce4 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -58,6 +58,18 @@ static unsigned int blinktimeout = 800;
@@ -453,8 +453,8 @@ index 0895a1f..bf6718b 100644
 + *    Bold affects lines thickness if boxdraw_bold is not 0. Italic is ignored.
 + * 0: disable (render all U25XX glyphs normally from the font).
 + */
-+const int boxdraw = 0;
-+const int boxdraw_bold = 0;
++const int boxdraw = 1;
++const int boxdraw_bold = 1;
 +
 +/* braille (U28XX):  1: render as adjacent "pixels",  0: use font */
 +const int boxdraw_braille = 0;

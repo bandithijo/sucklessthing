@@ -12,7 +12,7 @@ index 0895a1f..4e52216 100644
  
  /*
 diff --git a/config.mk b/config.mk
-index 0cbb002..6b1e4d6 100644
+index 0cbb002..3768630 100644
 --- a/config.mk
 +++ b/config.mk
 @@ -7,8 +7,8 @@ VERSION = 0.8.2
@@ -26,18 +26,3 @@ index 0cbb002..6b1e4d6 100644
  
  PKG_CONFIG = pkg-config
  
-@@ -26,10 +26,10 @@ STCFLAGS = $(INCS) $(STCPPFLAGS) $(CPPFLAGS) $(CFLAGS)
- STLDFLAGS = $(LIBS) $(LDFLAGS)
- 
- # OpenBSD:
--#CPPFLAGS = -DVERSION=\"$(VERSION)\" -D_XOPEN_SOURCE=600 -D_BSD_SOURCE
--#LIBS = -L$(X11LIB) -lm -lX11 -lutil -lXft \
--#       `pkg-config --libs fontconfig` \
--#       `pkg-config --libs freetype2`
-+CPPFLAGS = -DVERSION=\"$(VERSION)\" -D_XOPEN_SOURCE=600 -D_BSD_SOURCE
-+LIBS = -L$(X11LIB) -lm -lX11 -lutil -lXft \
-+       `pkg-config --libs fontconfig` \
-+       `pkg-config --libs freetype2`
- 
- # compiler and linker
- # CC = c99
