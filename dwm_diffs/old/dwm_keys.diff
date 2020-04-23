@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..b0930c3 100644
+index 1c0b587..6db4334 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -2,20 +2,20 @@
@@ -90,7 +90,7 @@ index 1c0b587..b0930c3 100644
 +    { MODKEY,               XK_F7,          spawn,          SHCMD("/usr/local/bin/arandr") },
 +    { MODKEY,               XK_F10,         spawn,          SHCMD("/usr/local/bin/keybind-helper") },
 +    { MODKEY,               XK_p,           spawn,          SHCMD("/usr/local/bin/clipmenu") },
-+    { MODKEY|ShiftMask,     XK_p,           spawn,          SHCMD("/usr/local/bin/clipdel -d '.*';kill -9 $(pkill -f bash /usr/local/bin/clipmenud); clipmenud") },
++    { MODKEY|ShiftMask,     XK_p,           spawn,          SHCMD("rm -f /tmp/clipmenu*/*") },
 +    { 0,                    0x1008ff13,     spawn,          SHCMD("mixer vol +5") },
 +    { 0,                    0x1008ff11,     spawn,          SHCMD("mixer vol -5") },
  };
