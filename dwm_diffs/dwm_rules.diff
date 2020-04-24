@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..5636de3 100644
+index 1c0b587..c346135 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -26,9 +26,26 @@ static const Rule rules[] = {
@@ -20,7 +20,7 @@ index 1c0b587..5636de3 100644
 +    { "mpv",                  NULL,       "*- mpv",                     0,            1,             0,           -1 },
 +    { "libreoffice-*",        NULL,       NULL,                         0,            1,             0,           -1 },
 +    // Floating
-+    { "St",                   NULL,       "Terminal+",                  0,            1,             1,           -1 },
++    { "St",                   NULL,       "st+",                        0,            1,             1,           -1 },
 +    { "copyq",                NULL,       NULL,                         0,            1,             1,           -1 },
 +    { "Arandr",               NULL,       NULL,                         0,            1,             1,           -1 },
 +    { "Gcolor3",              NULL,       "Color picker",               0,            1,             1,           -1 },

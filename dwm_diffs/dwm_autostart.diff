@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 41c6767..360824b 100644
+index 41c6767..3a63c6a 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -193,6 +193,7 @@ static void resizeclient(Client *c, int x, int y, int w, int h);
@@ -16,8 +16,8 @@ index 41c6767..360824b 100644
  
 +void
 +runAutostart(void) {
-+	system("cd ~/.dwm; ./autostart_blocking.sh");
-+	system("cd ~/.dwm; ./autostart.sh &");
++	system("cd ~/.local/bin; ./autostart_blocking.sh");
++	system("cd ~/.local/bin; ./autostart.sh &");
 +}
 +
  void

@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..6db4334 100644
+index 1c0b587..62e0947 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -2,20 +2,20 @@
@@ -79,7 +79,7 @@ index 1c0b587..6db4334 100644
 +
 +    // Custom Keys
 +	/* modifier             key             function        argument */
-+	{ MODKEY|ControlMask,   XK_Return,      spawn,          SHCMD("st -T 'Terminal+'") },
++	{ MODKEY|ControlMask,   XK_Return,      spawn,          SHCMD("st -T 'st+'") },
 +    { MODKEY,               XK_F12,         spawn,          SHCMD("polybar-tray off; polybar-tray on") },
 +    { MODKEY|ShiftMask,     XK_F12,         spawn,          SHCMD("polybar-tray off") },
 +    { MODKEY|ShiftMask,     XK_End,         spawn,          SHCMD("/usr/local/bin/rofi-power 'killall dwm'") },
