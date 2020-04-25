@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..62e0947 100644
+index 1c0b587..9522e8d 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -2,20 +2,20 @@
@@ -72,7 +72,7 @@ index 1c0b587..62e0947 100644
  	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
  	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
  	{ MODKEY,                       XK_Return, zoom,           {0} },
-@@ -94,6 +94,23 @@ static Key keys[] = {
+@@ -94,6 +94,24 @@ static Key keys[] = {
  	TAGKEYS(                        XK_8,                      7)
  	TAGKEYS(                        XK_9,                      8)
  	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
@@ -91,6 +91,7 @@ index 1c0b587..62e0947 100644
 +    { MODKEY,               XK_F10,         spawn,          SHCMD("/usr/local/bin/keybind-helper") },
 +    { MODKEY,               XK_p,           spawn,          SHCMD("/usr/local/bin/clipmenu") },
 +    { MODKEY|ShiftMask,     XK_p,           spawn,          SHCMD("rm -f /tmp/clipmenu*/*") },
++    { MODKEY|ShiftMask,     XK_backslash,   spawn,          SHCMD("/usr/local/bin/passmenu") },
 +    { 0,                    0x1008ff13,     spawn,          SHCMD("mixer vol +5") },
 +    { 0,                    0x1008ff11,     spawn,          SHCMD("mixer vol -5") },
  };
