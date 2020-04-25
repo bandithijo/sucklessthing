@@ -96,3 +96,16 @@ index 7084c33..a11c1ab 100644
  # OpenBSD (uncomment)
  #FREETYPEINC = ${X11INC}/freetype2
  
+diff --git a/dwm.c b/dwm.c
+index 41c6767..5245bf3 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -249,7 +249,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
+ 	[ConfigureRequest] = configurerequest,
+ 	[ConfigureNotify] = configurenotify,
+ 	[DestroyNotify] = destroynotify,
+-	[EnterNotify] = enternotify,
++	/* [EnterNotify] = enternotify, */
+ 	[Expose] = expose,
+ 	[FocusIn] = focusin,
+ 	[KeyPress] = keypress,
