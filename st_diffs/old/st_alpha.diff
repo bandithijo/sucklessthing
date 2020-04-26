@@ -440,7 +440,7 @@ index 0000000..7890500
 +	/* U+2571 - U+2573: unsupported (diagonals) */
 +};
 diff --git a/config.def.h b/config.def.h
-index 0895a1f..d189d3a 100644
+index 0895a1f..9676658 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -58,6 +58,18 @@ static unsigned int blinktimeout = 800;
@@ -476,7 +476,7 @@ index 0895a1f..d189d3a 100644
  	/* more colors can be added after 255 to use with DefaultXX */
  	"#cccccc",
  	"#555555",
-+	"#262626",
++	"#232729",
  };
  
  

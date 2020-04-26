@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 0895a1f..4e52216 100644
+index 0895a1f..55d41ca 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -5,7 +5,7 @@
@@ -7,7 +7,7 @@ index 0895a1f..4e52216 100644
   * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
   */
 -static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
-+static char *font = "FuraCode Nerd Font:style=Medium:pixelsize=10:antialias=true:autohint=true";
++static char *font = "FuraCode Nerd Font:style=Medium,Regular:pixelsize=10:antialias=true:autohint=true";
  static int borderpx = 2;
  
  /*

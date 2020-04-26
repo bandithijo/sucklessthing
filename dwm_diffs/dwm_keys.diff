@@ -121,3 +121,68 @@ index 7084c33..a11c1ab 100644
  # OpenBSD (uncomment)
  #FREETYPEINC = ${X11INC}/freetype2
  
+diff --git a/dwm.c b/dwm.c
+index 41c6767..d1ef857 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -163,7 +163,7 @@ static void detachstack(Client *c);
+ static Monitor *dirtomon(int dir);
+ static void drawbar(Monitor *m);
+ static void drawbars(void);
+-static void enternotify(XEvent *e);
++/* static void enternotify(XEvent *e); */
+ static void expose(XEvent *e);
+ static void focus(Client *c);
+ static void focusin(XEvent *e);
+@@ -249,7 +249,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
+ 	[ConfigureRequest] = configurerequest,
+ 	[ConfigureNotify] = configurenotify,
+ 	[DestroyNotify] = destroynotify,
+-	[EnterNotify] = enternotify,
++	/* [EnterNotify] = enternotify, */
+ 	[Expose] = expose,
+ 	[FocusIn] = focusin,
+ 	[KeyPress] = keypress,
+@@ -751,24 +751,24 @@ drawbars(void)
+ 		drawbar(m);
+ }
+ 
+-void
+-enternotify(XEvent *e)
+-{
+-	Client *c;
+-	Monitor *m;
+-	XCrossingEvent *ev = &e->xcrossing;
+-
+-	if ((ev->mode != NotifyNormal || ev->detail == NotifyInferior) && ev->window != root)
+-		return;
+-	c = wintoclient(ev->window);
+-	m = c ? c->mon : wintomon(ev->window);
+-	if (m != selmon) {
+-		unfocus(selmon->sel, 1);
+-		selmon = m;
+-	} else if (!c || c == selmon->sel)
+-		return;
+-	focus(c);
+-}
++/* void */
++/* enternotify(XEvent *e) */
++/* { */
++/* 	Client *c; */
++/* 	Monitor *m; */
++/* 	XCrossingEvent *ev = &e->xcrossing; */
++
++/* 	if ((ev->mode != NotifyNormal || ev->detail == NotifyInferior) && ev->window != root) */
++/* 		return; */
++/* 	c = wintoclient(ev->window); */
++/* 	m = c ? c->mon : wintomon(ev->window); */
++/* 	if (m != selmon) { */
++/* 		unfocus(selmon->sel, 1); */
++/* 		selmon = m; */
++/* 	} else if (!c || c == selmon->sel) */
++/* 		return; */
++/* 	focus(c); */
++/* } */
+ 
+ void
+ expose(XEvent *e)
