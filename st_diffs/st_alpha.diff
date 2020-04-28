@@ -490,7 +490,7 @@ index 0895a1f..d189d3a 100644
  static unsigned int defaultrcs = 257;
  
 diff --git a/config.mk b/config.mk
-index 0cbb002..1d2f0e2 100644
+index beafc35..ddc65ae 100644
 --- a/config.mk
 +++ b/config.mk
 @@ -16,7 +16,7 @@ PKG_CONFIG = pkg-config

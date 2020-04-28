@@ -116,7 +116,7 @@ index 7084c33..a11c1ab 100644
  #FREETYPEINC = ${X11INC}/freetype2
  
 diff --git a/dwm.c b/dwm.c
-index 41c6767..a33f413 100644
+index 41c6767..4094a29 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -87,6 +87,7 @@ typedef struct Client Client;
@@ -135,6 +135,15 @@ index 41c6767..a33f413 100644
  	unsigned int seltags;
  	unsigned int sellt;
  	unsigned int tagset[2];
+@@ -163,7 +165,7 @@ static void detachstack(Client *c);
+ static Monitor *dirtomon(int dir);
+ static void drawbar(Monitor *m);
+ static void drawbars(void);
+-static void enternotify(XEvent *e);
++/* static void enternotify(XEvent *e); */
+ static void expose(XEvent *e);
+ static void focus(Client *c);
+ static void focusin(XEvent *e);
 @@ -199,7 +201,9 @@ static void sendmon(Client *c, Monitor *m);
  static void setclientstate(Client *c, long state);
  static void setfocus(Client *c);

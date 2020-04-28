@@ -12,10 +12,10 @@ index 0895a1f..55d41ca 100644
  
  /*
 diff --git a/config.mk b/config.mk
-index 0cbb002..3768630 100644
+index beafc35..9387081 100644
 --- a/config.mk
 +++ b/config.mk
-@@ -7,8 +7,8 @@ VERSION = 0.8.2
+@@ -7,8 +7,8 @@ VERSION = 0.8.3
  PREFIX = /usr/local
  MANPREFIX = $(PREFIX)/share/man
  

@@ -463,9 +463,16 @@ index 0895a1f..f467ce4 100644
   * bell volume. It must be a value between -100 and 100. Use 0 for disabling
   * it
 diff --git a/config.mk b/config.mk
-index 0cbb002..a021b2c 100644
+index beafc35..a021b2c 100644
 --- a/config.mk
 +++ b/config.mk
+@@ -1,5 +1,5 @@
+ # st version
+-VERSION = 0.8.3
++VERSION = 0.8.2
+ 
+ # Customize below to fit your system
+ 
 @@ -15,10 +15,12 @@ PKG_CONFIG = pkg-config
  # includes and libs
  INCS = -I$(X11INC) \
