@@ -1,8 +1,8 @@
 diff --git a/dwm.c b/dwm.c
-index 41c6767..f1c77d6 100644
+index 9fd0286..d13c8a2 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -1291,9 +1291,14 @@ void
+@@ -1292,9 +1292,14 @@ void
  resizemouse(const Arg *arg)
  {
  	int ocx, ocy, nw, nh;
@@ -17,7 +17,7 @@ index 41c6767..f1c77d6 100644
  	Time lasttime = 0;
  
  	if (!(c = selmon->sel))
-@@ -1303,10 +1308,19 @@ resizemouse(const Arg *arg)
+@@ -1304,10 +1309,19 @@ resizemouse(const Arg *arg)
  	restack(selmon);
  	ocx = c->x;
  	ocy = c->y;
@@ -38,7 +38,7 @@ index 41c6767..f1c77d6 100644
  	do {
  		XMaskEvent(dpy, MOUSEMASK|ExposureMask|SubstructureRedirectMask, &ev);
  		switch(ev.type) {
-@@ -1322,6 +1336,11 @@ resizemouse(const Arg *arg)
+@@ -1323,6 +1337,11 @@ resizemouse(const Arg *arg)
  
  			nw = MAX(ev.xmotion.x - ocx - 2 * c->bw + 1, 1);
  			nh = MAX(ev.xmotion.y - ocy - 2 * c->bw + 1, 1);
@@ -50,7 +50,7 @@ index 41c6767..f1c77d6 100644
  			if (c->mon->wx + nw >= selmon->wx && c->mon->wx + nw <= selmon->wx + selmon->ww
  			&& c->mon->wy + nh >= selmon->wy && c->mon->wy + nh <= selmon->wy + selmon->wh)
  			{
-@@ -1330,11 +1349,13 @@ resizemouse(const Arg *arg)
+@@ -1331,11 +1350,13 @@ resizemouse(const Arg *arg)
  					togglefloating(NULL);
  			}
  			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)

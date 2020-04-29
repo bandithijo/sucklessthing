@@ -123,7 +123,7 @@ index 7084c33..a11c1ab 100644
  #FREETYPEINC = ${X11INC}/freetype2
  
 diff --git a/dwm.c b/dwm.c
-index 41c6767..78f0ba0 100644
+index 9fd0286..6092ae2 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -92,7 +92,7 @@ struct Client {
@@ -152,7 +152,7 @@ index 41c6767..78f0ba0 100644
  static void expose(XEvent *e);
  static void focus(Client *c);
  static void focusin(XEvent *e);
-@@ -249,7 +250,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
+@@ -250,7 +251,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
  	[ConfigureRequest] = configurerequest,
  	[ConfigureNotify] = configurenotify,
  	[DestroyNotify] = destroynotify,
@@ -161,7 +161,7 @@ index 41c6767..78f0ba0 100644
  	[Expose] = expose,
  	[FocusIn] = focusin,
  	[KeyPress] = keypress,
-@@ -297,6 +298,7 @@ applyrules(Client *c)
+@@ -298,6 +299,7 @@ applyrules(Client *c)
  		&& (!r->class || strstr(class, r->class))
  		&& (!r->instance || strstr(instance, r->instance)))
  		{
@@ -169,7 +169,7 @@ index 41c6767..78f0ba0 100644
  			c->isfloating = r->isfloating;
  			c->tags |= r->tags;
  			for (m = mons; m && m->num != r->monitor; m = m->next);
-@@ -751,24 +753,24 @@ drawbars(void)
+@@ -752,24 +754,24 @@ drawbars(void)
  		drawbar(m);
  }
  
@@ -211,7 +211,7 @@ index 41c6767..78f0ba0 100644
  
  void
  expose(XEvent *e)
-@@ -1049,6 +1051,11 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1050,6 +1052,11 @@ manage(Window w, XWindowAttributes *wa)
  		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
  	c->bw = borderpx;
  

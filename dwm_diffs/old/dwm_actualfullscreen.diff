@@ -11,10 +11,10 @@ index 1c0b587..8cd3204 100644
  	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
  	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
 diff --git a/dwm.c b/dwm.c
-index 41c6767..11c9688 100644
+index 9fd0286..1574576 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -211,6 +211,7 @@ static void tagmon(const Arg *arg);
+@@ -212,6 +212,7 @@ static void tagmon(const Arg *arg);
  static void tile(Monitor *);
  static void togglebar(const Arg *arg);
  static void togglefloating(const Arg *arg);
@@ -22,7 +22,7 @@ index 41c6767..11c9688 100644
  static void toggletag(const Arg *arg);
  static void toggleview(const Arg *arg);
  static void unfocus(Client *c, int setfocus);
-@@ -1719,6 +1720,13 @@ togglefloating(const Arg *arg)
+@@ -1722,6 +1723,13 @@ togglefloating(const Arg *arg)
  	arrange(selmon);
  }
  

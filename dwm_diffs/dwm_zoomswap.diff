@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 41c6767..4d3f73c 100644
+index 9fd0286..32449c4 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -165,6 +165,7 @@ static void drawbar(Monitor *m);
@@ -10,7 +10,7 @@ index 41c6767..4d3f73c 100644
  static void focus(Client *c);
  static void focusin(XEvent *e);
  static void focusmon(const Arg *arg);
-@@ -184,7 +185,6 @@ static void monocle(Monitor *m);
+@@ -185,7 +186,6 @@ static void monocle(Monitor *m);
  static void motionnotify(XEvent *e);
  static void movemouse(const Arg *arg);
  static Client *nexttiled(Client *c);
@@ -18,7 +18,7 @@ index 41c6767..4d3f73c 100644
  static void propertynotify(XEvent *e);
  static void quit(const Arg *arg);
  static Monitor *recttomon(int x, int y, int w, int h);
-@@ -235,6 +235,7 @@ static int xerrorstart(Display *dpy, XErrorEvent *ee);
+@@ -236,6 +236,7 @@ static int xerrorstart(Display *dpy, XErrorEvent *ee);
  static void zoom(const Arg *arg);
  
  /* variables */
@@ -26,7 +26,7 @@ index 41c6767..4d3f73c 100644
  static const char broken[] = "broken";
  static char stext[256];
  static int screen;
-@@ -780,6 +781,16 @@ expose(XEvent *e)
+@@ -781,6 +782,16 @@ expose(XEvent *e)
  		drawbar(m);
  }
  
@@ -43,7 +43,7 @@ index 41c6767..4d3f73c 100644
  void
  focus(Client *c)
  {
-@@ -1199,15 +1210,6 @@ nexttiled(Client *c)
+@@ -1200,15 +1211,6 @@ nexttiled(Client *c)
  	return c;
  }
  
@@ -59,7 +59,7 @@ index 41c6767..4d3f73c 100644
  void
  propertynotify(XEvent *e)
  {
-@@ -2114,14 +2116,38 @@ void
+@@ -2117,14 +2119,38 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;

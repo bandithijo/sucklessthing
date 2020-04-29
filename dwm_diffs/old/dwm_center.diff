@@ -16,7 +16,7 @@ index 1c0b587..ae7af3b 100644
  
  /* layout(s) */
 diff --git a/dwm.c b/dwm.c
-index 41c6767..0947b14 100644
+index 9fd0286..bbc40a6 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -92,7 +92,7 @@ struct Client {
@@ -36,7 +36,7 @@ index 41c6767..0947b14 100644
  	int isfloating;
  	int monitor;
  } Rule;
-@@ -297,6 +298,7 @@ applyrules(Client *c)
+@@ -298,6 +299,7 @@ applyrules(Client *c)
  		&& (!r->class || strstr(class, r->class))
  		&& (!r->instance || strstr(instance, r->instance)))
  		{
@@ -44,7 +44,7 @@ index 41c6767..0947b14 100644
  			c->isfloating = r->isfloating;
  			c->tags |= r->tags;
  			for (m = mons; m && m->num != r->monitor; m = m->next);
-@@ -1049,6 +1051,11 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1050,6 +1052,11 @@ manage(Window w, XWindowAttributes *wa)
  		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
  	c->bw = borderpx;
  

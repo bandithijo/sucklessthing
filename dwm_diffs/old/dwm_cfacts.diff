@@ -116,7 +116,7 @@ index 7084c33..a11c1ab 100644
  #FREETYPEINC = ${X11INC}/freetype2
  
 diff --git a/dwm.c b/dwm.c
-index 41c6767..4094a29 100644
+index 9fd0286..210cd06 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -87,6 +87,7 @@ typedef struct Client Client;
@@ -144,7 +144,7 @@ index 41c6767..4094a29 100644
  static void expose(XEvent *e);
  static void focus(Client *c);
  static void focusin(XEvent *e);
-@@ -199,7 +201,9 @@ static void sendmon(Client *c, Monitor *m);
+@@ -200,7 +202,9 @@ static void sendmon(Client *c, Monitor *m);
  static void setclientstate(Client *c, long state);
  static void setfocus(Client *c);
  static void setfullscreen(Client *c, int fullscreen);
@@ -154,7 +154,7 @@ index 41c6767..4094a29 100644
  static void setmfact(const Arg *arg);
  static void setup(void);
  static void seturgent(Client *c, int urg);
-@@ -249,7 +253,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
+@@ -250,7 +254,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
  	[ConfigureRequest] = configurerequest,
  	[ConfigureNotify] = configurenotify,
  	[DestroyNotify] = destroynotify,
@@ -163,7 +163,7 @@ index 41c6767..4094a29 100644
  	[Expose] = expose,
  	[FocusIn] = focusin,
  	[KeyPress] = keypress,
-@@ -638,6 +642,7 @@ createmon(void)
+@@ -639,6 +643,7 @@ createmon(void)
  	m->nmaster = nmaster;
  	m->showbar = showbar;
  	m->topbar = topbar;
@@ -171,7 +171,7 @@ index 41c6767..4094a29 100644
  	m->lt[0] = &layouts[0];
  	m->lt[1] = &layouts[1 % LENGTH(layouts)];
  	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
-@@ -751,24 +756,24 @@ drawbars(void)
+@@ -752,24 +757,24 @@ drawbars(void)
  		drawbar(m);
  }
  
@@ -213,7 +213,7 @@ index 41c6767..4094a29 100644
  
  void
  expose(XEvent *e)
-@@ -1029,6 +1034,7 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1030,6 +1035,7 @@ manage(Window w, XWindowAttributes *wa)
  	c->w = c->oldw = wa->width;
  	c->h = c->oldh = wa->height;
  	c->oldbw = wa->border_width;
@@ -221,7 +221,7 @@ index 41c6767..4094a29 100644
  
  	updatetitle(c);
  	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
-@@ -1497,6 +1503,16 @@ setfullscreen(Client *c, int fullscreen)
+@@ -1498,6 +1504,16 @@ setfullscreen(Client *c, int fullscreen)
  	}
  }
  
@@ -238,7 +238,7 @@ index 41c6767..4094a29 100644
  void
  setlayout(const Arg *arg)
  {
-@@ -1511,6 +1527,23 @@ setlayout(const Arg *arg)
+@@ -1512,6 +1528,23 @@ setlayout(const Arg *arg)
  		drawbar(selmon);
  }
  
@@ -262,7 +262,7 @@ index 41c6767..4094a29 100644
  /* arg > 1.0 will set mfact absolutely */
  void
  setmfact(const Arg *arg)
-@@ -1674,25 +1707,33 @@ void
+@@ -1675,27 +1708,33 @@ void
  tile(Monitor *m)
  {
  	unsigned int i, n, h, mw, my, ty;
@@ -289,19 +289,19 @@ index 41c6767..4094a29 100644
  		if (i < m->nmaster) {
 -			h = (m->wh - my) / (MIN(n, m->nmaster) - i);
 -			resize(c, m->wx, m->wy + my, mw - (2*c->bw), h - (2*c->bw), 0);
--			my += HEIGHT(c);
-+			h = (m->wh - my) * (c->cfact / mfacts) - m->gappx;
++			h = (m->wh - my) / (MIN(n, m->nmaster) - i) - m->gappx;
 +			resize(c, m->wx + m->gappx, m->wy + my, mw - (2*c->bw) - m->gappx, h - (2*c->bw), 0);
-+			my += HEIGHT(c) + m->gappx;
-+			mfacts -= c->cfact;
+ 			if (my + HEIGHT(c) < m->wh)
+-				my += HEIGHT(c);
++                my += HEIGHT(c) + m->gappx;
  		} else {
 -			h = (m->wh - ty) / (n - i);
 -			resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
--			ty += HEIGHT(c);
 +			h = (m->wh - ty) / (n - i) - m->gappx;
 +			resize(c, m->wx + mw + m->gappx, m->wy + ty, m->ww - mw - (2*c->bw) - 2*m->gappx, h - (2*c->bw), 0);
-+			ty += HEIGHT(c) + m->gappx;
-+			sfacts -= c->cfact;
+ 			if (ty + HEIGHT(c) < m->wh)
+-				ty += HEIGHT(c);
++    			ty += HEIGHT(c) + m->gappx;
  		}
  }
  
