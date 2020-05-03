@@ -440,7 +440,7 @@ index 0000000..7890500
 +	/* U+2571 - U+2573: unsupported (diagonals) */
 +};
 diff --git a/config.def.h b/config.def.h
-index 0895a1f..d189d3a 100644
+index 0895a1f..7ade821 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -58,6 +58,18 @@ static unsigned int blinktimeout = 800;
@@ -476,7 +476,7 @@ index 0895a1f..d189d3a 100644
  	/* more colors can be added after 255 to use with DefaultXX */
  	"#cccccc",
  	"#555555",
-+	"#262626",
++	"#222222",
  };
  
  
@@ -490,9 +490,16 @@ index 0895a1f..d189d3a 100644
  static unsigned int defaultrcs = 257;
  
 diff --git a/config.mk b/config.mk
-index beafc35..ddc65ae 100644
+index beafc35..1d2f0e2 100644
 --- a/config.mk
 +++ b/config.mk
+@@ -1,5 +1,5 @@
+ # st version
+-VERSION = 0.8.3
++VERSION = 0.8.2
+ 
+ # Customize below to fit your system
+ 
 @@ -16,7 +16,7 @@ PKG_CONFIG = pkg-config
  INCS = -I$(X11INC) \
         `$(PKG_CONFIG) --cflags fontconfig` \

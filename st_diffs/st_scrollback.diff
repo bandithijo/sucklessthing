@@ -11,6 +11,17 @@ index 0895a1f..eef24df 100644
  };
  
  /*
+diff --git a/config.mk b/config.mk
+index beafc35..0cbb002 100644
+--- a/config.mk
++++ b/config.mk
+@@ -1,5 +1,5 @@
+ # st version
+-VERSION = 0.8.3
++VERSION = 0.8.2
+ 
+ # Customize below to fit your system
+ 
 diff --git a/st.c b/st.c
 index 0ce6ac2..641edc0 100644
 --- a/st.c
