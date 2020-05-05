@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..0542aaa 100644
+index 1c0b587..a0b169b 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -2,11 +2,11 @@
@@ -43,7 +43,7 @@ index 1c0b587..0542aaa 100644
  static Key keys[] = {
  	/* modifier                     key        function        argument */
 -	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-+	{ MODKEY,                       XK_d,      spawn,          SHCMD("j4-dmenu-desktop --dmenu=\"dmenu -i -m 0 -fn 'FuraCode Nerd Font:style=Medium,Regular:size=8' -nb '#222222' -nf '#bbbbbb' -sb '#005577' -sf '#eeeeee' -p 'RUN:'\"") },
++	{ MODKEY,                       XK_d,      spawn,          SHCMD("/usr/bin/dmenu-apps") },
  	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
  	{ MODKEY,                       XK_b,      togglebar,      {0} },
  	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
@@ -75,9 +75,9 @@ index 1c0b587..0542aaa 100644
 +    { MODKEY,               XK_p,           spawn,          SHCMD("/usr/bin/clipmenu") },
 +    { MODKEY|ShiftMask,     XK_p,           spawn,          SHCMD("rm -f /tmp/clipmenu*/*") },
 +    { MODKEY|ShiftMask,     XK_backslash,   spawn,          SHCMD("/usr/bin/dmenu-pass") },
-+    { MODKEY,               XK_F4,          spawn,          SHCMD("pamixer --increase +5") },
-+    { MODKEY,               XK_F3,          spawn,          SHCMD("pamixer --increase -5") },
-+    { MODKEY,               XK_F2,          spawn,          SHCMD("pamixer --toggle-mute") },
++    { 0,                    0x1008ff13,     spawn,          SHCMD("pamixer --increase 5") },
++    { 0,                    0x1008ff11,     spawn,          SHCMD("pamixer --decrease 5") },
++    { 0,                    0x1008ff12,     spawn,          SHCMD("pamixer --toggle-mute") },
  };
  
  /* button definitions */

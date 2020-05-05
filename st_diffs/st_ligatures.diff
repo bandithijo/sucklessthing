@@ -22,16 +22,9 @@ index 470ac86..38240da 100644
  $(OBJ): config.h config.mk
  
 diff --git a/config.mk b/config.mk
-index beafc35..a021b2c 100644
+index beafc35..3df5c83 100644
 --- a/config.mk
 +++ b/config.mk
-@@ -1,5 +1,5 @@
- # st version
--VERSION = 0.8.3
-+VERSION = 0.8.2
- 
- # Customize below to fit your system
- 
 @@ -15,10 +15,12 @@ PKG_CONFIG = pkg-config
  # includes and libs
  INCS = -I$(X11INC) \
@@ -49,10 +42,10 @@ index beafc35..a021b2c 100644
  STCPPFLAGS = -DVERSION=\"$(VERSION)\" -D_XOPEN_SOURCE=600
 diff --git a/hb.c b/hb.c
 new file mode 100644
-index 0000000..28ac299
+index 0000000..7df2828
 --- /dev/null
 +++ b/hb.c
-@@ -0,0 +1,128 @@
+@@ -0,0 +1,136 @@
 +#include <stdlib.h>
 +#include <stdio.h>
 +#include <math.h>
@@ -73,7 +66,9 @@ index 0000000..28ac299
 +static int hbfontslen = 0;
 +static HbFontMatch *hbfontcache = NULL;
 +
-+void hbunloadfonts() {
++void
++hbunloadfonts()
++{
 +	for (int i = 0; i < hbfontslen; i++) {
 +		hb_font_destroy(hbfontcache[i].font);
 +		XftUnlockFace(hbfontcache[i].match);
@@ -86,13 +81,15 @@ index 0000000..28ac299
 +	hbfontslen = 0;
 +}
 +
-+hb_font_t *hbfindfont(XftFont *match) {
++hb_font_t *
++hbfindfont(XftFont *match)
++{
 +	for (int i = 0; i < hbfontslen; i++) {
 +		if (hbfontcache[i].match == match)
 +			return hbfontcache[i].font;
 +	}
 +
-+	// Font not found in cache, caching it now.
++	/* Font not found in cache, caching it now. */
 +	hbfontcache = realloc(hbfontcache, sizeof(HbFontMatch) * (hbfontslen + 1));
 +	FT_Face face = XftLockFace(match);
 +	hb_font_t *font = hb_ft_font_create(face, NULL);
@@ -106,7 +103,9 @@ index 0000000..28ac299
 +	return font;
 +}
 +
-+void hbtransform(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x, int y) {
++void
++hbtransform(XftGlyphFontSpec *specs, const Glyph *glyphs, size_t len, int x, int y)
++{
 +	int start = 0, length = 1, gstart = 0;
 +	hb_codepoint_t *codepoints = calloc(len, sizeof(hb_codepoint_t));
 +
@@ -119,7 +118,7 @@ index 0000000..28ac299
 +		if (specs[specidx].font != specs[start].font || ATTRCMP(glyphs[gstart], glyphs[idx]) || selected(x + idx, y) != selected(x + gstart, y)) {
 +			hbtransformsegment(specs[start].font, glyphs, codepoints, gstart, length);
 +
-+			// Reset the sequence.
++			/* Reset the sequence. */
 +			length = 1;
 +			start = specidx;
 +			gstart = idx;
@@ -130,10 +129,10 @@ index 0000000..28ac299
 +		specidx++;
 +	}
 +
-+	// EOL.
++	/* EOL. */
 +	hbtransformsegment(specs[start].font, glyphs, codepoints, gstart, length);
 +
-+	// Apply the transformation to glyph specs.
++	/* Apply the transformation to glyph specs. */
 +	for (int i = 0, specidx = 0; i < len; i++) {
 +		if (glyphs[i].mode & ATTR_WDUMMY)
 +			continue;
@@ -147,7 +146,9 @@ index 0000000..28ac299
 +	free(codepoints);
 +}
 +
-+void hbtransformsegment(XftFont *xfont, const Glyph *string, hb_codepoint_t *codepoints, int start, int length) {
++void
++hbtransformsegment(XftFont *xfont, const Glyph *string, hb_codepoint_t *codepoints, int start, int length)
++{
 +	hb_font_t *font = hbfindfont(xfont);
 +	if (font == NULL)
 +		return;
@@ -157,7 +158,7 @@ index 0000000..28ac299
 +	hb_buffer_t *buffer = hb_buffer_create();
 +	hb_buffer_set_direction(buffer, HB_DIRECTION_LTR);
 +
-+	// Fill buffer with codepoints.
++	/* Fill buffer with codepoints. */
 +	for (int i = start; i < (start+length); i++) {
 +		rune = string[i].u;
 +		mode = string[i].mode;
@@ -166,24 +167,24 @@ index 0000000..28ac299
 +		hb_buffer_add_codepoints(buffer, &rune, 1, 0, 1);
 +	}
 +
-+	// Shape the segment.
++	/* Shape the segment. */
 +	hb_shape(font, buffer, NULL, 0);
 +
-+	// Get new glyph info.
++	/* Get new glyph info. */
 +	hb_glyph_info_t *info = hb_buffer_get_glyph_infos(buffer, NULL);
 +
-+	// Write new codepoints.
++	/* Write new codepoints. */
 +	for (int i = 0; i < length; i++) {
 +		hb_codepoint_t gid = info[i].codepoint;
 +		codepoints[start+i] = gid;
 +	}
 +
-+	// Cleanup.
++	/* Cleanup. */
 +	hb_buffer_destroy(buffer);
 +}
 diff --git a/hb.h b/hb.h
 new file mode 100644
-index 0000000..a209238
+index 0000000..b3e02d0
 --- /dev/null
 +++ b/hb.h
 @@ -0,0 +1,7 @@
@@ -192,24 +193,19 @@ index 0000000..a209238
 +#include <hb-ft.h>
 +
 +void hbunloadfonts();
-+void hbtransform(XftGlyphFontSpec *, const Glyph *, int, int, int);
++void hbtransform(XftGlyphFontSpec *, const Glyph *, size_t, int, int);
 +
 diff --git a/st.c b/st.c
-index 0ce6ac2..d094ad6 100644
+index 0ce6ac2..3201490 100644
 --- a/st.c
 +++ b/st.c
-@@ -2598,8 +2598,14 @@ draw(void)
- 		cx--;
+@@ -2599,7 +2599,8 @@ draw(void)
  
  	drawregion(0, 0, term.col, term.row);
-+	// Draw current line to format ligatures properly.
-+	xdrawline(term.line[term.c.y], 0, term.c.y, term.col);
-+
  	xdrawcursor(cx, term.c.y, term.line[term.c.y][cx],
- 			term.ocx, term.ocy, term.line[term.ocy][term.ocx]);
-+	// If cursor was on a transformed glyph, we need to redraw the previous line
-+	if (term.ocy != term.c.y && (term.line[term.ocy][term.ocx].mode & ATTR_LIGA))
-+		xdrawline(term.line[term.ocy], 0, term.ocy, term.col);
+-			term.ocx, term.ocy, term.line[term.ocy][term.ocx]);
++			term.ocx, term.ocy, term.line[term.ocy][term.ocx],
++			term.line[term.ocy], term.col);
  	term.ocx = cx;
  	term.ocy = term.c.y;
  	xfinishdraw();
@@ -235,8 +231,21 @@ index d978458..c9b279b 100644
  	ATTR_BOLD_FAINT = ATTR_BOLD | ATTR_FAINT,
  };
  
+diff --git a/win.h b/win.h
+index a6ef1b9..bc0d180 100644
+--- a/win.h
++++ b/win.h
+@@ -25,7 +25,7 @@ enum win_mode {
+ 
+ void xbell(void);
+ void xclipcopy(void);
+-void xdrawcursor(int, int, Glyph, int, int, Glyph);
++void xdrawcursor(int, int, Glyph, int, int, Glyph, Line, int);
+ void xdrawline(Line, int, int, int);
+ void xfinishdraw(void);
+ void xloadcols(void);
 diff --git a/x.c b/x.c
-index e5f1737..982cc3c 100644
+index e5f1737..3334a83 100644
 --- a/x.c
 +++ b/x.c
 @@ -19,6 +19,7 @@ char *argv0;
@@ -251,7 +260,7 @@ index e5f1737..982cc3c 100644
  void
  xunloadfonts(void)
  {
-+	/* Clear Harfbuzz font cache */
++	/* Clear Harfbuzz font cache. */
 +	hbunloadfonts();
 +
  	/* Free the loaded fonts in the font cache.  */
@@ -270,9 +279,29 @@ index e5f1737..982cc3c 100644
  		numspecs++;
  	}
  
-+	// Harfbuzz transformation for ligatures.
++	/* Harfbuzz transformation for ligatures. */
 +	hbtransform(specs, glyphs, len, x, y);
 +
  	return numspecs;
  }
  
+@@ -1485,14 +1492,17 @@ xdrawglyph(Glyph g, int x, int y)
+ }
+ 
+ void
+-xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
++xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og, Line line, int len)
+ {
+ 	Color drawcol;
+ 
+ 	/* remove the old cursor */
+ 	if (selected(ox, oy))
+ 		og.mode ^= ATTR_REVERSE;
+-	xdrawglyph(og, ox, oy);
++
++	/* Redraw the line where cursor was previously.
++	 * It will restore the ligatures broken by the cursor. */
++	xdrawline(line, 0, oy, len);
+ 
+ 	if (IS_SET(MODE_HIDE))
+ 		return;

@@ -440,7 +440,7 @@ index 0000000..7890500
 +	/* U+2571 - U+2573: unsupported (diagonals) */
 +};
 diff --git a/config.def.h b/config.def.h
-index 0895a1f..7ade821 100644
+index 0895a1f..de2d7f7 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -58,6 +58,18 @@ static unsigned int blinktimeout = 800;
@@ -467,7 +467,7 @@ index 0895a1f..7ade821 100644
  unsigned int tabspaces = 8;
  
 +/* bg opacity */
-+float alpha = 0.95;
++float alpha = 0.99;
 +
  /* Terminal colors (16 first used in escape sequence) */
  static const char *colorname[] = {

@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..52c5bb7 100644
+index 1c0b587..999180b 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -2,11 +2,11 @@
@@ -54,7 +54,7 @@ index 1c0b587..52c5bb7 100644
  	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
  	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
  	{ MODKEY,                       XK_Return, zoom,           {0} },
-@@ -94,6 +94,26 @@ static Key keys[] = {
+@@ -94,6 +94,27 @@ static Key keys[] = {
  	TAGKEYS(                        XK_8,                      7)
  	TAGKEYS(                        XK_9,                      8)
  	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
@@ -75,9 +75,10 @@ index 1c0b587..52c5bb7 100644
 +    { MODKEY,               XK_p,           spawn,          SHCMD("/usr/bin/clipmenu") },
 +    { MODKEY|ShiftMask,     XK_p,           spawn,          SHCMD("rm -f /tmp/clipmenu*/*") },
 +    { MODKEY|ShiftMask,     XK_backslash,   spawn,          SHCMD("/usr/bin/dmenu-pass") },
-+    { MODKEY,               XK_F4,          spawn,          SHCMD("pamixer --increase +5") },
-+    { MODKEY,               XK_F3,          spawn,          SHCMD("pamixer --decrease -5") },
-+    { MODKEY,               XK_F2,          spawn,          SHCMD("pamixer --toggle-mute") },
++    { MODKEY,               XK_backslash,   spawn,          SHCMD("/usr/bin/passtore 0") },
++    { 0,                    0x1008ff13,     spawn,          SHCMD("pamixer --increase 5") },
++    { 0,                    0x1008ff11,     spawn,          SHCMD("pamixer --decrease 5") },
++    { 0,                    0x1008ff12,     spawn,          SHCMD("pamixer --toggle-mute") },
  };
  
  /* button definitions */
