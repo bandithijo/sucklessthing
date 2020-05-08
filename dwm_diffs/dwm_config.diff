@@ -70,7 +70,7 @@ index 7084c33..40fd077 100644
  # Xinerama, comment if you don't want it
  XINERAMALIBS  = -lXinerama
 diff --git a/dwm.c b/dwm.c
-index 9fd0286..6aab6d0 100644
+index 9fd0286..14e8a61 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -163,7 +163,7 @@ static void detachstack(Client *c);
@@ -101,7 +101,13 @@ index 9fd0286..6aab6d0 100644
 -	Client *c;
 -	Monitor *m;
 -	XCrossingEvent *ev = &e->xcrossing;
--
++/* void */
++/* enternotify(XEvent *e) */
++/* { */
++/* 	Client *c; */
++/* 	Monitor *m; */
++/* 	XCrossingEvent *ev = &e->xcrossing; */
+ 
 -	if ((ev->mode != NotifyNormal || ev->detail == NotifyInferior) && ev->window != root)
 -		return;
 -	c = wintoclient(ev->window);
@@ -113,13 +119,6 @@ index 9fd0286..6aab6d0 100644
 -		return;
 -	focus(c);
 -}
-+/* void */
-+/* enternotify(XEvent *e) */
-+/* { */
-+/* 	Client *c; */
-+/* 	Monitor *m; */
-+/* 	XCrossingEvent *ev = &e->xcrossing; */
-+
 +/* 	if ((ev->mode != NotifyNormal || ev->detail == NotifyInferior) && ev->window != root) */
 +/* 		return; */
 +/* 	c = wintoclient(ev->window); */
@@ -134,3 +133,12 @@ index 9fd0286..6aab6d0 100644
  
  void
  expose(XEvent *e)
+@@ -1546,7 +1546,7 @@ setup(void)
+ 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
+ 		die("no fonts could be loaded.");
+ 	lrpad = drw->fonts->h;
+-	bh = drw->fonts->h + 2;
++	bh = drw->fonts->h + 3;
+ 	updategeom();
+ 	/* init atoms */
+ 	utf8string = XInternAtom(dpy, "UTF8_STRING", False);

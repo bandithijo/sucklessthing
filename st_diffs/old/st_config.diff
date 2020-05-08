@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 0895a1f..854a005 100644
+index 0895a1f..9ebc5cc 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -5,8 +5,8 @@
@@ -13,6 +13,17 @@ index 0895a1f..854a005 100644
  
  /*
   * What program is execed by st depends of these precedence rules:
+@@ -136,8 +136,8 @@ static unsigned int cursorshape = 2;
+  * Default columns and rows numbers
+  */
+ 
+-static unsigned int cols = 80;
+-static unsigned int rows = 24;
++static unsigned int cols = 83;
++static unsigned int rows = 25;
+ 
+ /*
+  * Default colour and shape of the mouse cursor
 diff --git a/config.mk b/config.mk
 index beafc35..3768630 100644
 --- a/config.mk

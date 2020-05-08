@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..38295e1 100644
+index 1c0b587..f3ca668 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -2,12 +2,12 @@
@@ -19,7 +19,7 @@ index 1c0b587..38295e1 100644
  static const char col_gray2[]       = "#444444";
  static const char col_gray3[]       = "#bbbbbb";
  static const char col_gray4[]       = "#eeeeee";
-@@ -22,19 +22,46 @@ static const char *colors[][3]      = {
+@@ -22,19 +22,51 @@ static const char *colors[][3]      = {
  static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
  
  static const Rule rules[] = {
@@ -45,6 +45,10 @@ index 1c0b587..38295e1 100644
 +    { "mpv",                  NULL,                 NULL,                         0,            1,             0,           -1 },
 +    { NULL,                   "libreoffice",        NULL,                         0,            1,             0,           -1 },
 +    { "Thunar",               "thunar",             NULL,                         0,            1,             0,           -1 },
++    { "St",                   NULL,                 "neomutt",                    1 << 6,       1,             0,           -1 },
++    { "St",                   NULL,                 "ranger",                     1 << 2,       1,             0,           -1 },
++    { "St",                   NULL,                 "newsboat",                   1 << 5,       1,             0,           -1 },
++    { "Transmission-gtk",     NULL,                 NULL,                         1 << 5,       1,             0,           -1 },
 +    // Floating
 +    { "St",                   NULL,                 "st+",                        0,            1,             1,           -1 },
 +    { "copyq",                NULL,                 NULL,                         0,            1,             1,           -1 },
@@ -64,6 +68,7 @@ index 1c0b587..38295e1 100644
 +    { "Gpick",                NULL,                 NULL,                         0,            1,             1,           -1 },
 +    { "vokoscreen",           NULL,                 NULL,                         0,            1,             1,           -1 },
 +    { "Blueman-manager",      NULL,                 NULL,                         0,            1,             1,           -1 },
++    { "Xsane",                NULL,                 "No devices available",       0,            1,             1,           -1 },
  };
  
  /* layout(s) */
@@ -75,7 +80,7 @@ index 1c0b587..38295e1 100644
  
  static const Layout layouts[] = {
  	/* symbol     arrange function */
-@@ -44,7 +71,7 @@ static const Layout layouts[] = {
+@@ -44,7 +76,7 @@ static const Layout layouts[] = {
  };
  
  /* key definitions */
@@ -84,7 +89,7 @@ index 1c0b587..38295e1 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -61,13 +88,13 @@ static const char *termcmd[]  = { "st", NULL };
+@@ -61,13 +93,13 @@ static const char *termcmd[]  = { "st", NULL };
  
  static Key keys[] = {
  	/* modifier                     key        function        argument */

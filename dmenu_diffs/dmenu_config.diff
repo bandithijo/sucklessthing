@@ -36,3 +36,16 @@ index 0929b4a..f4014a9 100644
  
  # Xinerama, comment if you don't want it
  XINERAMALIBS  = -lXinerama
+diff --git a/dmenu.c b/dmenu.c
+index 65f25ce..8f5a5cc 100644
+--- a/dmenu.c
++++ b/dmenu.c
+@@ -608,7 +608,7 @@ setup(void)
+ 	utf8 = XInternAtom(dpy, "UTF8_STRING", False);
+ 
+ 	/* calculate menu geometry */
+-	bh = drw->fonts->h + 2;
++	bh = drw->fonts->h + 3;
+ 	lines = MAX(lines, 0);
+ 	mh = (lines + 1) * bh;
+ #ifdef XINERAMA
