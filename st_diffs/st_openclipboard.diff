@@ -1,0 +1,55 @@
+diff --git a/config.def.h b/config.def.h
+index 0895a1f..e7c1323 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -188,6 +188,7 @@ static Shortcut shortcuts[] = {
+ 	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
+ 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
+ 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
++	{ MODKEY,               XK_o,           opencopied,     {.v = "xdg-open"} },
+ };
+ 
+ /*
+diff --git a/st.h b/st.h
+index d978458..fe30597 100644
+--- a/st.h
++++ b/st.h
+@@ -81,6 +81,7 @@ void die(const char *, ...);
+ void redraw(void);
+ void draw(void);
+ 
++void opencopied(const Arg *);
+ void printscreen(const Arg *);
+ void printsel(const Arg *);
+ void sendbreak(const Arg *);
+diff --git a/x.c b/x.c
+index e5f1737..13ccb5e 100644
+--- a/x.c
++++ b/x.c
+@@ -2053,3 +2053,26 @@ run:
+ 
+ 	return 0;
+ }
++
++void
++opencopied(const Arg *arg)
++{
++	const size_t max_cmd = 2048;
++	const char *clip = xsel.clipboard;
++	if(!clip) {
++		fprintf(stderr, "Warning: nothing copied to clipboard\n");
++		return;
++	}
++
++	/* account for space/quote (3) and \0 (1) and & (1) */
++	char cmd[max_cmd + strlen(clip) + 5];
++	strncpy(cmd, (char *)arg->v, max_cmd);
++	cmd[max_cmd] = '\0';
++
++	strcat(cmd, " \"");
++	strcat(cmd, clip);
++	strcat(cmd, "\"");
++	strcat(cmd, "&");
++
++	system(cmd);
++}

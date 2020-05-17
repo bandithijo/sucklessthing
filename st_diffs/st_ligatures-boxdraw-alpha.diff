@@ -443,7 +443,7 @@ index 0000000..7890500
 +	/* U+2571 - U+2573: unsupported (diagonals) */
 +};
 diff --git a/config.def.h b/config.def.h
-index 0895a1f..0bc3145 100644
+index 0895a1f..1cf3b17 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -5,8 +5,8 @@
@@ -476,7 +476,34 @@ index 0895a1f..0bc3145 100644
  /*
   * bell volume. It must be a value between -100 and 100. Use 0 for disabling
   * it
-@@ -152,6 +164,42 @@ static unsigned int mousebg = 0;
+@@ -84,6 +96,9 @@ char *termname = "st-256color";
+  */
+ unsigned int tabspaces = 8;
+ 
++/* bg opacity */
++float alpha = 0.95;
++
+ /* Terminal colors (16 first used in escape sequence) */
+ static const char *colorname[] = {
+ 	/* 8 normal colors */
+@@ -111,6 +126,7 @@ static const char *colorname[] = {
+ 	/* more colors can be added after 255 to use with DefaultXX */
+ 	"#cccccc",
+ 	"#555555",
++	"#1E1E1E",
+ };
+ 
+ 
+@@ -119,7 +135,7 @@ static const char *colorname[] = {
+  * foreground, background, cursor, reverse cursor
+  */
+ unsigned int defaultfg = 7;
+-unsigned int defaultbg = 0;
++unsigned int defaultbg = 258;
+ static unsigned int defaultcs = 256;
+ static unsigned int defaultrcs = 257;
+ 
+@@ -152,6 +168,42 @@ static unsigned int mousebg = 0;
   */
  static unsigned int defaultattr = 11;
  
@@ -519,7 +546,7 @@ index 0895a1f..0bc3145 100644
  /*
   * Force mouse select/shortcuts while mask is active (when MODE_MOUSE is set).
   * Note that if you want to use ShiftMask with selmasks, set this to an other
-@@ -165,6 +213,8 @@ static uint forcemousemod = ShiftMask;
+@@ -165,6 +217,8 @@ static uint forcemousemod = ShiftMask;
   */
  static MouseShortcut mshortcuts[] = {
  	/* mask                 button   function        argument       release */
@@ -528,7 +555,7 @@ index 0895a1f..0bc3145 100644
  	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
  	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
  	{ XK_ANY_MOD,           Button5, ttysend,        {.s = "\005"} },
-@@ -188,6 +238,8 @@ static Shortcut shortcuts[] = {
+@@ -188,6 +242,8 @@ static Shortcut shortcuts[] = {
  	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
  	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
  	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
@@ -538,7 +565,7 @@ index 0895a1f..0bc3145 100644
  
  /*
 diff --git a/config.mk b/config.mk
-index beafc35..f77421c 100644
+index beafc35..fd7b788 100644
 --- a/config.mk
 +++ b/config.mk
 @@ -7,18 +7,20 @@ VERSION = 0.8.3
@@ -556,9 +583,10 @@ index beafc35..f77421c 100644
  INCS = -I$(X11INC) \
         `$(PKG_CONFIG) --cflags fontconfig` \
 -       `$(PKG_CONFIG) --cflags freetype2`
+-LIBS = -L$(X11LIB) -lm -lrt -lX11 -lutil -lXft \
 +       `$(PKG_CONFIG) --cflags freetype2` \
 +       `$(PKG_CONFIG) --cflags harfbuzz`
- LIBS = -L$(X11LIB) -lm -lrt -lX11 -lutil -lXft \
++LIBS = -L$(X11LIB) -lm -lrt -lX11 -lutil -lXft -lXrender\
         `$(PKG_CONFIG) --libs fontconfig` \
 -       `$(PKG_CONFIG) --libs freetype2`
 +       `$(PKG_CONFIG) --libs freetype2` \
@@ -1062,7 +1090,7 @@ index 0ce6ac2..d395ee3 100644
  	term.ocy = term.c.y;
  	xfinishdraw();
 diff --git a/st.h b/st.h
-index d978458..8e87190 100644
+index d978458..14f3aa6 100644
 --- a/st.h
 +++ b/st.h
 @@ -11,7 +11,8 @@
@@ -1108,11 +1136,12 @@ index d978458..8e87190 100644
  /* config.h globals */
  extern char *utmp;
  extern char *scroll;
-@@ -122,3 +135,4 @@ extern char *termname;
+@@ -122,3 +135,5 @@ extern char *termname;
  extern unsigned int tabspaces;
  extern unsigned int defaultfg;
  extern unsigned int defaultbg;
 +extern const int boxdraw, boxdraw_bold, boxdraw_braille;
++extern float alpha;
 diff --git a/win.h b/win.h
 index a6ef1b9..bc0d180 100644
 --- a/win.h
@@ -1127,7 +1156,7 @@ index a6ef1b9..bc0d180 100644
  void xfinishdraw(void);
  void xloadcols(void);
 diff --git a/x.c b/x.c
-index e5f1737..284fc17 100644
+index e5f1737..cb76333 100644
 --- a/x.c
 +++ b/x.c
 @@ -14,11 +14,13 @@
@@ -1164,7 +1193,46 @@ index e5f1737..284fc17 100644
  /* X modifiers */
  #define XK_ANY_MOD    UINT_MAX
  #define XK_NO_MOD     0
-@@ -828,8 +843,8 @@ xclear(int x1, int y1, int x2, int y2)
+@@ -105,6 +120,7 @@ typedef struct {
+ 	XSetWindowAttributes attrs;
+ 	int scr;
+ 	int isfixed; /* is fixed geometry? */
++	int depth; /* bit depth */
+ 	int l, t; /* left and top offset */
+ 	int gm; /* geometry mask */
+ } XWindow;
+@@ -243,6 +259,7 @@ static char *usedfont = NULL;
+ static double usedfontsize = 0;
+ static double defaultfontsize = 0;
+ 
++static char *opt_alpha = NULL;
+ static char *opt_class = NULL;
+ static char **opt_cmd  = NULL;
+ static char *opt_embed = NULL;
+@@ -734,7 +751,7 @@ xresize(int col, int row)
+ 
+ 	XFreePixmap(xw.dpy, xw.buf);
+ 	xw.buf = XCreatePixmap(xw.dpy, xw.win, win.w, win.h,
+-			DefaultDepth(xw.dpy, xw.scr));
++			xw.depth);
+ 	XftDrawChange(xw.draw, xw.buf);
+ 	xclear(0, 0, win.w, win.h);
+ 
+@@ -794,6 +811,13 @@ xloadcols(void)
+ 			else
+ 				die("could not allocate color %d\n", i);
+ 		}
++
++	/* set alpha value of bg color */
++	if (opt_alpha)
++		alpha = strtof(opt_alpha, NULL);
++	dc.col[defaultbg].color.alpha = (unsigned short)(0xffff * alpha);
++	dc.col[defaultbg].pixel &= 0x00FFFFFF;
++	dc.col[defaultbg].pixel |= (unsigned char)(0xff * alpha) << 24;
+ 	loaded = 1;
+ }
+ 
+@@ -828,8 +852,8 @@ xclear(int x1, int y1, int x2, int y2)
  void
  xhints(void)
  {
@@ -1175,7 +1243,7 @@ index e5f1737..284fc17 100644
  	XWMHints wm = {.flags = InputHint, .input = 1};
  	XSizeHints *sizeh;
  
-@@ -1031,6 +1046,9 @@ xunloadfont(Font *f)
+@@ -1031,6 +1055,9 @@ xunloadfont(Font *f)
  void
  xunloadfonts(void)
  {
@@ -1185,16 +1253,64 @@ index e5f1737..284fc17 100644
  	/* Free the loaded fonts in the font cache.  */
  	while (frclen > 0)
  		XftFontClose(xw.dpy, frc[--frclen].font);
-@@ -1104,8 +1122,6 @@ xinit(int cols, int rows)
+@@ -1103,11 +1130,21 @@ xinit(int cols, int rows)
+ 	Window parent;
  	pid_t thispid = getpid();
  	XColor xmousefg, xmousebg;
++	XWindowAttributes attr;
++	XVisualInfo vis;
  
 -	if (!(xw.dpy = XOpenDisplay(NULL)))
 -		die("can't open display\n");
  	xw.scr = XDefaultScreen(xw.dpy);
- 	xw.vis = XDefaultVisual(xw.dpy, xw.scr);
+-	xw.vis = XDefaultVisual(xw.dpy, xw.scr);
++
++	if (!(opt_embed && (parent = strtol(opt_embed, NULL, 0)))) {
++		parent = XRootWindow(xw.dpy, xw.scr);
++		xw.depth = 32;
++	} else {
++		XGetWindowAttributes(xw.dpy, parent, &attr);
++		xw.depth = attr.depth;
++	}
++
++	XMatchVisualInfo(xw.dpy, xw.scr, xw.depth, TrueColor, &vis);
++	xw.vis = vis.visual;
  
-@@ -1205,6 +1221,8 @@ xinit(int cols, int rows)
+ 	/* font */
+ 	if (!FcInit())
+@@ -1117,7 +1154,7 @@ xinit(int cols, int rows)
+ 	xloadfonts(usedfont, 0);
+ 
+ 	/* colors */
+-	xw.cmap = XDefaultColormap(xw.dpy, xw.scr);
++	xw.cmap = XCreateColormap(xw.dpy, parent, xw.vis, None);
+ 	xloadcols();
+ 
+ 	/* adjust fixed window geometry */
+@@ -1137,19 +1174,15 @@ xinit(int cols, int rows)
+ 		| ButtonMotionMask | ButtonPressMask | ButtonReleaseMask;
+ 	xw.attrs.colormap = xw.cmap;
+ 
+-	if (!(opt_embed && (parent = strtol(opt_embed, NULL, 0))))
+-		parent = XRootWindow(xw.dpy, xw.scr);
+ 	xw.win = XCreateWindow(xw.dpy, parent, xw.l, xw.t,
+-			win.w, win.h, 0, XDefaultDepth(xw.dpy, xw.scr), InputOutput,
++			win.w, win.h, 0, xw.depth, InputOutput,
+ 			xw.vis, CWBackPixel | CWBorderPixel | CWBitGravity
+ 			| CWEventMask | CWColormap, &xw.attrs);
+ 
+ 	memset(&gcvalues, 0, sizeof(gcvalues));
+ 	gcvalues.graphics_exposures = False;
+-	dc.gc = XCreateGC(xw.dpy, parent, GCGraphicsExposures,
+-			&gcvalues);
+-	xw.buf = XCreatePixmap(xw.dpy, xw.win, win.w, win.h,
+-			DefaultDepth(xw.dpy, xw.scr));
++	xw.buf = XCreatePixmap(xw.dpy, xw.win, win.w, win.h, xw.depth);
++	dc.gc = XCreateGC(xw.dpy, xw.buf, GCGraphicsExposures, &gcvalues);
+ 	XSetForeground(xw.dpy, dc.gc, dc.col[defaultbg].pixel);
+ 	XFillRectangle(xw.dpy, xw.buf, dc.gc, 0, 0, win.w, win.h);
+ 
+@@ -1205,6 +1238,8 @@ xinit(int cols, int rows)
  	xsel.xtarget = XInternAtom(xw.dpy, "UTF8_STRING", 0);
  	if (xsel.xtarget == None)
  		xsel.xtarget = XA_STRING;
@@ -1203,7 +1319,7 @@ index e5f1737..284fc17 100644
  }
  
  int
-@@ -1229,7 +1247,7 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
+@@ -1229,7 +1264,7 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
  		mode = glyphs[i].mode;
  
  		/* Skip dummy wide-character spacing. */
@@ -1212,7 +1328,7 @@ index e5f1737..284fc17 100644
  			continue;
  
  		/* Determine font for glyph if different from previous glyph. */
-@@ -1251,8 +1269,13 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
+@@ -1251,8 +1286,13 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
  			yp = winy + font->ascent;
  		}
  
@@ -1228,7 +1344,7 @@ index e5f1737..284fc17 100644
  		if (glyphidx) {
  			specs[numspecs].font = font->match;
  			specs[numspecs].glyph = glyphidx;
-@@ -1336,6 +1359,9 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
+@@ -1336,6 +1376,9 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
  		numspecs++;
  	}
  
@@ -1238,7 +1354,7 @@ index e5f1737..284fc17 100644
  	return numspecs;
  }
  
-@@ -1380,10 +1406,6 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
+@@ -1380,10 +1423,6 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
  		bg = &dc.col[base.bg];
  	}
  
@@ -1249,7 +1365,7 @@ index e5f1737..284fc17 100644
  	if (IS_SET(MODE_REVERSE)) {
  		if (fg == &dc.col[defaultfg]) {
  			fg = &dc.col[defaultbg];
-@@ -1456,8 +1478,12 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
+@@ -1456,8 +1495,12 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
  	r.width = width;
  	XftDrawSetClipRectangles(xw.draw, winx, winy, &r, 1);
  
@@ -1264,7 +1380,7 @@ index e5f1737..284fc17 100644
  
  	/* Render underline and strikethrough. */
  	if (base.mode & ATTR_UNDERLINE) {
-@@ -1485,14 +1511,17 @@ xdrawglyph(Glyph g, int x, int y)
+@@ -1485,14 +1528,17 @@ xdrawglyph(Glyph g, int x, int y)
  }
  
  void
@@ -1284,7 +1400,7 @@ index e5f1737..284fc17 100644
  
  	if (IS_SET(MODE_HIDE))
  		return;
-@@ -1500,7 +1529,7 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
+@@ -1500,7 +1546,7 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
  	/*
  	 * Select the right color for the right mode.
  	 */
@@ -1293,7 +1409,7 @@ index e5f1737..284fc17 100644
  
  	if (IS_SET(MODE_REVERSE)) {
  		g.mode |= ATTR_REVERSE;
-@@ -1970,6 +1999,59 @@ run(void)
+@@ -1970,6 +2016,59 @@ run(void)
  	}
  }
  
@@ -1353,7 +1469,17 @@ index e5f1737..284fc17 100644
  void
  usage(void)
  {
-@@ -2043,6 +2125,11 @@ run:
+@@ -1994,6 +2093,9 @@ main(int argc, char *argv[])
+ 	case 'a':
+ 		allowaltscreen = 0;
+ 		break;
++	case 'A':
++		opt_alpha = EARGF(usage());
++		break;
+ 	case 'c':
+ 		opt_class = EARGF(usage());
+ 		break;
+@@ -2043,6 +2145,11 @@ run:
  
  	setlocale(LC_CTYPE, "");
  	XSetLocaleModifiers("");

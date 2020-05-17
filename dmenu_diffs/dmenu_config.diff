@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 1edb647..8c4d710 100644
+index 1edb647..a89ff47 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -4,14 +4,14 @@
@@ -12,11 +12,12 @@ index 1edb647..8c4d710 100644
  static const char *prompt      = NULL;      /* -p  option; prompt to the left of input field */
  static const char *colors[SchemeLast][2] = {
 -	/*     fg         bg       */
-+	            /*      fg         bg     */
- 	[SchemeNorm] = { "#bbbbbb", "#222222" },
+-	[SchemeNorm] = { "#bbbbbb", "#222222" },
 -	[SchemeSel] = { "#eeeeee", "#005577" },
 -	[SchemeOut] = { "#000000", "#00ffff" },
-+	[SchemeSel]  = { "#eeeeee", "#005577" },
++	            /*      fg         bg     */
++	[SchemeNorm] = { "#bbbbbb", "#1e1e1e" },
++	[SchemeSel]  = { "#eeeeee", "#005f87" },
 +	[SchemeOut]  = { "#000000", "#00ffff" },
  };
  /* -l option; if nonzero, dmenu uses vertical list with given number of lines */
@@ -36,16 +37,3 @@ index 0929b4a..f4014a9 100644
  
  # Xinerama, comment if you don't want it
  XINERAMALIBS  = -lXinerama
-diff --git a/dmenu.c b/dmenu.c
-index 65f25ce..8f5a5cc 100644
---- a/dmenu.c
-+++ b/dmenu.c
-@@ -608,7 +608,7 @@ setup(void)
- 	utf8 = XInternAtom(dpy, "UTF8_STRING", False);
- 
- 	/* calculate menu geometry */
--	bh = drw->fonts->h + 2;
-+	bh = drw->fonts->h + 3;
- 	lines = MAX(lines, 0);
- 	mh = (lines + 1) * bh;
- #ifdef XINERAMA

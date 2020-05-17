@@ -1,0 +1,91 @@
+diff --git a/config.h b/config.h
+index 8e5d90a..25bfc44 100644
+--- a/config.h
++++ b/config.h
+@@ -3,17 +3,17 @@
+ 
+ static int bottom = 0;
+ static int embedded = 0;
+-static int minpwlen = 32;
++static int minpwlen = 10;
+ static int mon = -1;
+ 
+ static const char *asterisk = "*";
+ static const char *fonts[] = {
+-	"monospace:size=10"
++	"FuraCode Nerd Font:style=Medium,Regular:size=8"
+ };
+ static const char *prompt = NULL;
+ static const char *colors[SchemeLast][4] = {
+-	[SchemePrompt] = { "#bbbbbb", "#222222" },
+-	[SchemeNormal] = { "#bbbbbb", "#222222" },
++	[SchemePrompt] = { "#eeeeee", "#005577" },
++	[SchemeNormal] = { "#bbbbbb", "#1E1E1E" },
+ 	[SchemeSelect] = { "#eeeeee", "#005577" },
+-	[SchemeDesc]   = { "#bbbbbb", "#222222" }
++	[SchemeDesc]   = { "#eeeeee", "#005577" }
+ };
+diff --git a/pinentry-dmenu.c b/pinentry-dmenu.c
+index 18abf74..af80b49 100644
+--- a/pinentry-dmenu.c
++++ b/pinentry-dmenu.c
+@@ -123,7 +123,7 @@ nextrune(int cursor, int inc) {
+ 	for (n = cursor + inc;
+ 	     n + inc >= 0 && (pin[n] & 0xc0) == 0x80;
+ 	     n += inc);
+-	
++
+ 	return n;
+ }
+ 
+@@ -191,7 +191,7 @@ drawwin(void) {
+ 
+ 	char* pprompt = (repeat) ? pinentry->repeat_passphrase : pinentry->prompt;
+ 	int ppromptw = (pprompt) ? TEXTW(pprompt) : 0;
+-	
++
+ 	unsigned int censortl = minpwlen * TEXTW(asterisk) / strlen(asterisk);
+ 	unsigned int confirml = TEXTW(" YesNo ") + 3 * lrpad;
+ 
+@@ -212,7 +212,7 @@ drawwin(void) {
+ 	if (pinentry->description) {
+ 		pb = mw - x;
+ 		pdesclen = strlen(pinentry->description);
+-		
++
+ 		if (pb > 0) {
+ 			pb -= (winmode == WinPin) ? censortl : confirml;
+ 			pbw = MINDESCLEN * pdescw / pdesclen;
+@@ -312,7 +312,7 @@ setup(void) {
+ 			if (XGetWindowAttributes(dpy, pw, &wa)) {
+ 				for (j = 0; j < n; j++) {
+ 					a = INTERSECT(wa.x, wa.y, wa.width, wa.height, info[j]);
+-					if (a > area) { 
++					if (a > area) {
+ 						area = a;
+ 						i = j;
+ 					}
+@@ -650,7 +650,7 @@ static int
+ cmdhandler(pinentry_t received_pinentry) {
+ 	struct sigaction sa;
+ 	XWindowAttributes wa;
+-	
++
+ 	pinentry = received_pinentry;
+ 
+ 	if (!setlocale(LC_CTYPE, "") || !XSupportsLocale()) {
+@@ -790,12 +790,12 @@ main(int argc, char *argv[]) {
+ 
+ 	pinentry_init("pinentry-dmenu");
+ 	pinentry_parse_opts(argc, argv);
+-	
++
+ 	if (pinentry_loop()) {
+ 		return 1;
+ 	}
+ 
+ 	config_destroy(&cfg);
+-	
++
+ 	return 0;
+ }

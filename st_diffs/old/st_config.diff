@@ -1,25 +1,31 @@
 diff --git a/config.def.h b/config.def.h
-index 0895a1f..9ebc5cc 100644
+index 0895a1f..6155e5d 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -5,8 +5,8 @@
+@@ -5,8 +5,14 @@
   *
   * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
   */
 -static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
 -static int borderpx = 2;
 +static char *font = "FuraCode Nerd Font:style=Medium,Regular:pixelsize=10:antialias=true:autohint=true";
++/* Spare fonts */
++static char *font2[] = {
++/*	"Inconsolata for Powerline:pixelsize=12:antialias=true:autohint=true", */
++/*	"Hack Nerd Font Mono:pixelsize=11:antialias=true:autohint=true", */
++};
++
 +static int borderpx = 0;
  
  /*
   * What program is execed by st depends of these precedence rules:
-@@ -136,8 +136,8 @@ static unsigned int cursorshape = 2;
+@@ -136,8 +142,8 @@ static unsigned int cursorshape = 2;
   * Default columns and rows numbers
   */
  
 -static unsigned int cols = 80;
 -static unsigned int rows = 24;
-+static unsigned int cols = 83;
++static unsigned int cols = 85;
 +static unsigned int rows = 25;
  
  /*
