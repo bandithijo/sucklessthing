@@ -1,0 +1,34 @@
+diff --git a/config.def.h b/config.def.h
+index defa426..7fb0428 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -1,13 +1,13 @@
+ /* See LICENSE file for copyright and license details. */
+ 
+ /* appearance */
+-static const char font[]        = "monospace:size=9";
+-static const char* normbgcolor  = "#222222";
+-static const char* normfgcolor  = "#cccccc";
+-static const char* selbgcolor   = "#555555";
+-static const char* selfgcolor   = "#ffffff";
+-static const char* urgbgcolor   = "#111111";
+-static const char* urgfgcolor   = "#cc0000";
++static const char font[]        = "FuraCode Nerd Font:size=8";
++static const char* normbgcolor  = "#1e1e1e";
++static const char* normfgcolor  = "#eeeeee";
++static const char* selbgcolor   = "#4e4e4e";
++static const char* selfgcolor   = "#eeeeee";
++static const char* urgbgcolor   = "#ffffff";
++static const char* urgfgcolor   = "#ff0000";
+ static const char before[]      = "<";
+ static const char after[]       = ">";
+ static const char titletrim[]   = "...";
+@@ -33,7 +33,7 @@ static Bool npisrelative  = False;
+         } \
+ }
+ 
+-#define MODKEY ControlMask
++#define MODKEY Mod1Mask
+ static Key keys[] = {
+ 	/* modifier             key        function     argument */
+ 	{ MODKEY|ShiftMask,     XK_Return, focusonce,   { 0 } },

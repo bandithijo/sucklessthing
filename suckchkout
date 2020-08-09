@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+branch_list = `git branch -a`
+branches = branch_list.split(" ").reject{ |n| n == "*" || n == "master" || n == "remotes/origin/HEAD" || n == "->" || n == "origin/master" || n == "remotes/origin/master" }.map{ |n| n.gsub("remotes/origin/", "") }
+
+puts "\n=> Checkout each branch to Local"
+for branch in branches do
+  print "Checkout #{branch}... "
+  `git checkout #{branch}  > /dev/null 2>&1`
+  print "DONE\n"
+end
+`git checkout master > /dev/null 2>&1`
+puts "=> All Checkout COMPLETE!"

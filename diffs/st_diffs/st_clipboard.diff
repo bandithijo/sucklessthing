@@ -1,0 +1,688 @@
+diff --git a/FAQ b/FAQ
+index 0f9609d..85534a4 100644
+--- a/FAQ
++++ b/FAQ
+@@ -2,14 +2,12 @@
+ 
+ Use the excellent tool of [utmp](https://git.suckless.org/utmp/) for this task.
+ 
+-
+ ## Some _random program_ complains that st is unknown/not recognised/unsupported/whatever!
+ 
+ It means that st doesn’t have any terminfo entry on your system. Chances are
+ you did not `make install`. If you just want to test it without installing it,
+ you can manually run `tic -sx st.info`.
+ 
+-
+ ## Nothing works, and nothing is said about an unknown terminal!
+ 
+ * Some programs just assume they’re running in xterm i.e. they don’t rely on
+@@ -17,7 +15,6 @@ you can manually run `tic -sx st.info`.
+ * Some programs don’t complain about the lacking st description and default to
+   another terminal. In that case see the question about terminfo.
+ 
+-
+ ## How do I scroll back up?
+ 
+ * Using a terminal multiplexer.
+@@ -26,13 +23,11 @@ you can manually run `tic -sx st.info`.
+ * Using the excellent tool of [scroll](https://git.suckless.org/scroll/).
+ * Using the scrollback [patch](https://st.suckless.org/patches/scrollback/).
+ 
+-
+ ## I would like to have utmp and/or scroll functionality by default
+ 
+ You can add the absolute patch of both programs in your config.h
+ file. You only have to modify the value of utmp and scroll variables.
+ 
+-
+ ## Why doesn't the Del key work in some programs?
+ 
+ Taken from the terminfo manpage:
+@@ -88,14 +83,12 @@ If you are using zsh, then read the zsh FAQ
+ 
+ Putting these lines into your .zshrc will fix the problems.
+ 
+-
+ ## How can I use meta in 8bit mode?
+ 
+ St supports meta in 8bit mode, but the default terminfo entry doesn't
+ use this capability. If you want it, you have to use the 'st-meta' value
+ in TERM.
+ 
+-
+ ## I cannot compile st in OpenBSD
+ 
+ OpenBSD lacks librt, despite it being mandatory in POSIX
+@@ -104,7 +97,6 @@ If you want to compile st for OpenBSD you have to remove -lrt from config.mk, an
+ st will compile without any loss of functionality, because all the functions are
+ included in libc on this platform.
+ 
+-
+ ## The Backspace Case
+ 
+ St is emulating the Linux way of handling backspace being delete and delete being
+@@ -166,60 +158,19 @@ terminal users wants its backspace to be how he feels it:
+ 	[1] http://www.ibb.net/~anne/keyboard.html
+ 	[2] http://www.tldp.org/HOWTO/Keyboard-and-Console-HOWTO-5.html
+ 
+-
+ ## But I really want the old grumpy behaviour of my terminal
+ 
+ Apply [1].
+ 
+ [1] https://st.suckless.org/patches/delkey
+ 
++## Why do images not work in st (in programs such as w3m)?
+ 
+-## Why do images not work in st using the w3m image hack?
+-
+-w3mimg uses a hack that draws an image on top of the terminal emulator Drawable
+-window. The hack relies on the terminal to use a single buffer to draw its
+-contents directly.
+-
+-st uses double-buffered drawing so the image is quickly replaced and may show a
+-short flicker effect.
+-
+-Below is a patch example to change st double-buffering to a single Drawable
+-buffer.
+-
+-diff --git a/x.c b/x.c
+---- a/x.c
+-+++ b/x.c
+-@@ -732,10 +732,6 @@ xresize(int col, int row)
+- 	win.tw = col * win.cw;
+- 	win.th = row * win.ch;
+- 
+--	XFreePixmap(xw.dpy, xw.buf);
+--	xw.buf = XCreatePixmap(xw.dpy, xw.win, win.w, win.h,
+--			DefaultDepth(xw.dpy, xw.scr));
+--	XftDrawChange(xw.draw, xw.buf);
+- 	xclear(0, 0, win.w, win.h);
+- 
+- 	/* resize to new width */
+-@@ -1148,8 +1144,7 @@ xinit(int cols, int rows)
+- 	gcvalues.graphics_exposures = False;
+- 	dc.gc = XCreateGC(xw.dpy, parent, GCGraphicsExposures,
+- 			&gcvalues);
+--	xw.buf = XCreatePixmap(xw.dpy, xw.win, win.w, win.h,
+--			DefaultDepth(xw.dpy, xw.scr));
+-+	xw.buf = xw.win;
+- 	XSetForeground(xw.dpy, dc.gc, dc.col[defaultbg].pixel);
+- 	XFillRectangle(xw.dpy, xw.buf, dc.gc, 0, 0, win.w, win.h);
+- 
+-@@ -1632,8 +1627,6 @@ xdrawline(Line line, int x1, int y1, int x2)
+- void
+- xfinishdraw(void)
+- {
+--	XCopyArea(xw.dpy, xw.buf, xw.win, dc.gc, 0, 0, win.w,
+--			win.h, 0, 0);
+- 	XSetForeground(xw.dpy, dc.gc,
+- 			dc.col[IS_SET(MODE_REVERSE)?
+- 				defaultfg : defaultbg].pixel);
++This is a terrible hack that overdraws an image on top of the terminal emulator
++window. It also relies on a very specific way the terminal draws it's contents.
+ 
++A more proper (but limited way) would be using sixels. Which st doesn't
++support.
+ 
+ ## BadLength X error in Xft when trying to render emoji
+ 
+diff --git a/LICENSE b/LICENSE
+index d80eb47..c356c39 100644
+--- a/LICENSE
++++ b/LICENSE
+@@ -1,6 +1,6 @@
+ MIT/X Consortium License
+ 
+-© 2014-2020 Hiltjo Posthuma <hiltjo at codemadness dot org>
++© 2014-2018 Hiltjo Posthuma <hiltjo at codemadness dot org>
+ © 2018 Devin J. Pohly <djpohly at gmail dot com>
+ © 2014-2017 Quentin Rameau <quinq at fifth dot space>
+ © 2009-2012 Aurélien APTEL <aurelien dot aptel at gmail dot com>
+diff --git a/config.def.h b/config.def.h
+index 6f05dce..0895a1f 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -43,18 +43,9 @@ static unsigned int tripleclicktimeout = 600;
+ /* alt screens */
+ int allowaltscreen = 1;
+ 
+-/* allow certain non-interactive (insecure) window operations such as:
+-   setting the clipboard text */
+-int allowwindowops = 0;
+-
+-/*
+- * draw latency range in ms - from new content/keypress/etc until drawing.
+- * within this range, st draws when content stops arriving (idle). mostly it's
+- * near minlatency, but it waits longer for slow updates to avoid partial draw.
+- * low minlatency will tear/flicker more, as it can "detect" idle too early.
+- */
+-static double minlatency = 8;
+-static double maxlatency = 33;
++/* frames per second st should at maximum draw to the screen */
++static unsigned int xfps = 120;
++static unsigned int actionfps = 30;
+ 
+ /*
+  * blinking timeout (set to 0 to disable blinking) for the terminal blinking
+@@ -175,9 +166,7 @@ static uint forcemousemod = ShiftMask;
+ static MouseShortcut mshortcuts[] = {
+ 	/* mask                 button   function        argument       release */
+ 	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
+-	{ ShiftMask,            Button4, ttysend,        {.s = "\033[5;2~"} },
+ 	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
+-	{ ShiftMask,            Button5, ttysend,        {.s = "\033[6;2~"} },
+ 	{ XK_ANY_MOD,           Button5, ttysend,        {.s = "\005"} },
+ };
+ 
+diff --git a/config.mk b/config.mk
+index c070a4a..beafc35 100644
+--- a/config.mk
++++ b/config.mk
+@@ -1,5 +1,5 @@
+ # st version
+-VERSION = 0.8.4
++VERSION = 0.8.3
+ 
+ # Customize below to fit your system
+ 
+@@ -28,8 +28,8 @@ STLDFLAGS = $(LIBS) $(LDFLAGS)
+ # OpenBSD:
+ #CPPFLAGS = -DVERSION=\"$(VERSION)\" -D_XOPEN_SOURCE=600 -D_BSD_SOURCE
+ #LIBS = -L$(X11LIB) -lm -lX11 -lutil -lXft \
+-#       `$(PKG_CONFIG) --libs fontconfig` \
+-#       `$(PKG_CONFIG) --libs freetype2`
++#       `pkg-config --libs fontconfig` \
++#       `pkg-config --libs freetype2`
+ 
+ # compiler and linker
+ # CC = c99
+diff --git a/st.c b/st.c
+index 76b7e0d..0ce6ac2 100644
+--- a/st.c
++++ b/st.c
+@@ -38,7 +38,7 @@
+ 
+ /* macros */
+ #define IS_SET(flag)		((term.mode & (flag)) != 0)
+-#define ISCONTROLC0(c)		(BETWEEN(c, 0, 0x1f) || (c) == 0x7f)
++#define ISCONTROLC0(c)		(BETWEEN(c, 0, 0x1f) || (c) == '\177')
+ #define ISCONTROLC1(c)		(BETWEEN(c, 0x80, 0x9f))
+ #define ISCONTROL(c)		(ISCONTROLC0(c) || ISCONTROLC1(c))
+ #define ISDELIM(u)		(u && wcschr(worddelimiters, u))
+@@ -51,6 +51,7 @@ enum term_mode {
+ 	MODE_ECHO        = 1 << 4,
+ 	MODE_PRINT       = 1 << 5,
+ 	MODE_UTF8        = 1 << 6,
++	MODE_SIXEL       = 1 << 7,
+ };
+ 
+ enum cursor_movement {
+@@ -77,11 +78,12 @@ enum charset {
+ enum escape_state {
+ 	ESC_START      = 1,
+ 	ESC_CSI        = 2,
+-	ESC_STR        = 4,  /* DCS, OSC, PM, APC */
++	ESC_STR        = 4,  /* OSC, PM, APC */
+ 	ESC_ALTCHARSET = 8,
+ 	ESC_STR_END    = 16, /* a final string was encountered */
+ 	ESC_TEST       = 32, /* Enter in test mode */
+ 	ESC_UTF8       = 64,
++	ESC_DCS        =128,
+ };
+ 
+ typedef struct {
+@@ -127,7 +129,6 @@ typedef struct {
+ 	int charset;  /* current charset */
+ 	int icharset; /* selected charset for sequence */
+ 	int *tabs;
+-	Rune lastc;   /* last printed char outside of sequence, 0 if control */
+ } Term;
+ 
+ /* CSI Escape sequence structs */
+@@ -633,8 +634,7 @@ getsel(void)
+ 		 * st.
+ 		 * FIXME: Fix the computer world.
+ 		 */
+-		if ((y < sel.ne.y || lastx >= linelen) &&
+-		    (!(last->mode & ATTR_WRAP) || sel.type == SEL_RECTANGULAR))
++		if ((y < sel.ne.y || lastx >= linelen) && !(last->mode & ATTR_WRAP))
+ 			*ptr++ = '\n';
+ 	}
+ 	*ptr = 0;
+@@ -730,7 +730,7 @@ sigchld(int a)
+ 		die("child exited with status %d\n", WEXITSTATUS(stat));
+ 	else if (WIFSIGNALED(stat))
+ 		die("child terminated due to signal %d\n", WTERMSIG(stat));
+-	_exit(0);
++	exit(0);
+ }
+ 
+ void
+@@ -841,6 +841,7 @@ ttyread(void)
+ 		if (buflen > 0)
+ 			memmove(buf, buf + written, buflen);
+ 		return ret;
++
+ 	}
+ }
+ 
+@@ -1104,17 +1105,27 @@ selscroll(int orig, int n)
+ 	if (sel.ob.x == -1)
+ 		return;
+ 
+-	if (BETWEEN(sel.nb.y, orig, term.bot) != BETWEEN(sel.ne.y, orig, term.bot)) {
+-		selclear();
+-	} else if (BETWEEN(sel.nb.y, orig, term.bot)) {
+-		sel.ob.y += n;
+-		sel.oe.y += n;
+-		if (sel.ob.y < term.top || sel.ob.y > term.bot ||
+-		    sel.oe.y < term.top || sel.oe.y > term.bot) {
++	if (BETWEEN(sel.ob.y, orig, term.bot) || BETWEEN(sel.oe.y, orig, term.bot)) {
++		if ((sel.ob.y += n) > term.bot || (sel.oe.y += n) < term.top) {
+ 			selclear();
++			return;
++		}
++		if (sel.type == SEL_RECTANGULAR) {
++			if (sel.ob.y < term.top)
++				sel.ob.y = term.top;
++			if (sel.oe.y > term.bot)
++				sel.oe.y = term.bot;
+ 		} else {
+-			selnormalize();
++			if (sel.ob.y < term.top) {
++				sel.ob.y = term.top;
++				sel.ob.x = 0;
++			}
++			if (sel.oe.y > term.bot) {
++				sel.oe.y = term.bot;
++				sel.oe.x = term.col;
++			}
+ 		}
++		selnormalize();
+ 	}
+ }
+ 
+@@ -1646,12 +1657,6 @@ csihandle(void)
+ 		if (csiescseq.arg[0] == 0)
+ 			ttywrite(vtiden, strlen(vtiden), 0);
+ 		break;
+-	case 'b': /* REP -- if last char is printable print it <n> more times */
+-		DEFAULT(csiescseq.arg[0], 1);
+-		if (term.lastc)
+-			while (csiescseq.arg[0]-- > 0)
+-				tputc(term.lastc);
+-		break;
+ 	case 'C': /* CUF -- Cursor <n> Forward */
+ 	case 'a': /* HPR -- Cursor <n> Forward */
+ 		DEFAULT(csiescseq.arg[0], 1);
+@@ -1775,7 +1780,7 @@ csihandle(void)
+ 		break;
+ 	case 'n': /* DSR – Device Status Report (cursor position) */
+ 		if (csiescseq.arg[0] == 6) {
+-			len = snprintf(buf, sizeof(buf), "\033[%i;%iR",
++			len = snprintf(buf, sizeof(buf),"\033[%i;%iR",
+ 					term.c.y+1, term.c.x+1);
+ 			ttywrite(buf, len, 0);
+ 		}
+@@ -1859,7 +1864,7 @@ strhandle(void)
+ 				xsettitle(strescseq.args[1]);
+ 			return;
+ 		case 52:
+-			if (narg > 2 && allowwindowops) {
++			if (narg > 2) {
+ 				dec = base64dec(strescseq.args[2]);
+ 				if (dec) {
+ 					xsetsel(dec);
+@@ -1895,6 +1900,7 @@ strhandle(void)
+ 		xsettitle(strescseq.args[0]);
+ 		return;
+ 	case 'P': /* DCS -- Device Control String */
++		term.mode |= ESC_DCS;
+ 	case '_': /* APC -- Application Program Command */
+ 	case '^': /* PM -- Privacy Message */
+ 		return;
+@@ -2017,7 +2023,7 @@ tdumpline(int n)
+ 	bp = &term.line[n][0];
+ 	end = &bp[MIN(tlinelen(n), term.col) - 1];
+ 	if (bp != end || bp->u != ' ') {
+-		for ( ; bp <= end; ++bp)
++		for ( ;bp <= end; ++bp)
+ 			tprinter(buf, utf8encode(bp->u, buf));
+ 	}
+ 	tprinter("\n", 1);
+@@ -2088,9 +2094,12 @@ tdectest(char c)
+ void
+ tstrsequence(uchar c)
+ {
++	strreset();
++
+ 	switch (c) {
+ 	case 0x90:   /* DCS -- Device Control String */
+ 		c = 'P';
++		term.esc |= ESC_DCS;
+ 		break;
+ 	case 0x9f:   /* APC -- Application Program Command */
+ 		c = '_';
+@@ -2102,7 +2111,6 @@ tstrsequence(uchar c)
+ 		c = ']';
+ 		break;
+ 	}
+-	strreset();
+ 	strescseq.type = c;
+ 	term.esc |= ESC_STR;
+ }
+@@ -2145,7 +2153,6 @@ tcontrolcode(uchar ascii)
+ 		return;
+ 	case '\032': /* SUB */
+ 		tsetchar('?', &term.c.attr, term.c.x, term.c.y);
+-		/* FALLTHROUGH */
+ 	case '\030': /* CAN */
+ 		csireset();
+ 		break;
+@@ -2300,13 +2307,15 @@ tputc(Rune u)
+ 	Glyph *gp;
+ 
+ 	control = ISCONTROL(u);
+-	if (u < 127 || !IS_SET(MODE_UTF8)) {
++	if (!IS_SET(MODE_UTF8) && !IS_SET(MODE_SIXEL)) {
+ 		c[0] = u;
+ 		width = len = 1;
+ 	} else {
+ 		len = utf8encode(u, c);
+-		if (!control && (width = wcwidth(u)) == -1)
++		if (!control && (width = wcwidth(u)) == -1) {
++			memcpy(c, "\357\277\275", 4); /* UTF_INVALID */
+ 			width = 1;
++		}
+ 	}
+ 
+ 	if (IS_SET(MODE_PRINT))
+@@ -2321,11 +2330,23 @@ tputc(Rune u)
+ 	if (term.esc & ESC_STR) {
+ 		if (u == '\a' || u == 030 || u == 032 || u == 033 ||
+ 		   ISCONTROLC1(u)) {
+-			term.esc &= ~(ESC_START|ESC_STR);
++			term.esc &= ~(ESC_START|ESC_STR|ESC_DCS);
++			if (IS_SET(MODE_SIXEL)) {
++				/* TODO: render sixel */;
++				term.mode &= ~MODE_SIXEL;
++				return;
++			}
+ 			term.esc |= ESC_STR_END;
+ 			goto check_control_code;
+ 		}
+ 
++		if (IS_SET(MODE_SIXEL)) {
++			/* TODO: implement sixel mode */
++			return;
++		}
++		if (term.esc&ESC_DCS && strescseq.len == 0 && u == 'q')
++			term.mode |= MODE_SIXEL;
++
+ 		if (strescseq.len+len >= strescseq.siz) {
+ 			/*
+ 			 * Here is a bug in terminals. If the user never sends
+@@ -2362,8 +2383,6 @@ check_control_code:
+ 		/*
+ 		 * control codes are not shown ever
+ 		 */
+-		if (!term.esc)
+-			term.lastc = 0;
+ 		return;
+ 	} else if (term.esc & ESC_START) {
+ 		if (term.esc & ESC_CSI) {
+@@ -2394,7 +2413,7 @@ check_control_code:
+ 		 */
+ 		return;
+ 	}
+-	if (selected(term.c.x, term.c.y))
++	if (sel.ob.x != -1 && BETWEEN(term.c.y, sel.ob.y, sel.oe.y))
+ 		selclear();
+ 
+ 	gp = &term.line[term.c.y][term.c.x];
+@@ -2413,7 +2432,6 @@ check_control_code:
+ 	}
+ 
+ 	tsetchar(u, &term.c.attr, term.c.x, term.c.y);
+-	term.lastc = u;
+ 
+ 	if (width == 2) {
+ 		gp->mode |= ATTR_WIDE;
+@@ -2437,7 +2455,7 @@ twrite(const char *buf, int buflen, int show_ctrl)
+ 	int n;
+ 
+ 	for (n = 0; n < buflen; n += charsize) {
+-		if (IS_SET(MODE_UTF8)) {
++		if (IS_SET(MODE_UTF8) && !IS_SET(MODE_SIXEL)) {
+ 			/* process a complete utf8 char */
+ 			charsize = utf8decode(buf + n, &u, buflen - n);
+ 			if (charsize == 0)
+diff --git a/st.h b/st.h
+index 3d351b6..d978458 100644
+--- a/st.h
++++ b/st.h
+@@ -118,7 +118,6 @@ extern char *stty_args;
+ extern char *vtiden;
+ extern wchar_t *worddelimiters;
+ extern int allowaltscreen;
+-extern int allowwindowops;
+ extern char *termname;
+ extern unsigned int tabspaces;
+ extern unsigned int defaultfg;
+diff --git a/st.info b/st.info
+index 8201ad6..e2abc98 100644
+--- a/st.info
++++ b/st.info
+@@ -158,7 +158,6 @@ st-mono| simpleterm monocolor,
+ 	rc=\E8,
+ 	rev=\E[7m,
+ 	ri=\EM,
+-	rin=\E[%p1%dT,
+ 	ritm=\E[23m,
+ 	rmacs=\E(B,
+ 	rmcup=\E[?1049l,
+@@ -184,8 +183,6 @@ st-mono| simpleterm monocolor,
+ # XTerm extensions
+ 	rmxx=\E[29m,
+ 	smxx=\E[9m,
+-# disabled rep for now: causes some issues with older ncurses versions.
+-#	rep=%p1%c\E[%p2%{1}%-%db,
+ # tmux extensions, see TERMINFO EXTENSIONS in tmux(1)
+ 	Tc,
+ 	Ms=\E]52;%p1%s;%p2%s\007,
+diff --git a/x.c b/x.c
+index 210f184..5cabd60 100644
+--- a/x.c
++++ b/x.c
+@@ -673,6 +673,7 @@ setsel(char *str, Time t)
+ 	XSetSelectionOwner(xw.dpy, XA_PRIMARY, xw.win, t);
+ 	if (XGetSelectionOwner(xw.dpy, XA_PRIMARY) != xw.win)
+ 		selclear();
++	clipcopy(NULL);
+ }
+ 
+ void
+@@ -1526,9 +1527,8 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
+ 	/* draw the new one */
+ 	if (IS_SET(MODE_FOCUSED)) {
+ 		switch (win.cursor) {
+-		case 7: /* st extension */
+-			g.u = 0x2603; /* snowman (U+2603) */
+-			/* FALLTHROUGH */
++		case 7: /* st extension: snowman (U+2603) */
++			g.u = 0x2603;
+ 		case 0: /* Blinking Block */
+ 		case 1: /* Blinking Block (Default) */
+ 		case 2: /* Steady Block */
+@@ -1690,7 +1690,8 @@ xsetmode(int set, unsigned int flags)
+ int
+ xsetcursor(int cursor)
+ {
+-	if (!BETWEEN(cursor, 0, 7)) /* 7: st extension */
++	DEFAULT(cursor, 1);
++	if (!BETWEEN(cursor, 0, 6))
+ 		return 1;
+ 	win.cursor = cursor;
+ 	return 0;
+@@ -1867,9 +1868,10 @@ run(void)
+ 	XEvent ev;
+ 	int w = win.w, h = win.h;
+ 	fd_set rfd;
+-	int xfd = XConnectionNumber(xw.dpy), ttyfd, xev, drawing;
+-	struct timespec seltv, *tv, now, lastblink, trigger;
+-	double timeout;
++	int xfd = XConnectionNumber(xw.dpy), xev, blinkset = 0, dodraw = 0;
++	int ttyfd;
++	struct timespec drawtimeout, *tv = NULL, now, last, lastblink;
++	long deltatime;
+ 
+ 	/* Waiting for window mapping */
+ 	do {
+@@ -1890,77 +1892,82 @@ run(void)
+ 	ttyfd = ttynew(opt_line, shell, opt_io, opt_cmd);
+ 	cresize(w, h);
+ 
+-	for (timeout = -1, drawing = 0, lastblink = (struct timespec){0};;) {
++	clock_gettime(CLOCK_MONOTONIC, &last);
++	lastblink = last;
++
++	for (xev = actionfps;;) {
+ 		FD_ZERO(&rfd);
+ 		FD_SET(ttyfd, &rfd);
+ 		FD_SET(xfd, &rfd);
+ 
+-		if (XPending(xw.dpy))
+-			timeout = 0;  /* existing events might not set xfd */
+-
+-		seltv.tv_sec = timeout / 1E3;
+-		seltv.tv_nsec = 1E6 * (timeout - 1E3 * seltv.tv_sec);
+-		tv = timeout >= 0 ? &seltv : NULL;
+-
+ 		if (pselect(MAX(xfd, ttyfd)+1, &rfd, NULL, NULL, tv, NULL) < 0) {
+ 			if (errno == EINTR)
+ 				continue;
+ 			die("select failed: %s\n", strerror(errno));
+ 		}
+-		clock_gettime(CLOCK_MONOTONIC, &now);
+-
+-		if (FD_ISSET(ttyfd, &rfd))
++		if (FD_ISSET(ttyfd, &rfd)) {
+ 			ttyread();
++			if (blinktimeout) {
++				blinkset = tattrset(ATTR_BLINK);
++				if (!blinkset)
++					MODBIT(win.mode, 0, MODE_BLINK);
++			}
++		}
+ 
+-		xev = 0;
+-		while (XPending(xw.dpy)) {
+-			xev = 1;
+-			XNextEvent(xw.dpy, &ev);
+-			if (XFilterEvent(&ev, None))
+-				continue;
+-			if (handler[ev.type])
+-				(handler[ev.type])(&ev);
++		if (FD_ISSET(xfd, &rfd))
++			xev = actionfps;
++
++		clock_gettime(CLOCK_MONOTONIC, &now);
++		drawtimeout.tv_sec = 0;
++		drawtimeout.tv_nsec =  (1000 * 1E6)/ xfps;
++		tv = &drawtimeout;
++
++		dodraw = 0;
++		if (blinktimeout && TIMEDIFF(now, lastblink) > blinktimeout) {
++			tsetdirtattr(ATTR_BLINK);
++			win.mode ^= MODE_BLINK;
++			lastblink = now;
++			dodraw = 1;
++		}
++		deltatime = TIMEDIFF(now, last);
++		if (deltatime > 1000 / (xev ? xfps : actionfps)) {
++			dodraw = 1;
++			last = now;
+ 		}
+ 
+-		/*
+-		 * To reduce flicker and tearing, when new content or event
+-		 * triggers drawing, we first wait a bit to ensure we got
+-		 * everything, and if nothing new arrives - we draw.
+-		 * We start with trying to wait minlatency ms. If more content
+-		 * arrives sooner, we retry with shorter and shorter periods,
+-		 * and eventually draw even without idle after maxlatency ms.
+-		 * Typically this results in low latency while interacting,
+-		 * maximum latency intervals during `cat huge.txt`, and perfect
+-		 * sync with periodic updates from animations/key-repeats/etc.
+-		 */
+-		if (FD_ISSET(ttyfd, &rfd) || xev) {
+-			if (!drawing) {
+-				trigger = now;
+-				drawing = 1;
++		if (dodraw) {
++			while (XPending(xw.dpy)) {
++				XNextEvent(xw.dpy, &ev);
++				if (XFilterEvent(&ev, None))
++					continue;
++				if (handler[ev.type])
++					(handler[ev.type])(&ev);
+ 			}
+-			timeout = (maxlatency - TIMEDIFF(now, trigger)) \
+-			          / maxlatency * minlatency;
+-			if (timeout > 0)
+-				continue;  /* we have time, try to find idle */
+-		}
+ 
+-		/* idle detected or maxlatency exhausted -> draw */
+-		timeout = -1;
+-		if (blinktimeout && tattrset(ATTR_BLINK)) {
+-			timeout = blinktimeout - TIMEDIFF(now, lastblink);
+-			if (timeout <= 0) {
+-				if (-timeout > blinktimeout) /* start visible */
+-					win.mode |= MODE_BLINK;
+-				win.mode ^= MODE_BLINK;
+-				tsetdirtattr(ATTR_BLINK);
+-				lastblink = now;
+-				timeout = blinktimeout;
++			draw();
++			XFlush(xw.dpy);
++
++			if (xev && !FD_ISSET(xfd, &rfd))
++				xev--;
++			if (!FD_ISSET(ttyfd, &rfd) && !FD_ISSET(xfd, &rfd)) {
++				if (blinkset) {
++					if (TIMEDIFF(now, lastblink) \
++							> blinktimeout) {
++						drawtimeout.tv_nsec = 1000;
++					} else {
++						drawtimeout.tv_nsec = (1E6 * \
++							(blinktimeout - \
++							TIMEDIFF(now,
++								lastblink)));
++					}
++					drawtimeout.tv_sec = \
++					    drawtimeout.tv_nsec / 1E9;
++					drawtimeout.tv_nsec %= (long)1E9;
++				} else {
++					tv = NULL;
++				}
+ 			}
+ 		}
+-
+-		draw();
+-		XFlush(xw.dpy);
+-		drawing = 0;
+ 	}
+ }
+ 
+@@ -1982,7 +1989,7 @@ main(int argc, char *argv[])
+ {
+ 	xw.l = xw.t = 0;
+ 	xw.isfixed = False;
+-	xsetcursor(cursorshape);
++	win.cursor = cursorshape;
+ 
+ 	ARGBEGIN {
+ 	case 'a':

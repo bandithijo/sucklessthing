@@ -1,0 +1,80 @@
+diff --git a/st.1 b/st.1
+index 39120b4..b82beb3 100644
+--- a/st.1
++++ b/st.1
+@@ -6,6 +6,8 @@ st \- simple terminal
+ .RB [ \-aiv ]
+ .RB [ \-c
+ .IR class ]
++.RB [ \-d
++.IR path ]
+ .RB [ \-f
+ .IR font ]
+ .RB [ \-g
+@@ -30,6 +32,8 @@ st \- simple terminal
+ .RB [ \-aiv ]
+ .RB [ \-c
+ .IR class ]
++.RB [ \-d
++.IR path ]
+ .RB [ \-f
+ .IR font ]
+ .RB [ \-g
+@@ -58,6 +62,10 @@ disable alternate screens in terminal
+ .BI \-c " class"
+ defines the window class (default $TERM).
+ .TP
++.BI \-d " path"
++changes the working directory to
++.IR path .
++.TP
+ .BI \-f " font"
+ defines the
+ .I font
+diff --git a/x.c b/x.c
+index 210f184..22fba07 100644
+--- a/x.c
++++ b/x.c
+@@ -251,6 +251,7 @@ static char *opt_io    = NULL;
+ static char *opt_line  = NULL;
+ static char *opt_name  = NULL;
+ static char *opt_title = NULL;
++static char *opt_dir   = NULL;
+ 
+ static int oldbutton = 3; /* button event on startup: 3 = release */
+ 
+@@ -1967,12 +1968,12 @@ run(void)
+ void
+ usage(void)
+ {
+-	die("usage: %s [-aiv] [-c class] [-f font] [-g geometry]"
+-	    " [-n name] [-o file]\n"
++	die("usage: %s [-aiv] [-c class] [-d path] [-f font]"
++	    " [-g geometry] [-n name] [-o file]\n"
+ 	    "          [-T title] [-t title] [-w windowid]"
+ 	    " [[-e] command [args ...]]\n"
+-	    "       %s [-aiv] [-c class] [-f font] [-g geometry]"
+-	    " [-n name] [-o file]\n"
++	    "       %s [-aiv] [-c class] [-d path] [-f font]"
++	    " [-g geometry] [-n name] [-o file]\n"
+ 	    "          [-T title] [-t title] [-w windowid] -l line"
+ 	    " [stty_args ...]\n", argv0, argv0);
+ }
+@@ -2024,6 +2025,9 @@ main(int argc, char *argv[])
+ 	case 'v':
+ 		die("%s " VERSION "\n", argv0);
+ 		break;
++	case 'd':
++		opt_dir = EARGF(usage());
++		break;
+ 	default:
+ 		usage();
+ 	} ARGEND;
+@@ -2043,6 +2047,7 @@ run:
+ 	xinit(cols, rows);
+ 	xsetenv();
+ 	selinit();
++	chdir(opt_dir);
+ 	run();
+ 
+ 	return 0;
