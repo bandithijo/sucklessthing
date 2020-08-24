@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index e06be66..5b5f796 100644
+index e06be66..c59603a 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -4,7 +4,7 @@
@@ -27,7 +27,7 @@ index e06be66..5b5f796 100644
 +    { ram_perc, " %s%% ",      NULL },
 +    { disk_perc, " %s%% ",     "/" },
 +	{ run_command, "%s ",       "$HOME/bin/status/volume" },
-+	{ datetime, "%s ",          " 0%u%y%m%d%H%M" },
++	{ datetime, "%s",          " 0%u%y%m%d%H%M" },
 +	{ run_command, "%s ",       "$HOME/bin/status/bat-state" },
 +	{ run_command, "%s ",       "$HOME/bin/status/bat-capacity" },
 +	{ run_command, "%s",        "$HOME/bin/status/user" },

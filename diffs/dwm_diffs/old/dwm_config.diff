@@ -1,8 +1,8 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..62f7c6f 100644
+index 1c0b587..0235bd0 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -2,49 +2,109 @@
+@@ -2,49 +2,110 @@
  
  /* appearance */
  static const unsigned int borderpx  = 1;        /* border pixel of windows */
@@ -102,6 +102,7 @@ index 1c0b587..62f7c6f 100644
 +    { "GParted",              NULL,                 NULL,                         0,            1,             1,              1,          -1 },
 +    { "zoom",                 NULL,                 "Question and Answer",        0,            1,             1,              1,          -1 },
 +    { "guvcview",             NULL,                 NULL,                         0,            1,             1,              0,          -1 },
++    { "Key-mon",              NULL,                 NULL,                         0,            1,             1,              0,          -1 },
 +    { "Gnome-power-statistics", NULL,               NULL,                         0,            1,             1,              1,          -1 },
 +    { "firefox",              "Browser",            "About Mozilla Firefox",      0,            1,             1,              1,          -1 },
 +    { "Tor Browser",          "Browser",            "About Tor Browser",          0,            1,             1,              1,          -1 },
@@ -135,7 +136,7 @@ index 1c0b587..62f7c6f 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -56,34 +116,46 @@ static const Layout layouts[] = {
+@@ -56,34 +117,46 @@ static const Layout layouts[] = {
  
  /* commands */
  static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -187,7 +188,7 @@ index 1c0b587..62f7c6f 100644
  	TAGKEYS(                        XK_1,                      0)
  	TAGKEYS(                        XK_2,                      1)
  	TAGKEYS(                        XK_3,                      2)
-@@ -94,22 +166,77 @@ static Key keys[] = {
+@@ -94,22 +167,76 @@ static Key keys[] = {
  	TAGKEYS(                        XK_8,                      7)
  	TAGKEYS(                        XK_9,                      8)
  	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
@@ -216,16 +217,15 @@ index 1c0b587..62f7c6f 100644
 +    { MODKEY|ControlMask,           XK_Return,                 spawn,          SHCMD("st -T 'st+'") },
 +    { MODKEY|Mod1Mask,              XK_Return,                 spawn,          SHCMD("tabbed -c -r 2 st -w ''") },
 +    { MODKEY|ShiftMask,             XK_End,                    spawn,          SHCMD("/usr/bin/rofi-power 'killall dwm'") },
-+    { MODKEY,                       XK_e,                      spawn,          SHCMD("/usr/bin/rofi-emoji") },
-+    { MODKEY|ShiftMask,             XK_e,                      spawn,          SHCMD("/usr/bin/rofi-emoji-git-commit-messages") },
-+    { MODKEY,                       XK_Print,                  spawn,          SHCMD("scrot 'Screenshot_%Y-%m-%d_%H-%M-%S.png' -e 'mv *.png ~/pic/ScreenShots/'; notify-send 'Scrot' 'Screen has been captured!'") },
-+    { MODKEY|ControlMask,           XK_Print,                  spawn,          SHCMD("scrot -d 5 'Screenshot_%Y-%m-%d_%H-%M-%S.png' -e 'mv *.png ~/pic/ScreenShots/'; notify-send 'Scrot' 'Screen has been captured!'") },
-+    { MODKEY|Mod1Mask,              XK_Print,                  spawn,          SHCMD("scrot -d 3 -u 'Screenshot_%Y-%m-%d_%H-%M-%S.png' -e 'mv *.png ~/pic/ScreenShots/'; $HOME/bin/scrot-mac; notify-send 'Scrot' 'Window has been captured!'") },
-+    { MODKEY|ShiftMask|Mod1Mask,    XK_Print,                  spawn,          SHCMD("scrot -d 3 -u 'Screenshot_%Y-%m-%d_%H-%M-%S.png' -e 'mv *.png ~/pic/ScreenShots/'; notify-send 'Scrot' 'Window has been captured!'") },
-+    { MODKEY|ShiftMask,             XK_Print,                  spawn,          SHCMD("/usr/bin/flameshot-imgmgck") },
-+    { MODKEY|ShiftMask|ControlMask, XK_Print,                  spawn,          SHCMD("/usr/bin/flameshot gui; scrot-mac-noname") },
++    { MODKEY,                       XK_e,                      spawn,          SHCMD("/usr/bin/rofi-emoji-run") },
++    { MODKEY,                       XK_Print,                  spawn,          SHCMD("/usr/bin/scrot-full") },
++    { MODKEY|ControlMask,           XK_Print,                  spawn,          SHCMD("/usr/bin/scrot-time") },
++    { MODKEY|Mod1Mask,              XK_Print,                  spawn,          SHCMD("/usr/bin/scrot-window-imgck") },
++    { MODKEY|ShiftMask|Mod1Mask,    XK_Print,                  spawn,          SHCMD("/usr/bin/scrot-window") },
++    { MODKEY|ShiftMask,             XK_Print,                  spawn,          SHCMD("/usr/bin/flameshot-imgck") },
++    { MODKEY|ShiftMask|ControlMask, XK_Print,                  spawn,          SHCMD("/usr/bin/flameshot gui") },
 +    { MODKEY|ShiftMask,             XK_Pause,                  spawn,          SHCMD("/usr/bin/dmenu-record") },
-+    { MODKEY|ShiftMask,             XK_x,                      spawn,          SHCMD("/usr/bin/lock-dark") },
++    { MODKEY|ShiftMask,             XK_x,                      spawn,          SHCMD("/usr/bin/slimlock") },
 +    { MODKEY,                       XK_F7,                     spawn,          SHCMD("/usr/bin/arandr") },
 +    { MODKEY,                       XK_F8,                     spawn,          SHCMD("/usr/bin/networkmanager_dmenu") },
 +    { MODKEY,                       XK_F9,                     spawn,          SHCMD("/usr/bin/guvcview-launcher") },
@@ -233,8 +233,8 @@ index 1c0b587..62f7c6f 100644
 +    { MODKEY|ControlMask,           XK_F9,                     spawn,          SHCMD("wmctrl -r 'Guvcview' -e '0,862,609,160,120'") },
 +    { MODKEY|Mod1Mask,              XK_F9,                     spawn,          SHCMD("wmctrl -r 'Guvcview' -e '0,862,646,160,120'") },
 +    { MODKEY,                       XK_F10,                    spawn,          SHCMD("/usr/bin/keybind-helper") },
-+    { MODKEY,                       XK_F11,                    spawn,          SHCMD("/usr/bin/screenkey-launcher") },
-+    { MODKEY|ShiftMask,             XK_F11,                    spawn,          SHCMD("pkill -f 'screenkey'") },
++    { MODKEY,                       XK_F11,                    spawn,          SHCMD("/usr/bin/key-mon") },
++    { MODKEY|ShiftMask,             XK_F11,                    spawn,          SHCMD("pkill -f 'key-mon'") },
 +    { MODKEY,                       XK_F12,                    spawn,          SHCMD("/usr/bin/dmenu-systemd") },
 +    { MODKEY,                       XK_p,                      spawn,          SHCMD("/usr/bin/clipmenu") },
 +    { MODKEY|ShiftMask,             XK_p,                      spawn,          SHCMD("clipdel -d '.'") },

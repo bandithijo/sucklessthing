@@ -73,6 +73,7 @@ tabbed_branches = [
 dir_config_branches = [
 'pinentry-dmenu',
 'slstatus',
+'sxiv',
 ]
 config_branches = [ 'config' ]
 
