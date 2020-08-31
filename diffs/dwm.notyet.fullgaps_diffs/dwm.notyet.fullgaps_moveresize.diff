@@ -1,13 +1,12 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..83e534d 100644
+index 1c0b587..88e3c0f 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -2,49 +2,111 @@
+@@ -2,49 +2,109 @@
  
  /* appearance */
  static const unsigned int borderpx  = 1;        /* border pixel of windows */
 -static const unsigned int snap      = 32;       /* snap pixel */
-+static const unsigned int gappx     = 0;        /* gaps between windows */
 +static const unsigned int snap      = 5;        /* snap pixel */
 +static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 +static const unsigned int systrayspacing = 2;   /* systray spacing */
@@ -70,7 +69,7 @@ index 1c0b587..83e534d 100644
 +    { "Thunar",               "thunar",             NULL,                         1 << 2,       1,             0,              1,          -1 },
 +    { "Org.gnome.Nautilus",   NULL,                 NULL,                         1 << 2,       1,             0,              1,          -1 },
 +    { "St",                   NULL,                 "neomutt",                    1 << 6,       1,             0,              1,          -1 },
-+    { "St",                   NULL,                 "ranger",                     0,            1,             0,              1,          -1 },
++    { "St",                   NULL,                 "ranger",                     1 << 2,       1,             0,              1,          -1 },
 +    { "St",                   NULL,                 "newsboat",                   1 << 5,       1,             0,              1,          -1 },
 +    { "St",                   NULL,                 "WeeChat",                    1 << 5,       1,             0,              1,          -1 },
 +    { "Transmission-gtk",     NULL,                 NULL,                         1 << 5,       1,             0,              1,          -1 },
@@ -89,7 +88,7 @@ index 1c0b587..83e534d 100644
 +    { "SimpleScreenRecorder", NULL,                 NULL,                         0,            1,             1,              1,          -1 },
 +    { "Soffice",              NULL,                 "Print",                      0,            1,             1,              1,          -1 },
 +    { "Chrome",               NULL,                 "Save File",                  2,            1,             1,              1,          -1 },
-+    { "Barrier",              NULL,                 NULL,                         1 << 5,       1,             1,              1,          -1 },
++    { "Barrier",              NULL,                 NULL,                         0,            1,             1,              1,          -1 },
 +    { "Soffice",              "soffice",            NULL,                         0,            1,             0,              1,          -1 },
 +    { "Thunar",               "thunar",             "File Operation Progress",    0,            1,             1,              1,          -1 },
 +    { "System-config-printer.py", NULL,             NULL,                         0,            1,             1,              1,          -1 },
@@ -103,7 +102,6 @@ index 1c0b587..83e534d 100644
 +    { "GParted",              NULL,                 NULL,                         0,            1,             1,              1,          -1 },
 +    { "zoom",                 NULL,                 "Question and Answer",        0,            1,             1,              1,          -1 },
 +    { "guvcview",             NULL,                 NULL,                         0,            1,             1,              0,          -1 },
-+    { "Key-mon",              NULL,                 NULL,                         0,            1,             1,              0,          -1 },
 +    { "Gnome-power-statistics", NULL,               NULL,                         0,            1,             1,              1,          -1 },
 +    { "firefox",              "Browser",            "About Mozilla Firefox",      0,            1,             1,              1,          -1 },
 +    { "Tor Browser",          "Browser",            "About Tor Browser",          0,            1,             1,              1,          -1 },
@@ -137,7 +135,7 @@ index 1c0b587..83e534d 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -56,34 +118,49 @@ static const Layout layouts[] = {
+@@ -56,34 +116,45 @@ static const Layout layouts[] = {
  
  /* commands */
  static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -150,20 +148,17 @@ index 1c0b587..83e534d 100644
 -	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 +	{ MODKEY,                       XK_d,      spawn,          SHCMD("/usr/bin/dmenu-apps") },
  	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
-+	{ MODKEY,                       XK_g,      center,         {0} },
  	{ MODKEY,                       XK_b,      togglebar,      {0} },
 +    { MODKEY|ShiftMask,             XK_b,      togglesystray,  {0} },
  	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
  	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
  	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
 -	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
--	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
--	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
 +	{ MODKEY|ShiftMask,             XK_i,      incnmaster,     {.i = -1 } },
-+	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.01} },
-+	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.01} },
-+	{ MODKEY|ShiftMask,             XK_h,      setcfact,       {.f = +0.01} },
-+	{ MODKEY|ShiftMask,             XK_l,      setcfact,       {.f = -0.01} },
+ 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
+ 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
++	{ MODKEY|ShiftMask,             XK_h,      setcfact,       {.f = +0.05} },
++	{ MODKEY|ShiftMask,             XK_l,      setcfact,       {.f = -0.05} },
 +	{ MODKEY|ShiftMask,             XK_o,      setcfact,       {.f =  0.00} },
 +	{ MODKEY|ShiftMask,             XK_j,      movestack,      {.i = +1 } },
 +	{ MODKEY|ShiftMask,             XK_k,      movestack,      {.i = -1 } },
@@ -188,54 +183,30 @@ index 1c0b587..83e534d 100644
  	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
  	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
 +	{ MODKEY,                       XK_F3,     xrdb,           {.v = NULL } },
-+	{ MODKEY,                       XK_minus,  setgaps,        {.i = -1 } },
-+	{ MODKEY,                       XK_equal,  setgaps,        {.i = +1 } },
-+	{ MODKEY|ShiftMask,             XK_equal,  setgaps,        {.i = 0  } },
  	TAGKEYS(                        XK_1,                      0)
  	TAGKEYS(                        XK_2,                      1)
  	TAGKEYS(                        XK_3,                      2)
-@@ -94,22 +171,80 @@ static Key keys[] = {
+@@ -94,6 +165,45 @@ static Key keys[] = {
  	TAGKEYS(                        XK_8,                      7)
  	TAGKEYS(                        XK_9,                      8)
  	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
 +	{ MODKEY,                       XK_minus, scratchpad_show, {0} },
 +	{ MODKEY|ShiftMask,             XK_minus, scratchpad_hide, {0} },
 +	{ MODKEY|ControlMask,           XK_minus,scratchpad_remove,{0} },
-+	{ MODKEY,                       XK_Down,   moveresize,     {.v = "  0x  10y   0w   0h" } },
-+	{ MODKEY,                       XK_Up,     moveresize,     {.v = "  0x -10y   0w   0h" } },
-+	{ MODKEY,                       XK_Right,  moveresize,     {.v = " 10x   0y   0w   0h" } },
-+	{ MODKEY,                       XK_Left,   moveresize,     {.v = "-10x   0y   0w   0h" } },
-+	{ MODKEY|ShiftMask,             XK_Down,   moveresize,     {.v = "  0x   1y   0w   0h" } },
-+	{ MODKEY|ShiftMask,             XK_Up,     moveresize,     {.v = "  0x  -1y   0w   0h" } },
-+	{ MODKEY|ShiftMask,             XK_Right,  moveresize,     {.v = "  1x   0y   0w   0h" } },
-+	{ MODKEY|ShiftMask,             XK_Left,   moveresize,     {.v = " -1x   0y   0w   0h" } },
-+	{ MODKEY|Mod1Mask,              XK_Down,   moveresize,     {.v = "  0x   0y   0w  10h" } },
-+	{ MODKEY|Mod1Mask,              XK_Up,     moveresize,     {.v = "  0x   0y   0w -10h" } },
-+	{ MODKEY|Mod1Mask,              XK_Right,  moveresize,     {.v = "  0x   0y  10w   0h" } },
-+	{ MODKEY|Mod1Mask,              XK_Left,   moveresize,     {.v = "  0x   0y -10w   0h" } },
-+	{ MODKEY|ControlMask,           XK_Up,     moveresizeedge, {.v = "t"} },
-+	{ MODKEY|ControlMask,           XK_Down,   moveresizeedge, {.v = "b"} },
-+	{ MODKEY|ControlMask,           XK_Left,   moveresizeedge, {.v = "l"} },
-+	{ MODKEY|ControlMask,           XK_Right,  moveresizeedge, {.v = "r"} },
-+	{ MODKEY|ControlMask|ShiftMask, XK_Up,     moveresizeedge, {.v = "T"} },
-+	{ MODKEY|ControlMask|ShiftMask, XK_Down,   moveresizeedge, {.v = "B"} },
-+	{ MODKEY|ControlMask|ShiftMask, XK_Left,   moveresizeedge, {.v = "L"} },
-+	{ MODKEY|ControlMask|ShiftMask, XK_Right,  moveresizeedge, {.v = "R"} },
 +
 +    // Custom Keys
 +    /* modifier                     key                        function        argument */
 +    { MODKEY|ControlMask,           XK_Return,                 spawn,          SHCMD("st -T 'st+'") },
 +    { MODKEY|Mod1Mask,              XK_Return,                 spawn,          SHCMD("tabbed -c -r 2 st -w ''") },
 +    { MODKEY|ShiftMask,             XK_End,                    spawn,          SHCMD("/usr/bin/rofi-power 'killall dwm'") },
-+    { MODKEY,                       XK_e,                      spawn,          SHCMD("/usr/bin/rofi-emoji-run") },
-+    { MODKEY,                       XK_Print,                  spawn,          SHCMD("/usr/bin/scrot-full") },
-+    { MODKEY|ControlMask,           XK_Print,                  spawn,          SHCMD("/usr/bin/scrot-time") },
-+    { MODKEY|Mod1Mask,              XK_Print,                  spawn,          SHCMD("/usr/bin/scrot-window-imgck") },
-+    { MODKEY|ShiftMask|Mod1Mask,    XK_Print,                  spawn,          SHCMD("/usr/bin/scrot-window") },
-+    { MODKEY|ShiftMask,             XK_Print,                  spawn,          SHCMD("/usr/bin/flameshot-imgck") },
-+    { MODKEY|ShiftMask|ControlMask, XK_Print,                  spawn,          SHCMD("/usr/bin/flameshot gui") },
++    { MODKEY,                       XK_e,                      spawn,          SHCMD("/usr/bin/rofi-emoji") },
++    { MODKEY|ShiftMask,             XK_e,                      spawn,          SHCMD("/usr/bin/rofi-emoji-git-commit-messages") },
++    { MODKEY,                       XK_Print,                  spawn,          SHCMD("scrot 'Screenshot_%Y-%m-%d_%H-%M-%S.png' -e 'mv *.png ~/pic/ScreenShots/'; notify-send 'Scrot' 'Screen has been captured!'") },
++    { MODKEY|ControlMask,           XK_Print,                  spawn,          SHCMD("scrot -d 5 'Screenshot_%Y-%m-%d_%H-%M-%S.png' -e 'mv *.png ~/pic/ScreenShots/'; notify-send 'Scrot' 'Screen has been captured!'") },
++    { MODKEY|ShiftMask,             XK_Print,                  spawn,          SHCMD("/usr/bin/flameshot gui") },
++    { MODKEY|Mod1Mask,              XK_Print,                  spawn,          SHCMD("/usr/bin/flameshot gui -d 5000") },
 +    { MODKEY|ShiftMask,             XK_Pause,                  spawn,          SHCMD("/usr/bin/dmenu-record") },
-+    { MODKEY|ShiftMask,             XK_x,                      spawn,          SHCMD("/usr/bin/slimlock") },
++    { MODKEY|ShiftMask,             XK_x,                      spawn,          SHCMD("/usr/bin/lock-dark") },
 +    { MODKEY,                       XK_F7,                     spawn,          SHCMD("/usr/bin/arandr") },
 +    { MODKEY,                       XK_F8,                     spawn,          SHCMD("/usr/bin/networkmanager_dmenu") },
 +    { MODKEY,                       XK_F9,                     spawn,          SHCMD("/usr/bin/guvcview-launcher") },
@@ -243,50 +214,32 @@ index 1c0b587..83e534d 100644
 +    { MODKEY|ControlMask,           XK_F9,                     spawn,          SHCMD("wmctrl -r 'Guvcview' -e '0,862,609,160,120'") },
 +    { MODKEY|Mod1Mask,              XK_F9,                     spawn,          SHCMD("wmctrl -r 'Guvcview' -e '0,862,646,160,120'") },
 +    { MODKEY,                       XK_F10,                    spawn,          SHCMD("/usr/bin/keybind-helper") },
-+    { MODKEY,                       XK_F11,                    spawn,          SHCMD("/usr/bin/key-mon") },
-+    { MODKEY|ShiftMask,             XK_F11,                    spawn,          SHCMD("pkill -f 'key-mon'") },
++    { MODKEY,                       XK_F11,                    spawn,          SHCMD("/usr/bin/screenkey-launcher") },
++    { MODKEY|ShiftMask,             XK_F11,                    spawn,          SHCMD("pkill -f 'screenkey'") },
 +    { MODKEY,                       XK_F12,                    spawn,          SHCMD("/usr/bin/dmenu-systemd") },
 +    { MODKEY,                       XK_p,                      spawn,          SHCMD("/usr/bin/clipmenu") },
 +    { MODKEY|ShiftMask,             XK_p,                      spawn,          SHCMD("clipdel -d '.'") },
 +    { MODKEY|ShiftMask,             XK_backslash,              spawn,          SHCMD("/usr/bin/dmenu-pass") },
 +    { MODKEY,                       XK_backslash,              spawn,          SHCMD("/usr/bin/passtore 0") },
-+    { MODKEY,                       XK_F4,                     spawn,          SHCMD("killall conky; /usr/bin/feh --bg-fill -Z $WALLPAPER3 --bg-fill $WALLPAPER4") },
++    { MODKEY,                       XK_F4,                     spawn,          SHCMD("killall conky; /usr/bin/feh --bg-fill -Z $WALLPAPER3") },
 +    { MODKEY,                       XK_F5,                     spawn,          SHCMD("killall conky; /usr/bin/feh --bg-fill -Z $WALLPAPER1") },
++    { MODKEY|ShiftMask,             XK_F5,                     spawn,          SHCMD("/usr/bin/feh --bg-fill -Z $WALLPAPER1; ./.config/conky/conky-launch.sh") },
++    { MODKEY,                       XK_F6,                     spawn,          SHCMD("killall conky; /usr/bin/feh --bg-fill -Z $WALLPAPER2") },
++    { MODKEY|ShiftMask,             XK_F6,                     spawn,          SHCMD("/usr/bin/feh --bg-fill -Z $WALLPAPER2; ./.config/conky/conky-launch.sh") },
 +    { 0,                            0x1008ff13,                spawn,          SHCMD("pamixer --increase 5") },
 +    { 0,                            0x1008ff11,                spawn,          SHCMD("pamixer --decrease 5") },
 +    { 0,                            0x1008ff12,                spawn,          SHCMD("pamixer --toggle-mute") },
  };
  
  /* button definitions */
- /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
- static Button buttons[] = {
--	/* click                event mask      button          function        argument */
--	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
--	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
--	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
--	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
--	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
--	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
--	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
--	{ ClkTagBar,            0,              Button1,        view,           {0} },
--	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
--	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
--	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
-+	/* click                event mask         button          function        argument */
-+	{ ClkLtSymbol,          0,                 Button1,        setlayout,      {0} },
-+	{ ClkLtSymbol,          0,                 Button3,        setlayout,      {.v = &layouts[2]} },
-+	{ ClkWinTitle,          0,                 Button2,        zoom,           {0} },
-+	{ ClkStatusText,        0,                 Button2,        spawn,          {.v = termcmd } },
-+	{ ClkClientWin,         MODKEY,            Button1,        movemouse,      {0} },
-+	{ ClkClientWin,         MODKEY,            Button2,        togglefloating, {0} },
-+	{ ClkClientWin,         MODKEY,            Button3,        resizemouse,    {0} },
-+	{ ClkClientWin,         MODKEY|ShiftMask,  Button3,        dragcfact,      {0} },
-+	{ ClkTagBar,            0,                 Button1,        view,           {0} },
-+	{ ClkTagBar,            0,                 Button3,        toggleview,     {0} },
-+	{ ClkTagBar,            MODKEY,            Button1,        tag,            {0} },
-+	{ ClkTagBar,            MODKEY,            Button3,        toggletag,      {0} },
- };
- 
+@@ -107,6 +217,7 @@ static Button buttons[] = {
+ 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
+ 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
+ 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
++	{ ClkClientWin,         MODKEY|ShiftMask, Button3,      dragcfact,      {0} },
+ 	{ ClkTagBar,            0,              Button1,        view,           {0} },
+ 	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
+ 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 diff --git a/config.mk b/config.mk
 index 7084c33..40fd077 100644
 --- a/config.mk
@@ -324,7 +277,7 @@ index 4cdbcbe..490a592 100644
  
  /* Wrapper to create color schemes. The caller has to call free(3) on the
 diff --git a/dwm.c b/dwm.c
-index 9fd0286..b074009 100644
+index 9fd0286..9c12e7c 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -163,7 +163,7 @@ static void detachstack(Client *c);
@@ -336,7 +289,16 @@ index 9fd0286..b074009 100644
  static void expose(XEvent *e);
  static void focus(Client *c);
  static void focusin(XEvent *e);
-@@ -195,6 +195,12 @@ static void resizemouse(const Arg *arg);
+@@ -183,6 +183,8 @@ static void mappingnotify(XEvent *e);
+ static void maprequest(XEvent *e);
+ static void monocle(Monitor *m);
+ static void motionnotify(XEvent *e);
++static void moveresize(const Arg *arg);
++static void moveresizeedge(const Arg *arg);
+ static void movemouse(const Arg *arg);
+ static Client *nexttiled(Client *c);
+ static void pop(Client *);
+@@ -195,6 +197,12 @@ static void resizemouse(const Arg *arg);
  static void restack(Monitor *m);
  static void run(void);
  static void scan(void);
@@ -349,7 +311,7 @@ index 9fd0286..b074009 100644
  static int sendevent(Client *c, Atom proto);
  static void sendmon(Client *c, Monitor *m);
  static void setclientstate(Client *c, long state);
-@@ -212,6 +218,7 @@ static void tagmon(const Arg *arg);
+@@ -212,6 +220,7 @@ static void tagmon(const Arg *arg);
  static void tile(Monitor *);
  static void togglebar(const Arg *arg);
  static void togglefloating(const Arg *arg);
@@ -357,7 +319,7 @@ index 9fd0286..b074009 100644
  static void toggletag(const Arg *arg);
  static void toggleview(const Arg *arg);
  static void unfocus(Client *c, int setfocus);
-@@ -250,7 +257,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
+@@ -250,7 +259,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
  	[ConfigureRequest] = configurerequest,
  	[ConfigureNotify] = configurenotify,
  	[DestroyNotify] = destroynotify,
@@ -366,7 +328,7 @@ index 9fd0286..b074009 100644
  	[Expose] = expose,
  	[FocusIn] = focusin,
  	[KeyPress] = keypress,
-@@ -269,11 +276,15 @@ static Drw *drw;
+@@ -269,11 +278,15 @@ static Drw *drw;
  static Monitor *mons, *selmon;
  static Window root, wmcheckwin;
  
@@ -383,7 +345,7 @@ index 9fd0286..b074009 100644
  
  /* function implementations */
  void
-@@ -309,7 +320,7 @@ applyrules(Client *c)
+@@ -309,7 +322,7 @@ applyrules(Client *c)
  		XFree(ch.res_class);
  	if (ch.res_name)
  		XFree(ch.res_name);
@@ -392,7 +354,7 @@ index 9fd0286..b074009 100644
  }
  
  int
-@@ -752,24 +763,24 @@ drawbars(void)
+@@ -752,24 +765,24 @@ drawbars(void)
  		drawbar(m);
  }
  
@@ -434,7 +396,7 @@ index 9fd0286..b074009 100644
  
  void
  expose(XEvent *e)
-@@ -1051,6 +1062,11 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1051,6 +1064,11 @@ manage(Window w, XWindowAttributes *wa)
  	c->bw = borderpx;
  
  	wc.border_width = c->bw;
@@ -446,7 +408,161 @@ index 9fd0286..b074009 100644
  	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
  	XSetWindowBorder(dpy, w, scheme[SchemeNorm][ColBorder].pixel);
  	configure(c); /* propagates border_width, if size doesn't change */
-@@ -1408,6 +1424,97 @@ scan(void)
+@@ -1193,6 +1211,153 @@ movemouse(const Arg *arg)
+ 	}
+ }
+ 
++void
++moveresize(const Arg *arg) {
++	/* only floating windows can be moved */
++	Client *c;
++	c = selmon->sel;
++	int x, y, w, h, nx, ny, nw, nh, ox, oy, ow, oh;
++	char xAbs, yAbs, wAbs, hAbs;
++	int msx, msy, dx, dy, nmx, nmy;
++	unsigned int dui;
++	Window dummy;
++
++	if (!c || !arg)
++		return;
++	if (selmon->lt[selmon->sellt]->arrange && !c->isfloating)
++		return;
++	if (sscanf((char *)arg->v, "%d%c %d%c %d%c %d%c", &x, &xAbs, &y, &yAbs, &w, &wAbs, &h, &hAbs) != 8)
++		return;
++
++	/* compute new window position; prevent window from be positioned outside the current monitor */
++	nw = c->w + w;
++	if (wAbs == 'W')
++		nw = w < selmon->mw - 2 * c->bw ? w : selmon->mw - 2 * c->bw;
++
++	nh = c->h + h;
++	if (hAbs == 'H')
++		nh = h < selmon->mh - 2 * c->bw ? h : selmon->mh - 2 * c->bw;
++
++	nx = c->x + x;
++	if (xAbs == 'X') {
++		if (x < selmon->mx)
++			nx = selmon->mx;
++		else if (x > selmon->mx + selmon->mw)
++			nx = selmon->mx + selmon->mw - nw - 2 * c->bw;
++		else
++			nx = x;
++	}
++
++	ny = c->y + y;
++	if (yAbs == 'Y') {
++		if (y < selmon->my)
++			ny = selmon->my;
++		else if (y > selmon->my + selmon->mh)
++			ny = selmon->my + selmon->mh - nh - 2 * c->bw;
++		else
++			ny = y;
++	}
++
++	ox = c->x;
++	oy = c->y;
++	ow = c->w;
++	oh = c->h;
++
++	XRaiseWindow(dpy, c->win);
++	Bool xqp = XQueryPointer(dpy, root, &dummy, &dummy, &msx, &msy, &dx, &dy, &dui);
++	resize(c, nx, ny, nw, nh, True);
++
++	/* move cursor along with the window to avoid problems caused by the sloppy focus */
++	if (xqp && ox <= msx && (ox + ow) >= msx && oy <= msy && (oy + oh) >= msy)
++	{
++		nmx = c->x - ox + c->w - ow;
++		nmy = c->y - oy + c->h - oh;
++		XWarpPointer(dpy, None, None, 0, 0, 0, 0, nmx, nmy);
++	}
++}
++
++void
++moveresizeedge(const Arg *arg) {
++	/* move or resize floating window to edge of screen */
++	Client *c;
++	c = selmon->sel;
++	char e;
++	int nx, ny, nw, nh, ox, oy, ow, oh;
++	int msx, msy, dx, dy, nmx, nmy;
++	int starty;
++	unsigned int dui;
++	Window dummy;
++
++	nx = c->x;
++	ny = c->y;
++	nw = c->w;
++	nh = c->h;
++
++	starty = selmon->showbar ? bh : 0;
++
++	if (!c || !arg)
++		return;
++	if (selmon->lt[selmon->sellt]->arrange && !c->isfloating)
++		return;
++	if(sscanf((char *)arg->v, "%c", &e) != 1)
++		return;
++
++	if(e == 't')
++		ny = starty;
++
++	if(e == 'b')
++		ny = c->h > selmon->mh - 2 * c->bw ? c->h : selmon->mh - c->h - 2 * c->bw;
++
++	if(e == 'l')
++		nx = 0;
++
++	if(e == 'r')
++		nx = c->w > selmon->mw - 2 * c->bw ? c->w : selmon->mw - c->w - 2 * c->bw;
++
++	if(e == 'T') {
++		/* if you click to resize again, it will return to old size/position */
++		if(c->h + starty == c->oldh + c->oldy) {
++			nh = c->oldh;
++			ny = c->oldy;
++		} else {
++			nh = c->h + c->y - starty;
++			ny = starty;
++		}
++	}
++
++	if(e == 'B')
++		nh = c->h + c->y + 2 * c->bw == selmon->mh ? c->oldh : selmon->mh - c->y - 2 * c->bw;
++
++	if(e == 'L') {
++		if(c->w == c->oldw + c->oldx) {
++			nw = c->oldw;
++			nx = c->oldx;
++		} else {
++			nw = c->w + c->x;
++			nx = 0;
++		}
++	}
++
++	if(e == 'R')
++		nw = c->w + c->x + 2 * c->bw == selmon->mw ? c->oldw : selmon->mw - c->x - 2 * c->bw;
++
++	ox = c->x;
++	oy = c->y;
++	ow = c->w;
++	oh = c->h;
++
++	XRaiseWindow(dpy, c->win);
++	Bool xqp = XQueryPointer(dpy, root, &dummy, &dummy, &msx, &msy, &dx, &dy, &dui);
++	resize(c, nx, ny, nw, nh, True);
++
++	/* move cursor along with the window to avoid problems caused by the sloppy focus */
++	if (xqp && ox <= msx && (ox + ow) >= msx && oy <= msy && (oy + oh) >= msy) {
++		nmx = c->x - ox + c->w - ow;
++		nmy = c->y - oy + c->h - oh;
++		XWarpPointer(dpy, None, None, 0, 0, 0, 0, nmx, nmy);
++	}
++}
++
+ Client *
+ nexttiled(Client *c)
+ {
+@@ -1408,6 +1573,97 @@ scan(void)
  	}
  }
  
@@ -544,7 +660,7 @@ index 9fd0286..b074009 100644
  void
  sendmon(Client *c, Monitor *m)
  {
-@@ -1722,6 +1829,13 @@ togglefloating(const Arg *arg)
+@@ -1722,6 +1978,13 @@ togglefloating(const Arg *arg)
  	arrange(selmon);
  }
  

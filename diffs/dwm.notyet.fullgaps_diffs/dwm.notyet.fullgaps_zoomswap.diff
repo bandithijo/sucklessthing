@@ -1,0 +1,116 @@
+diff --git a/drw.c b/drw.c
+index 4cdbcbe..8fd1ca4 100644
+--- a/drw.c
++++ b/drw.c
+@@ -95,7 +95,6 @@ drw_free(Drw *drw)
+ {
+ 	XFreePixmap(drw->dpy, drw->drawable);
+ 	XFreeGC(drw->dpy, drw->gc);
+-	drw_fontset_free(drw->fonts);
+ 	free(drw);
+ }
+ 
+diff --git a/dwm.c b/dwm.c
+index 9fd0286..32449c4 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -165,6 +165,7 @@ static void drawbar(Monitor *m);
+ static void drawbars(void);
+ static void enternotify(XEvent *e);
+ static void expose(XEvent *e);
++static Client *findbefore(Client *c);
+ static void focus(Client *c);
+ static void focusin(XEvent *e);
+ static void focusmon(const Arg *arg);
+@@ -185,7 +186,6 @@ static void monocle(Monitor *m);
+ static void motionnotify(XEvent *e);
+ static void movemouse(const Arg *arg);
+ static Client *nexttiled(Client *c);
+-static void pop(Client *);
+ static void propertynotify(XEvent *e);
+ static void quit(const Arg *arg);
+ static Monitor *recttomon(int x, int y, int w, int h);
+@@ -236,6 +236,7 @@ static int xerrorstart(Display *dpy, XErrorEvent *ee);
+ static void zoom(const Arg *arg);
+ 
+ /* variables */
++static Client *prevzoom = NULL;
+ static const char broken[] = "broken";
+ static char stext[256];
+ static int screen;
+@@ -781,6 +782,16 @@ expose(XEvent *e)
+ 		drawbar(m);
+ }
+ 
++Client *
++findbefore(Client *c)
++{
++	Client *tmp;
++	if (c == selmon->clients)
++		return NULL;
++	for (tmp = selmon->clients; tmp && tmp->next != c; tmp = tmp->next);
++	return tmp;
++}
++
+ void
+ focus(Client *c)
+ {
+@@ -1200,15 +1211,6 @@ nexttiled(Client *c)
+ 	return c;
+ }
+ 
+-void
+-pop(Client *c)
+-{
+-	detach(c);
+-	attach(c);
+-	focus(c);
+-	arrange(c->mon);
+-}
+-
+ void
+ propertynotify(XEvent *e)
+ {
+@@ -2117,14 +2119,38 @@ void
+ zoom(const Arg *arg)
+ {
+ 	Client *c = selmon->sel;
++	Client *at = NULL, *cold, *cprevious = NULL;
+ 
+ 	if (!selmon->lt[selmon->sellt]->arrange
+ 	|| (selmon->sel && selmon->sel->isfloating))
+ 		return;
+-	if (c == nexttiled(selmon->clients))
+-		if (!c || !(c = nexttiled(c->next)))
+-			return;
+-	pop(c);
++	if (c == nexttiled(selmon->clients)) {
++		at = findbefore(prevzoom);
++		if (at)
++			cprevious = nexttiled(at->next);
++		if (!cprevious || cprevious != prevzoom) {
++			prevzoom = NULL;
++			if (!c || !(c = nexttiled(c->next)))
++				return;
++		} else
++			c = cprevious;
++	}
++	cold = nexttiled(selmon->clients);
++	if (c != cold && !at)
++		at = findbefore(c);
++	detach(c);
++	attach(c);
++	/* swap windows instead of pushing the previous one down */
++	if (c != cold && at) {
++		prevzoom = cold;
++		if (cold && at != cold) {
++			detach(cold);
++			cold->next = at->next;
++			at->next = cold;
++		}
++	}
++	focus(c);
++	arrange(c->mon);
+ }
+ 
+ int
