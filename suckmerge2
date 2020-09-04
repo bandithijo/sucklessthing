@@ -3,8 +3,7 @@
 # For dwm
 dwm_branches = [
   'config',                # merge w/: actualfullscreen, scratchpad-gaspar
-  'sticky',                # merge w/: actualfullscreen
-  'rmaster',               # merge w/: sticky, cfacts
+  'sticky',                # merge w/: actualfullscreen, center
   'canfocusrule',          # merge w/: systray
   'actualfullscreen',
   'xrdb',
@@ -22,14 +21,9 @@ dwm_branches = [
   'centerkeybinding',
   'center',
   'cfacts',
-  'deck',
   'dwmc',                  # merge w/: systray
   'statusallmons',         # merge w/: systray
-  'fullgaps'               # merge w/: cfacts, rmaster
-
-  # Disable
-  # 'config-swallow',
-  # 'swallow',              # merge w/: center, sticky, canfocusrule
+  'ru-gaps',               # merge w/: noborder, cfacts
 ]
 
 # For st
@@ -114,5 +108,5 @@ end
 puts '=> Patching COMPLETE!'
 
 puts "\n=> Installing"
-%x(`make && sudo make clean install`)
+system 'make && sudo make clean install'
 puts '=> Installation COMPLETE!'

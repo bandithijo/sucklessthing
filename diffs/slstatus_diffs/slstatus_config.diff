@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index e06be66..78e5410 100644
+index e06be66..a8e74fc 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -4,7 +4,7 @@
@@ -18,18 +18,18 @@ index e06be66..78e5410 100644
 -	/* function format          argument */
 -	{ datetime, "%s",           "%F %T" },
 +	/* function format           argument */
-+	{ run_command, "%s",        "$HOME/bin/status/tor" },
-+	{ run_command, "%s",        "$HOME/bin/status/vpn" },
-+	{ run_command, "%s",        "$HOME/bin/status/screenkey" },
-+	{ run_command, "%s",        "$HOME/bin/status/key-mon" },
-+	{ run_command, "%s",        "$HOME/bin/status/record" },
-+	{ run_command, "%s ",       "$HOME/bin/status/network-wlan-tfc" },
-+    { temp, " %s°C ",          "/sys/class/thermal/thermal_zone0/temp" },
-+    { ram_perc, " %s%% ",      NULL },
-+    { disk_perc, " %s%% ",     "/" },
-+	{ run_command, "%s ",       "$HOME/bin/status/volume" },
-+	{ datetime, "%s",          " 0%u%y%m%d%H%M" },
-+	{ run_command, "%s ",       "$HOME/bin/status/bat-state" },
-+	{ run_command, "%s ",       "$HOME/bin/status/bat-capacity" },
-+	{ run_command, "%s",        "$HOME/bin/status/user" },
++	{ run_command,    "%s",         "$HOME/bin/status/tor" },
++	{ run_command,    "%s",         "$HOME/bin/status/vpn" },
++	{ run_command,    "%s",         "$HOME/bin/status/screenkey" },
++	{ run_command,    "%s",         "$HOME/bin/status/key-mon" },
++	{ run_command,    "%s",         "$HOME/bin/status/record" },
++	{ run_command,    "%s ",        "$HOME/bin/status/network-wlan-tfc" },
++    { temp,           " %s°C ",    "/sys/class/thermal/thermal_zone0/temp" },
++    { ram_perc,       " %s%% ",    NULL },
++    { disk_perc,      " %s%% ",    "/" },
++	{ run_command,    "%s ",        "$HOME/bin/status/volume" },
++	{ run_command,    "%s ",        "$HOME/bin/status/datetime" },
++	{ run_command,    "%s ",        "$HOME/bin/status/bat-state" },
++	{ run_command,    "%s ",        "$HOME/bin/status/bat-capacity" },
++	{ run_command,    "%s",         "$HOME/bin/status/user" },
  };

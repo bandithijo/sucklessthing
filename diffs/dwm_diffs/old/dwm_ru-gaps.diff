@@ -1,0 +1,253 @@
+diff --git a/dwm.c b/dwm.c
+index 9fd0286..9d2e903 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -87,6 +87,7 @@ typedef struct Client Client;
+ struct Client {
+ 	char name[256];
+ 	float mina, maxa;
++	float cfact;
+ 	int x, y, w, h;
+ 	int oldx, oldy, oldw, oldh;
+ 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
+@@ -119,6 +120,7 @@ struct Monitor {
+ 	int by;               /* bar geometry */
+ 	int mx, my, mw, mh;   /* screen size */
+ 	int wx, wy, ww, wh;   /* window area  */
++	int gappx;            /* gaps between windows */
+ 	unsigned int seltags;
+ 	unsigned int sellt;
+ 	unsigned int tagset[2];
+@@ -161,6 +163,7 @@ static void destroynotify(XEvent *e);
+ static void detach(Client *c);
+ static void detachstack(Client *c);
+ static Monitor *dirtomon(int dir);
++static void dragcfact(const Arg *arg);
+ static void drawbar(Monitor *m);
+ static void drawbars(void);
+ static void enternotify(XEvent *e);
+@@ -200,7 +203,9 @@ static void sendmon(Client *c, Monitor *m);
+ static void setclientstate(Client *c, long state);
+ static void setfocus(Client *c);
+ static void setfullscreen(Client *c, int fullscreen);
++static void setgaps(const Arg *arg);
+ static void setlayout(const Arg *arg);
++static void setcfact(const Arg *arg);
+ static void setmfact(const Arg *arg);
+ static void setup(void);
+ static void seturgent(Client *c, int urg);
+@@ -639,6 +644,7 @@ createmon(void)
+ 	m->nmaster = nmaster;
+ 	m->showbar = showbar;
+ 	m->topbar = topbar;
++	m->gappx = gappx;
+ 	m->lt[0] = &layouts[0];
+ 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
+ 	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
+@@ -693,6 +699,81 @@ dirtomon(int dir)
+ 	return m;
+ }
+ 
++void
++dragcfact(const Arg *arg)
++{
++	int prev_x, prev_y, dist_x, dist_y;
++	float fact;
++	Client *c;
++	XEvent ev;
++	Time lasttime = 0;
++
++	if (!(c = selmon->sel))
++		return;
++	if (c->isfloating) {
++		resizemouse(arg);
++		return;
++	}
++	#if !FAKEFULLSCREEN_PATCH
++	#if FAKEFULLSCREEN_CLIENT_PATCH
++	if (c->isfullscreen && !c->fakefullscreen) /* no support resizing fullscreen windows by mouse */
++		return;
++	#else
++	if (c->isfullscreen) /* no support resizing fullscreen windows by mouse */
++		return;
++	#endif // FAKEFULLSCREEN_CLIENT_PATCH
++	#endif // !FAKEFULLSCREEN_PATCH
++	restack(selmon);
++
++	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
++		None, cursor[CurResize]->cursor, CurrentTime) != GrabSuccess)
++		return;
++	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w/2, c->h/2);
++
++	prev_x = prev_y = -999999;
++
++	do {
++		XMaskEvent(dpy, MOUSEMASK|ExposureMask|SubstructureRedirectMask, &ev);
++		switch(ev.type) {
++		case ConfigureRequest:
++		case Expose:
++		case MapRequest:
++			handler[ev.type](&ev);
++			break;
++		case MotionNotify:
++			if ((ev.xmotion.time - lasttime) <= (1000 / 60))
++				continue;
++			lasttime = ev.xmotion.time;
++			if (prev_x == -999999) {
++				prev_x = ev.xmotion.x_root;
++				prev_y = ev.xmotion.y_root;
++			}
++
++			dist_x = ev.xmotion.x - prev_x;
++			dist_y = ev.xmotion.y - prev_y;
++
++			if (abs(dist_x) > abs(dist_y)) {
++				fact = (float) 4.0 * dist_x / c->mon->ww;
++			} else {
++				fact = (float) -4.0 * dist_y / c->mon->wh;
++			}
++
++			if (fact)
++				setcfact(&((Arg) { .f = fact }));
++
++			prev_x = ev.xmotion.x;
++			prev_y = ev.xmotion.y;
++			break;
++		}
++	} while (ev.type != ButtonRelease);
++
++
++	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w/2, c->h/2);
++
++	XUngrabPointer(dpy, CurrentTime);
++	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
++}
++
+ void
+ drawbar(Monitor *m)
+ {
+@@ -1030,6 +1111,7 @@ manage(Window w, XWindowAttributes *wa)
+ 	c->w = c->oldw = wa->width;
+ 	c->h = c->oldh = wa->height;
+ 	c->oldbw = wa->border_width;
++	c->cfact = 1.0;
+ 
+ 	updatetitle(c);
+ 	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
+@@ -1283,6 +1365,13 @@ resizeclient(Client *c, int x, int y, int w, int h)
+ 	c->oldw = c->w; c->w = wc.width = w;
+ 	c->oldh = c->h; c->h = wc.height = h;
+ 	wc.border_width = c->bw;
++	if (((nexttiled(c->mon->clients) == c && !nexttiled(c->next))
++	    || &monocle == c->mon->lt[c->mon->sellt]->arrange))
++	{
++		c->w = wc.width += c->bw * 2;
++		c->h = wc.height += c->bw * 2;
++		wc.border_width = 0;
++	}
+ 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
+ 	configure(c);
+ 	XSync(dpy, False);
+@@ -1498,6 +1587,16 @@ setfullscreen(Client *c, int fullscreen)
+ 	}
+ }
+ 
++void
++setgaps(const Arg *arg)
++{
++	if ((arg->i == 0) || (selmon->gappx + arg->i < 0))
++		selmon->gappx = 0;
++	else
++		selmon->gappx += arg->i;
++	arrange(selmon);
++}
++
+ void
+ setlayout(const Arg *arg)
+ {
+@@ -1512,6 +1611,25 @@ setlayout(const Arg *arg)
+ 		drawbar(selmon);
+ }
+ 
++void
++setcfact(const Arg *arg) {
++	float f;
++	Client *c;
++
++	c = selmon->sel;
++
++	if(!arg || !c || !selmon->lt[selmon->sellt]->arrange)
++		return;
++	f = arg->f + c->cfact;
++	if(arg->f == 0.0)
++		f = 1.0;
++	else if(f < 0.25 || f > 4.0)
++		return;
++	c->cfact = f;
++	arrange(selmon);
++}
++
++
+ /* arg > 1.0 will set mfact absolutely */
+ void
+ setmfact(const Arg *arg)
+@@ -1674,28 +1792,45 @@ tagmon(const Arg *arg)
+ void
+ tile(Monitor *m)
+ {
+-	unsigned int i, n, h, mw, my, ty;
++	unsigned int i, n, h, mw, my, ty, ns;
++	float mfacts = 0, sfacts = 0;
+ 	Client *c;
+ 
+-	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
++	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++) {
++		if (n < m->nmaster)
++			mfacts += c->cfact;
++		else
++			sfacts += c->cfact;
++	}
+ 	if (n == 0)
+ 		return;
++	if(n == 1){
++		c = nexttiled(m->clients);
++		resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, 0);
++		return;
++	}
+ 
+-	if (n > m->nmaster)
++	if (n > m->nmaster){
+ 		mw = m->nmaster ? m->ww * m->mfact : 0;
+-	else
+-		mw = m->ww;
+-	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
++		ns = m->nmaster > 0 ? 2 : 1;
++	}
++	else{
++		mw = m->ww - m->gappx;
++		ns = 1;
++	}
++	for (i = 0, my = ty = m->gappx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+ 		if (i < m->nmaster) {
+-			h = (m->wh - my) / (MIN(n, m->nmaster) - i);
+-			resize(c, m->wx, m->wy + my, mw - (2*c->bw), h - (2*c->bw), 0);
+-			if (my + HEIGHT(c) < m->wh)
+-				my += HEIGHT(c);
++			h = (m->wh - my) * (c->cfact / mfacts) - m->gappx;
++			resize(c, m->wx + m->gappx, m->wy + my, mw - 2*c->bw - m->gappx*(5-ns)/2, h - 2*c->bw, 0);
++			if(my + HEIGHT(c) + m->gappx < m->wh)
++				my += HEIGHT(c) + m->gappx;
++			mfacts -= c->cfact;
+ 		} else {
+-			h = (m->wh - ty) / (n - i);
+-			resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
+-			if (ty + HEIGHT(c) < m->wh)
+-				ty += HEIGHT(c);
++			h = (m->wh - ty) * (c->cfact / sfacts) - m->gappx;
++			resize(c, m->wx + mw + m->gappx/ns, m->wy + ty, m->ww - mw - (2*c->bw) - m->gappx*(5-ns)/2, h - 2*c->bw, 0);
++			if(ty + HEIGHT(c) + m->gappx < m->wh)
++				ty += HEIGHT(c) + m->gappx;
++			sfacts -= c->cfact;
+ 		}
+ }
+ 
