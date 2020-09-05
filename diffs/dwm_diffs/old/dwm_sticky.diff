@@ -23,7 +23,7 @@ index 4cdbcbe..8fd1ca4 100644
  }
  
 diff --git a/dwm.c b/dwm.c
-index 9fd0286..59adb9f 100644
+index 9fd0286..1f4f009 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -49,7 +49,7 @@
@@ -40,19 +40,11 @@ index 9fd0286..59adb9f 100644
  	int bw, oldbw;
  	unsigned int tags;
 -	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
-+	int isfixed, iscentered, isfloating, isurgent, neverfocus, oldstate, isfullscreen, issticky, wasfocused;
++	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen, issticky;
  	Client *next;
  	Client *snext;
  	Monitor *mon;
-@@ -137,6 +137,7 @@ typedef struct {
- 	const char *instance;
- 	const char *title;
- 	unsigned int tags;
-+	int iscentered;
- 	int isfloating;
- 	int monitor;
- } Rule;
-@@ -212,6 +213,8 @@ static void tagmon(const Arg *arg);
+@@ -212,6 +212,8 @@ static void tagmon(const Arg *arg);
  static void tile(Monitor *);
  static void togglebar(const Arg *arg);
  static void togglefloating(const Arg *arg);
@@ -61,44 +53,7 @@ index 9fd0286..59adb9f 100644
  static void toggletag(const Arg *arg);
  static void toggleview(const Arg *arg);
  static void unfocus(Client *c, int setfocus);
-@@ -298,6 +301,7 @@ applyrules(Client *c)
- 		&& (!r->class || strstr(class, r->class))
- 		&& (!r->instance || strstr(instance, r->instance)))
- 		{
-+			c->iscentered = r->iscentered;
- 			c->isfloating = r->isfloating;
- 			c->tags |= r->tags;
- 			for (m = mons; m && m->num != r->monitor; m = m->next);
-@@ -785,6 +789,8 @@ void
- focus(Client *c)
- {
- 	if (!c || !ISVISIBLE(c))
-+        for (c = selmon->stack; c && !(ISVISIBLE(c) && (!c->issticky || (c->issticky && c->wasfocused))); c = c->snext);
-+	if (!c)
- 		for (c = selmon->stack; c && !ISVISIBLE(c); c = c->snext);
- 	if (selmon->sel && selmon->sel != c)
- 		unfocus(selmon->sel, 0);
-@@ -1050,6 +1056,11 @@ manage(Window w, XWindowAttributes *wa)
- 		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
- 	c->bw = borderpx;
- 
-+	if(c->iscentered) {
-+		c->x = (c->mon->mw - WIDTH(c)) / 2;
-+		c->y = (c->mon->mh - HEIGHT(c)) / 2;
-+	}
-+
- 	wc.border_width = c->bw;
- 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
- 	XSetWindowBorder(dpy, w, scheme[SchemeNorm][ColBorder].pixel);
-@@ -1467,6 +1478,7 @@ setfocus(Client *c)
- 			XA_WINDOW, 32, PropModeReplace,
- 			(unsigned char *) &(c->win), 1);
- 	}
-+ 	c->wasfocused = 1;
- 	sendevent(c, wmatom[WMTakeFocus]);
- }
- 
-@@ -1722,6 +1734,22 @@ togglefloating(const Arg *arg)
+@@ -1722,6 +1724,22 @@ togglefloating(const Arg *arg)
  	arrange(selmon);
  }
  
@@ -121,11 +76,3 @@ index 9fd0286..59adb9f 100644
  void
  toggletag(const Arg *arg)
  {
-@@ -1754,6 +1782,7 @@ unfocus(Client *c, int setfocus)
- {
- 	if (!c)
- 		return;
-+ 	c->wasfocused = 0;
- 	grabbuttons(c, 0);
- 	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
- 	if (setfocus) {
