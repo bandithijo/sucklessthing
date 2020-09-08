@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 9fd0286..9d2e903 100644
+index 9fd0286..93fefe1 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -87,6 +87,7 @@ typedef struct Client Client;
@@ -134,13 +134,14 @@ index 9fd0286..9d2e903 100644
  
  	updatetitle(c);
  	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
-@@ -1283,6 +1365,13 @@ resizeclient(Client *c, int x, int y, int w, int h)
+@@ -1283,6 +1365,14 @@ resizeclient(Client *c, int x, int y, int w, int h)
  	c->oldw = c->w; c->w = wc.width = w;
  	c->oldh = c->h; c->h = wc.height = h;
  	wc.border_width = c->bw;
 +	if (((nexttiled(c->mon->clients) == c && !nexttiled(c->next))
-+	    || &monocle == c->mon->lt[c->mon->sellt]->arrange))
-+	{
++	    || &monocle == c->mon->lt[c->mon->sellt]->arrange)
++	    && !c->isfullscreen && !c->isfloating
++	    && NULL != c->mon->lt[c->mon->sellt]->arrange) {
 +		c->w = wc.width += c->bw * 2;
 +		c->h = wc.height += c->bw * 2;
 +		wc.border_width = 0;
@@ -148,7 +149,7 @@ index 9fd0286..9d2e903 100644
  	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
  	configure(c);
  	XSync(dpy, False);
-@@ -1498,6 +1587,16 @@ setfullscreen(Client *c, int fullscreen)
+@@ -1498,6 +1588,16 @@ setfullscreen(Client *c, int fullscreen)
  	}
  }
  
@@ -165,7 +166,7 @@ index 9fd0286..9d2e903 100644
  void
  setlayout(const Arg *arg)
  {
-@@ -1512,6 +1611,25 @@ setlayout(const Arg *arg)
+@@ -1512,6 +1612,25 @@ setlayout(const Arg *arg)
  		drawbar(selmon);
  }
  
@@ -191,7 +192,7 @@ index 9fd0286..9d2e903 100644
  /* arg > 1.0 will set mfact absolutely */
  void
  setmfact(const Arg *arg)
-@@ -1674,28 +1792,45 @@ tagmon(const Arg *arg)
+@@ -1674,28 +1793,45 @@ tagmon(const Arg *arg)
  void
  tile(Monitor *m)
  {

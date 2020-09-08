@@ -4,8 +4,7 @@
 dwm_branches = [
   'config',           # merge w/: actualfullscreen, scratchpad-gaspar
   'sticky',           # merge w/: actualfullscreen
-  'canfocusrule',     # merge w/: sticky
-  'systray',  # merge w/: scratchpad-gaspar, zoomswap, statusallmons, dwmc
+  'systray',          # merge w/: scratchpad, zoomswap, statusallmons, dwmc
   'ru-gaps',          # merge w/: noborder, cfacts
   'cfacts',
   'systray-toggle',
@@ -22,6 +21,7 @@ dwm_branches = [
   'zoomswap',
   'savefloats',
   'centerkeybinding',
+  'horizgrid',
   'statusallmons',
   'dwmc',
 ]
