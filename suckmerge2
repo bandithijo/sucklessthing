@@ -88,7 +88,7 @@ elsif dir_name == 'tabbed'
 elsif dir_config_branches.include? dir_name
   branches = config_branches
 else
-  puts 'You are not in suckless directory!'
+  puts 'You are not in Suckless directory!'
   exit
 end
 
@@ -110,5 +110,3 @@ puts '=> Patching COMPLETE!'
 puts "\n=> Installing"
 system 'make && sudo make clean install'
 puts '=> Installation COMPLETE!'
-
-# >> You are not in suckless directory!
