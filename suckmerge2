@@ -65,13 +65,19 @@ tabbed_branches = [
   'alpha'
 ]
 
-# For etc.
+# For etc. with config branch
 dir_config_branches = [
   'pinentry-dmenu',
   'slstatus',
   'sxiv'
 ]
 config_branches = ['config']
+
+# For etc. only master branch
+dir_only_master_branches = [
+  'wmname'
+]
+only_master_branch = ['master']
 
 # Define dir_name based on cwd
 dir_name = `basename $PWD`.strip
@@ -87,6 +93,8 @@ elsif dir_name == 'tabbed'
   branches = tabbed_branches
 elsif dir_config_branches.include? dir_name
   branches = config_branches
+elsif dir_only_master_branches.include? dir_name
+  branches = only_master_branch
 else
   puts 'You are not in Suckless directory!'
   exit
