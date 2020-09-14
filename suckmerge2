@@ -23,7 +23,8 @@ dwm_branches = [
   'centerkeybinding',
   'horizgrid',
   'statusallmons',
-  'dwmc'
+  'dwmc',
+  'warp'
 ]
 
 # For st
