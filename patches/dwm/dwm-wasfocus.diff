@@ -1,0 +1,50 @@
+commit 5d9abdae8a402dfd7369375fc0ca8e870668f901
+Refs: [sticky], {bandithijo/sticky}
+Author:     Rizqi Nur Assyaufi <bandithijo@gmail.com>
+AuthorDate: Fri Jun 12 11:18:17 2020 +0800
+Commit:     Rizqi Nur Assyaufi <bandithijo@gmail.com>
+CommitDate: Fri Jun 12 11:18:17 2020 +0800
+
+    Don't focus sticky client unless it was focused before
+---
+ dwm.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/dwm.c b/dwm.c
+index 1dfc2c3..59adb9f 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -92,7 +92,7 @@ struct Client {
+        int basew, baseh, incw, inch, maxw, maxh, minw, minh;
+        int bw, oldbw;
+        unsigned int tags;
+-       int isfixed, iscentered, isfloating, isurgent, neverfocus, oldstate, isfullscreen, issticky;
++       int isfixed, iscentered, isfloating, isurgent, neverfocus, oldstate, isfullscreen, issticky, wasfocused;
+        Client *next;
+        Client *snext;
+        Monitor *mon;
+@@ -789,6 +789,8 @@ void
+ focus(Client *c)
+ {
+        if (!c || !ISVISIBLE(c))
++        for (c = selmon->stack; c && !(ISVISIBLE(c) && (!c->issticky || (c->issticky && c->wasfocused))); c = c->snext);
++       if (!c)
+                for (c = selmon->stack; c && !ISVISIBLE(c); c = c->snext);
+        if (selmon->sel && selmon->sel != c)
+                unfocus(selmon->sel, 0);
+@@ -1476,6 +1478,7 @@ setfocus(Client *c)
+                        XA_WINDOW, 32, PropModeReplace,
+                        (unsigned char *) &(c->win), 1);
+        }
++       c->wasfocused = 1;
+        sendevent(c, wmatom[WMTakeFocus]);
+ }
+
+@@ -1779,6 +1782,7 @@ unfocus(Client *c, int setfocus)
+ {
+        if (!c)
+                return;
++       c->wasfocused = 0;
+        grabbuttons(c, 0);
+        XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
+        if (setfocus) {
