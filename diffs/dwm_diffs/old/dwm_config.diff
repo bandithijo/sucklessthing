@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..c8bfc80 100644
+index 1c0b587..93d0f2f 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -1,50 +1,116 @@
@@ -184,7 +184,7 @@ index 1c0b587..c8bfc80 100644
  	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
 +	{ MODKEY,                       XK_v,      setlayout,      {.v = &layouts[3]} },
 +	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[4]} },
-+	{ MODKEY,                       XK_y,      setlayout,      {.v = &layouts[5]} },
++	{ MODKEY|ShiftMask,             XK_u,      setlayout,      {.v = &layouts[5]} },
  	{ MODKEY,                       XK_space,  setlayout,      {0} },
  	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 -	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
@@ -204,7 +204,7 @@ index 1c0b587..c8bfc80 100644
  	TAGKEYS(                        XK_1,                      0)
  	TAGKEYS(                        XK_2,                      1)
  	TAGKEYS(                        XK_3,                      2)
-@@ -94,22 +180,150 @@ static Key keys[] = {
+@@ -94,22 +180,119 @@ static Key keys[] = {
  	TAGKEYS(                        XK_8,                      7)
  	TAGKEYS(                        XK_9,                      8)
  	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
@@ -233,38 +233,7 @@ index 1c0b587..c8bfc80 100644
 +	{ MODKEY|ControlMask|ShiftMask, XK_Right,  moveresizeedge, {.v = "R"} },
 +
 +    // Custom Keys
-+    /* modifier                     key                        function        argument */
-+    { MODKEY|ControlMask,           XK_Return,                 spawn,          SHCMD("st -T 'st+'") },
-+    { MODKEY|Mod1Mask,              XK_Return,                 spawn,          SHCMD("tabbed -c -r 2 st -w ''") },
-+    { MODKEY|ShiftMask,             XK_End,                    spawn,          SHCMD("/usr/bin/rofi-power 'killall dwm'") },
-+    { MODKEY,                       XK_e,                      spawn,          SHCMD("/usr/bin/rofi-emoji-run") },
-+    { MODKEY,                       XK_Print,                  spawn,          SHCMD("/usr/bin/scrot-full") },
-+    { MODKEY|ControlMask,           XK_Print,                  spawn,          SHCMD("/usr/bin/scrot-time") },
-+    { MODKEY|Mod1Mask,              XK_Print,                  spawn,          SHCMD("/usr/bin/scrot-window-imgck") },
-+    { MODKEY|ShiftMask|Mod1Mask,    XK_Print,                  spawn,          SHCMD("/usr/bin/scrot-window") },
-+    { MODKEY|ShiftMask,             XK_Print,                  spawn,          SHCMD("/usr/bin/flameshot-imgck") },
-+    { MODKEY|ShiftMask|ControlMask, XK_Print,                  spawn,          SHCMD("/usr/bin/flameshot gui") },
-+    { MODKEY|ShiftMask,             XK_Pause,                  spawn,          SHCMD("/usr/bin/dmenu-record") },
-+    { MODKEY|ShiftMask,             XK_x,                      spawn,          SHCMD("/usr/bin/slimlock") },
-+    { MODKEY,                       XK_F7,                     spawn,          SHCMD("/usr/bin/arandr") },
-+    { MODKEY,                       XK_F8,                     spawn,          SHCMD("/usr/bin/networkmanager_dmenu") },
-+    { MODKEY,                       XK_F9,                     spawn,          SHCMD("/usr/bin/guvcview-launcher") },
-+    { MODKEY|ShiftMask,             XK_F9,                     spawn,          SHCMD("pkill -f 'guvcview'") },
-+    { MODKEY|ControlMask,           XK_F9,                     spawn,          SHCMD("wmctrl -r 'Guvcview' -e '0,862,609,160,120'") },
-+    { MODKEY|Mod1Mask,              XK_F9,                     spawn,          SHCMD("wmctrl -r 'Guvcview' -e '0,862,646,160,120'") },
-+    { MODKEY,                       XK_F10,                    spawn,          SHCMD("/usr/bin/keybind-helper") },
-+    { MODKEY,                       XK_F11,                    spawn,          SHCMD("/usr/bin/key-mon") },
-+    { MODKEY|ShiftMask,             XK_F11,                    spawn,          SHCMD("pkill -f 'key-mon'") },
-+    { MODKEY,                       XK_F12,                    spawn,          SHCMD("/usr/bin/dmenu-systemd") },
-+    { MODKEY,                       XK_p,                      spawn,          SHCMD("/usr/bin/clipmenu") },
-+    { MODKEY|ShiftMask,             XK_p,                      spawn,          SHCMD("clipdel -d '.'") },
-+    { MODKEY|ShiftMask,             XK_backslash,              spawn,          SHCMD("/usr/bin/dmenu-pass") },
-+    { MODKEY,                       XK_backslash,              spawn,          SHCMD("/usr/bin/passtore 0") },
-+    { MODKEY,                       XK_F4,                     spawn,          SHCMD("killall conky; /usr/bin/feh --bg-fill -Z $WALLPAPER3 --bg-fill $WALLPAPER4") },
-+    { MODKEY,                       XK_F5,                     spawn,          SHCMD("killall conky; /usr/bin/feh --bg-fill -Z $WALLPAPER1") },
-+    { 0,                            XF86XK_AudioRaiseVolume,   spawn,          SHCMD("pamixer --increase 5") },
-+    { 0,                            XF86XK_AudioLowerVolume,   spawn,          SHCMD("pamixer --decrease 5") },
-+    { 0,                            XF86XK_AudioMute,          spawn,          SHCMD("pamixer --toggle-mute") },
++    /* I have migrated all this custom keys for using with SXHKD */
  };
  
  /* button definitions */
