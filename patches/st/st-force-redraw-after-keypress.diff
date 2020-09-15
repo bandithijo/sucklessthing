@@ -1,0 +1,60 @@
+From: Kenneth Maples <kenneth.maples_AT_gmail.com>
+Date: Sun, 19 Apr 2020 17:09:40 +0800
+
+While profiling terminal latency in st, I observed that data read from
+the tty was not immediately written to the screen, but instead queued in
+a rate limiting step. This results in a delay of ~17ms on my computer
+between the XEvent capture by the terminal and the new character written
+to the buffer when there is no system load.
+
+This patch creates a global flag which is set when a keypress is sent
+from X which forces the terminal to check for new data on the tty fd on
+every return from pselect(). When new data read from the tty results in
+a line being redrawn, the flag is reset.
+
+On my computer, this results in a speedup from 17ms to 400us, which
+includes the round-trip time to the shell.
+---
+ x.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+diff --git a/x.c b/x.c
+index e5f1737..7b3feef 100644
+--- a/x.c
++++ b/x.c
+_AT_@ -220,6 +220,7 @@ static DC dc;
+ static XWindow xw;
+ static XSelection xsel;
+ static TermWindow win;
++static int pendingkpress = 0;
+
+ /* Font Ring Cache */
+ enum {
+_AT_@ -1604,6 +1605,8 @@ xdrawline(Line line, int x1, int y1, int x2)
+ 	Glyph base, new;
+ 	XftGlyphFontSpec *specs = xw.specbuf;
+
++	pendingkpress = 0;
++
+ 	numspecs = xmakeglyphfontspecs(specs, &line[x1], x2 - x1, x1, y1);
+ 	i = ox = 0;
+ 	for (x = x1; x < x2 && i < numspecs; x++) {
+_AT_@ -1793,6 +1796,8 @@ kpress(XEvent *ev)
+ 	Status status;
+ 	Shortcut *bp;
+
++	pendingkpress = 1;
++
+ 	if (IS_SET(MODE_KBDLOCK))
+ 		return;
+
+_AT_@ -1922,6 +1927,8 @@ run(void)
+ 		tv = &drawtimeout;
+
+ 		dodraw = 0;
++		if (pendingkpress)
++			dodraw = 1;
+ 		if (blinktimeout && TIMEDIFF(now, lastblink) > blinktimeout) {
+ 			tsetdirtattr(ATTR_BLINK);
+ 			win.mode ^= MODE_BLINK;
+--
+2.26.1

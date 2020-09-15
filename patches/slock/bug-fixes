@@ -1,0 +1,7 @@
+Bug Fixes: from 35633d4 to b46028b
+=================================
+
+- Added xinerama support 
+- Fixed a bug on BSD 
+- Added list of font names
+- No longer segfaults on unavailable font.
