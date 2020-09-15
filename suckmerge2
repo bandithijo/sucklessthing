@@ -22,6 +22,7 @@ dwm_branches = [
   'savefloats',
   'centerkeybinding',
   'horizgrid',
+  'bottomstack',
   'statusallmons',
   'dwmc',
   'warp'
