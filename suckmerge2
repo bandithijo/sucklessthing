@@ -23,8 +23,7 @@ dwm_branches = [
   'centerkeybinding',
   'ru-bottomstack',
   'statusallmons',
-  'dwmc',
-  'warp'
+  'dwmc'
 ]
 
 # For st
