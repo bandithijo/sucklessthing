@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 9fd0286..93fefe1 100644
+index 9fd0286..488086e 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -87,6 +87,7 @@ typedef struct Client Client;
@@ -217,15 +217,15 @@ index 9fd0286..93fefe1 100644
 +	}
  
 -	if (n > m->nmaster)
-+	if (n > m->nmaster){
- 		mw = m->nmaster ? m->ww * m->mfact : 0;
+-		mw = m->nmaster ? m->ww * m->mfact : 0;
 -	else
--		mw = m->ww;
--	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
-+		ns = m->nmaster > 0 ? 2 : 1;
++	if (n > m->nmaster){
++		mw = m->nmaster ? m->ww * m->mfact : m->gappx - 2;
++		ns = 2;
 +	}
 +	else{
-+		mw = m->ww - m->gappx;
+ 		mw = m->ww;
+-	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
 +		ns = 1;
 +	}
 +	for (i = 0, my = ty = m->gappx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
