@@ -1,0 +1,71 @@
+diff --git a/dwm.c b/dwm.c
+index 664c527..fef4a8b 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -49,7 +49,7 @@
+ #define CLEANMASK(mask)         (mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))
+ #define INTERSECT(x,y,w,h,m)    (MAX(0, MIN((x)+(w),(m)->wx+(m)->ww) - MAX((x),(m)->wx)) \
+                                * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
+-#define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]))
++#define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]) || C->issticky)
+ #define LENGTH(X)               (sizeof X / sizeof X[0])
+ #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
+ #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
+@@ -92,7 +92,7 @@ struct Client {
+ 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
+ 	int bw, oldbw;
+ 	unsigned int tags;
+-	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
++    int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen, issticky, wasfocused;
+ 	Client *next;
+ 	Client *snext;
+ 	Monitor *mon;
+@@ -212,6 +212,7 @@ static void tagmon(const Arg *arg);
+ static void tile(Monitor *);
+ static void togglebar(const Arg *arg);
+ static void togglefloating(const Arg *arg);
++static void togglesticky(const Arg *arg);
+ static void toggletag(const Arg *arg);
+ static void toggleview(const Arg *arg);
+ static void unfocus(Client *c, int setfocus);
+@@ -785,6 +786,8 @@ void
+ focus(Client *c)
+ {
+ 	if (!c || !ISVISIBLE(c))
++        for (c = selmon->stack; c && !(ISVISIBLE(c) && (!c->issticky || (c->issticky && c->wasfocused))); c = c->snext);
++    if (!c)
+ 		for (c = selmon->stack; c && !ISVISIBLE(c); c = c->snext);
+ 	if (selmon->sel && selmon->sel != c)
+ 		unfocus(selmon->sel, 0);
+@@ -1467,6 +1470,7 @@ setfocus(Client *c)
+ 			XA_WINDOW, 32, PropModeReplace,
+ 			(unsigned char *) &(c->win), 1);
+ 	}
++    c->wasfocused = 1;
+ 	sendevent(c, wmatom[WMTakeFocus]);
+ }
+ 
+@@ -1722,6 +1726,15 @@ togglefloating(const Arg *arg)
+ 	arrange(selmon);
+ }
+ 
++void
++togglesticky(const Arg *arg)
++{
++	if (!selmon->sel)
++		return;
++	selmon->sel->issticky = !selmon->sel->issticky;
++	arrange(selmon);
++}
++
+ void
+ toggletag(const Arg *arg)
+ {
+@@ -1754,6 +1767,7 @@ unfocus(Client *c, int setfocus)
+ {
+ 	if (!c)
+ 		return;
++    c->wasfocused = 0;
+ 	grabbuttons(c, 0);
+ 	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
+ 	if (setfocus) {
