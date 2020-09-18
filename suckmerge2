@@ -2,28 +2,31 @@
 
 # For dwm
 dwm_branches = [
-  'config',           # merge w/: actualfullscreen, scratchpad-gaspar
-  'sticky',           # merge w/: actualfullscreen
-  'systray',          # merge w/: scratchpad, zoomswap, statusallmons, dwmc
-  'ru-gaps',          # merge w/: noborder, cfacts
-  'cfacts',
-  'systray-toggle',
-  'actualfullscreen',
-  'xrdb',
-  'noborder',
-  'autostart',
-  'movestack',
-  'moveresize',
-  'pertag',
-  'resizecorners',
-  'focusonnetactive',
-  'scratchpad-gaspar',
-  'zoomswap',
-  'savefloats',
-  'centerkeybinding',
-  'ru-bottomstack',
-  'statusallmons',
-  'dwmc'
+  'config',
+  'sticky', # 19
+  'wasfocus', # 20 : sticky
+  'ru-gaps', # 17 : cfacts, noborder
+  'cfacts', # 15
+  'cfacts-dragcfact', # 16 : cfacts
+  'actualfullscreen', # 13 : sticky
+  'xrdb', # 2
+  'pertag', # 1
+  'noborder', # 11
+  'autostart', # 3
+  'movestack', # 8
+  'moveresize', # 9
+  'resizecorners', # 6
+  'focusonnetactive', # 7
+  'focusonclick', # 24 : moveresize <-
+  'scratchpad', # 14
+  'zoomswap', # 4
+  'savefloats', # 5 : alwayscenter
+  'alwayscenter', # 10
+  'centerkeybinding', # 21
+  'ru-bottomstack', # 18
+  'statusallmons', # 12
+  'systray', # 22 : zoomswap, scratchpad, wasfocus, statusallmons
+  'systray-toggle' # 23
 ]
 
 # For st
