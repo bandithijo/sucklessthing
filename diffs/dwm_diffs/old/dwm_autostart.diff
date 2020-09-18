@@ -1,0 +1,33 @@
+diff --git a/dwm.c b/dwm.c
+index 664c527..272acdf 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -194,6 +194,7 @@ static void resizeclient(Client *c, int x, int y, int w, int h);
+ static void resizemouse(const Arg *arg);
+ static void restack(Monitor *m);
+ static void run(void);
++static void runAutostart(void);
+ static void scan(void);
+ static int sendevent(Client *c, Atom proto);
+ static void sendmon(Client *c, Monitor *m);
+@@ -1381,6 +1382,12 @@ run(void)
+ 			handler[ev.type](&ev); /* call handler */
+ }
+ 
++void
++runAutostart(void) {
++	system("cd ~/bin; ./autostart_blocking.sh");
++	system("cd ~/bin; ./autostart.sh &");
++}
++
+ void
+ scan(void)
+ {
+@@ -2146,6 +2153,7 @@ main(int argc, char *argv[])
+ #endif /* __OpenBSD__ */
+ 	scan();
+ 	run();
++	runAutostart();
+ 	cleanup();
+ 	XCloseDisplay(dpy);
+ 	return EXIT_SUCCESS;

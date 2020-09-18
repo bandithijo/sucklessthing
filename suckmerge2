@@ -3,30 +3,31 @@
 # For dwm
 dwm_branches = [
   'config',
-  'sticky', # 19
+  'sticky', # 19*
   'wasfocus', # 20 : sticky
-  'ru-gaps', # 17 : cfacts, noborder
-  'cfacts', # 15
-  'cfacts-dragcfact', # 16 : cfacts
-  'actualfullscreen', # 13 : sticky
-  'xrdb', # 2
+  'ru-gaps', # 17* : cfacts, noborder
+  'cfacts', # 15*
+  'cfacts-dragcfact', # 16* : cfacts
+  'actualfullscreen', # 13* : sticky
+  'xrdb', # 2*
   'pertag', # 1
   'noborder', # 11
   'autostart', # 3
-  'movestack', # 8
-  'moveresize', # 9
+  'movestack', # 8*
+  'moveresize', # 9*
   'resizecorners', # 6
   'focusonnetactive', # 7
-  'focusonclick', # 24 : moveresize <-
-  'scratchpad', # 14
+  'focusonclick', # 24* : moveresize
+  'fixborders', # 25 <-
+  'scratchpad', # 14*
   'zoomswap', # 4
   'savefloats', # 5 : alwayscenter
   'alwayscenter', # 10
-  'centerkeybinding', # 21
-  'ru-bottomstack', # 18
+  'centerkeybinding', # 21*
+  'ru-bottomstack', # 18*
   'statusallmons', # 12
   'systray', # 22 : zoomswap, scratchpad, wasfocus, statusallmons
-  'systray-toggle' # 23
+  'systray-toggle' # 23*
 ]
 
 # For st
