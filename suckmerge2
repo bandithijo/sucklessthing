@@ -9,31 +9,31 @@
 # For dwm
 dwm_branches = [
   'config',
-  'sticky', # 19*
-  'wasfocus', # 20 : sticky
-  'ru-gaps', # 17* : cfacts, noborder
-  'cfacts', # 15*
+  'sticky',           # 19*
+  'wasfocus',         # 20  : sticky
+  'ru-gaps',          # 17* : cfacts, noborder
+  'cfacts',           # 15*
   'cfacts-dragcfact', # 16* : cfacts
   'actualfullscreen', # 13* : sticky
-  'xrdb', # 2*
-  'pertag', # 1
-  'noborder', # 11
-  'autostart', # 3
-  'movestack', # 8*
-  'moveresize', # 9*
-  'resizecorners', # 6
+  'xrdb',             # 2*
+  'pertag',           # 1
+  'noborder',         # 11
+  'autostart',        # 3
+  'movestack',        # 8*
+  'moveresize',       # 9*
+  'resizecorners',    # 6
   'focusonnetactive', # 7
-  'focusonclick', # 24* : moveresize
-  'fixborders', # 25 <-
-  'scratchpad', # 14*
-  'zoomswap', # 4
-  'savefloats', # 5 : alwayscenter
-  'alwayscenter', # 10
+  'focusonclick',     # 24* : moveresize
+  'fixborders',       # 25 <-
+  'scratchpad',       # 14*
+  'zoomswap',         # 4
+  'savefloats',       # 5   : alwayscenter
+  'alwayscenter',     # 10
   'centerkeybinding', # 21*
-  'ru-bottomstack', # 18*
-  'statusallmons', # 12
-  'systray', # 22 : zoomswap, scratchpad, wasfocus, statusallmons
-  'systray-toggle' # 23*
+  'ru-bottomstack',   # 18*
+  'statusallmons',    # 12
+  'systray',          # 22  : zoomswap, scratchpad, wasfocus, statusallmons
+  'systray-toggle'    # 23*
 ]
 
 # For st
@@ -125,3 +125,39 @@ puts '=> Patching COMPLETE!'
 puts "\n=> Installing"
 system 'make && sudo make clean install'
 puts '=> Installation COMPLETE!'
+
+if dir_name == 'dwm'
+  puts """
+  +----------------------------------------------------------------------+
+  | STATUSBAR:                                                           |
+  +----------------------------------------------------------------------+
+  | Bandithijo's DWM doesn't bring the status bar.                       |
+  | You should bring your own. My personal preferences are use slstatus. |
+  |                                                                      |
+  | Sample: https://s.id/bandithijo-slstatus                             |
+  +----------------------------------------------------------------------+
+  +----------------------------------------------------------------------+
+  | KEYBOARD:                                                            |
+  +----------------------------------------------------------------------+
+  | Bandithijo's DWM doesn't bring the keyboard shortcut for apps.       |
+  | You should bring your own. My personal preferences are use SXHKD.    |
+  |                                                                      |
+  | Sample: https://s.id/bandithijo-sxhkdrc-dwm                          |
+  +----------------------------------------------------------------------+
+  +----------------------------------------------------------------------+
+  | AUTOSTART:                                                           |
+  +----------------------------------------------------------------------+
+  | BanditHijo's DWM use autostart patch. But I modified the path.       |
+  | Please, provide the autostart file on:                               |
+  | ~/.local/bin/autostart.sh                                            |
+  |                                                                      |
+  | And the other one:                                                   |
+  | ~/.local/bin/autostart_blocking.sh (just empty file)                 |
+  |                                                                      |
+  | Don't forget to make all of them as executeable file, with:          |
+  | $ chmod +x ~/.local/bin/autostart*.sh                                |
+  |                                                                      |
+  | Sample: https://s.id/bandithijo-autostart                            |
+  +----------------------------------------------------------------------+
+  """
+end

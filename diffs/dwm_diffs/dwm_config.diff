@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..6bff12c 100644
+index 1c0b587..e343ad4 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -1,50 +1,115 @@
@@ -10,7 +10,7 @@ index 1c0b587..6bff12c 100644
  /* appearance */
  static const unsigned int borderpx  = 1;        /* border pixel of windows */
 -static const unsigned int snap      = 32;       /* snap pixel */
-+static const int gappx              = 4;        /* gaps between windows */
++static const int gappx              = 0;        /* gaps between windows */
 +static const unsigned int snap      = 5;        /* snap pixel */
 +static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 +static const unsigned int systrayspacing = 2;   /* systray spacing */
