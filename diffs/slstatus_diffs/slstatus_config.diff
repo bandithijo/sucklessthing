@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index e06be66..f28afa2 100644
+index e06be66..48c22cd 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -4,7 +4,7 @@
@@ -19,10 +19,10 @@ index e06be66..f28afa2 100644
 -	{ datetime, "%s",           "%F %T" },
 +	/* function format           argument */
 +	{ run_command,    "%s",         "echo ' '" },
++	{ run_command,    "%s",         "$HOME/bin/status/key-mon" },
 +	{ run_command,    "%s",         "$HOME/bin/status/tor" },
 +	{ run_command,    "%s",         "$HOME/bin/status/vpn" },
 +	{ run_command,    "%s",         "$HOME/bin/status/screenkey" },
-+	{ run_command,    "%s",         "$HOME/bin/status/key-mon" },
 +	{ run_command,    "%s",         "$HOME/bin/status/record" },
 +	{ run_command,    "%s ",        "$HOME/bin/status/network-wlan-tfc" },
 +    { temp,           " %s°C ",    "/sys/class/thermal/thermal_zone0/temp" },

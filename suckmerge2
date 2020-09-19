@@ -1,5 +1,11 @@
 #!/usr/bin/env ruby
 
+# LEGEND
+# n    => branch without config
+# n*   => branch with config on config branch
+# n :  => branch has merge with other branch
+# n <- => latest branch on the fleet
+
 # For dwm
 dwm_branches = [
   'config',
@@ -105,16 +111,13 @@ else
 end
 
 puts '=> Convert All Branch to Patch'
-system '''
-suckdiff &&
-git reset --hard origin/master
-'''
+system 'suckdiff && git reset --hard origin/master'
 puts '=> Converting COMPLETE!'
 
 puts "\n=> Patching All Branch to Master"
 branches.each do |branch|
   print "Patching #{branch}... "
-  `git merge #{branch} -m #{branch}`
+  system "git merge #{branch} -m #{branch}"
   print "DONE\n"
 end
 puts '=> Patching COMPLETE!'
