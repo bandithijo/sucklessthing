@@ -1,5 +1,16 @@
+From 37e970479dc5d40e57fc0cbfeaa5e39941483237 Mon Sep 17 00:00:00 2001
+From: Gan Ainm <gan.ainm.riomhphost@gmail.com>
+Date: Wed, 10 Jun 2020 10:59:02 +0000
+Subject: [PATCH] dwm-xdgautostart-6.2.diff
+
+===================================================================
+---
+ dwm.1 | 23 +++++++++++++++++
+ dwm.c | 82 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 105 insertions(+)
+
 diff --git a/dwm.1 b/dwm.1
-index ddc8321..86e73f9 100644
+index 13b3729..9533aa6 100644
 --- a/dwm.1
 +++ b/dwm.1
 @@ -30,6 +30,14 @@ top left corner.  The tags which are applied to one or more windows are
@@ -40,7 +51,7 @@ index ddc8321..86e73f9 100644
  dwm is customized by creating a custom config.h and (re)compiling the source
  code. This keeps it fast, secure and simple.
 diff --git a/dwm.c b/dwm.c
-index 664c527..7472d14 100644
+index 4465af1..2156b49 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -29,6 +29,7 @@
@@ -51,15 +62,15 @@ index 664c527..7472d14 100644
  #include <sys/wait.h>
  #include <X11/cursorfont.h>
  #include <X11/keysym.h>
-@@ -197,6 +198,7 @@ static void run(void);
+@@ -193,6 +194,7 @@ static void resizeclient(Client *c, int x, int y, int w, int h);
+ static void resizemouse(const Arg *arg);
+ static void restack(Monitor *m);
+ static void run(void);
++static void runautostart(void);
  static void scan(void);
  static int sendevent(Client *c, Atom proto);
  static void sendmon(Client *c, Monitor *m);
-+static void runautostart(void);
- static void setclientstate(Client *c, long state);
- static void setfocus(Client *c);
- static void setfullscreen(Client *c, int fullscreen);
-@@ -236,7 +238,11 @@ static int xerrorstart(Display *dpy, XErrorEvent *ee);
+@@ -235,7 +237,11 @@ static int xerrorstart(Display *dpy, XErrorEvent *ee);
  static void zoom(const Arg *arg);
  
  /* variables */
@@ -71,7 +82,7 @@ index 664c527..7472d14 100644
  static char stext[256];
  static int screen;
  static int sw, sh;           /* X display screen geometry width, height */
-@@ -1381,6 +1387,83 @@ run(void)
+@@ -1380,6 +1386,83 @@ run(void)
  			handler[ev.type](&ev); /* call handler */
  }
  
@@ -155,7 +166,7 @@ index 664c527..7472d14 100644
  void
  scan(void)
  {
-@@ -2145,6 +2228,7 @@ main(int argc, char *argv[])
+@@ -2142,6 +2223,7 @@ main(int argc, char *argv[])
  		die("pledge");
  #endif /* __OpenBSD__ */
  	scan();
@@ -163,3 +174,6 @@ index 664c527..7472d14 100644
  	run();
  	cleanup();
  	XCloseDisplay(dpy);
+-- 
+2.27.0
+

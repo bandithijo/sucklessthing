@@ -23,9 +23,10 @@ dwm_branches = [
   'resizecorners',    # 5
   'focusonnetactive', # 6
   'focusonclick',     # 23* : moveresize
-  'fixborders',       # 24 <-
+  'fixborders',       # 24
   'scratchpad',       # 13*
   'zoomswap',         # 3
+  'autostart',        # 25  : zoomswap <-
   'savefloats',       # 4   : alwayscenter
   'alwayscenter',     # 9
   'centerkeybinding', # 20*
