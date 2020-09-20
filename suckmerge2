@@ -9,31 +9,30 @@
 # For dwm
 dwm_branches = [
   'config',
-  'sticky',           # 19*
-  'wasfocus',         # 20  : sticky
-  'ru-gaps',          # 17* : cfacts, noborder
-  'cfacts',           # 15*
-  'cfacts-dragcfact', # 16* : cfacts
-  'actualfullscreen', # 13* : sticky
+  'sticky',           # 18*
+  'wasfocus',         # 19  : sticky
+  'ru-gaps',          # 16* : cfacts, noborder
+  'cfacts',           # 14*
+  'cfacts-dragcfact', # 15* : cfacts
+  'actualfullscreen', # 12* : sticky
   'xrdb',             # 2*
   'pertag',           # 1
-  'noborder',         # 11
-  'autostart',        # 3
-  'movestack',        # 8*
-  'moveresize',       # 9*
-  'resizecorners',    # 6
-  'focusonnetactive', # 7
-  'focusonclick',     # 24* : moveresize
-  'fixborders',       # 25 <-
-  'scratchpad',       # 14*
-  'zoomswap',         # 4
-  'savefloats',       # 5   : alwayscenter
-  'alwayscenter',     # 10
-  'centerkeybinding', # 21*
-  'ru-bottomstack',   # 18*
-  'statusallmons',    # 12
-  'systray',          # 22  : zoomswap, scratchpad, wasfocus, statusallmons
-  'systray-toggle'    # 23*
+  'noborder',         # 10
+  'movestack',        # 7*
+  'moveresize',       # 8*
+  'resizecorners',    # 5
+  'focusonnetactive', # 6
+  'focusonclick',     # 23* : moveresize
+  'fixborders',       # 24 <-
+  'scratchpad',       # 13*
+  'zoomswap',         # 3
+  'savefloats',       # 4   : alwayscenter
+  'alwayscenter',     # 9
+  'centerkeybinding', # 20*
+  'ru-bottomstack',   # 17*
+  'statusallmons',    # 11
+  'systray',          # 21  : zoomswap, scratchpad, wasfocus, statusallmons
+  'systray-toggle'    # 22*
 ]
 
 # For st

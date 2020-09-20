@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 664c527..c0a4503 100644
+index 664c527..3ee37c2 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -87,6 +87,7 @@ typedef struct Client Client;
@@ -100,7 +100,7 @@ index 664c527..c0a4503 100644
  /* arg > 1.0 will set mfact absolutely */
  void
  setmfact(const Arg *arg)
-@@ -1674,28 +1715,43 @@ tagmon(const Arg *arg)
+@@ -1674,28 +1715,45 @@ tagmon(const Arg *arg)
  void
  tile(Monitor *m)
  {
@@ -147,15 +147,17 @@ index 664c527..c0a4503 100644
 -			resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
 -			if (ty + HEIGHT(c) < m->wh)
 -				ty += HEIGHT(c);
-+			h = (m->wh - my) / (MIN(n, m->nmaster) - i) - m->gappx;
++			h = (m->wh - my) * (c->cfact / mfacts) - m->gappx;
 +			resize(c, m->wx + m->gappx, m->wy + my, mw - 2*c->bw - m->gappx*(5-ns)/2, h - 2*c->bw, 0);
 +			if(my + HEIGHT(c) + m->gappx < m->wh)
 +				my += HEIGHT(c) + m->gappx;
++            mfacts -= c->cfact;
 + 		} else {
-+			h = (m->wh - ty) / (n - i) - m->gappx;
++			h = (m->wh - ty) * (c->cfact / sfacts) - m->gappx;
 +			resize(c, m->wx + mw + m->gappx/ns, m->wy + ty, m->ww - mw - (2*c->bw) - m->gappx*(5-ns)/2, h - 2*c->bw, 0);
 +			if(ty + HEIGHT(c) + m->gappx < m->wh)
 +				ty += HEIGHT(c) + m->gappx;
++            sfacts -= c->cfact;
  		}
  }
  
