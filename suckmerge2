@@ -26,14 +26,15 @@ dwm_branches = [
   'fixborders',       # 24
   'scratchpad',       # 13*
   'zoomswap',         # 3
-  'autostart',        # 25  : zoomswap <-
+  'autostart',        # 25  : zoomswap
   'savefloats',       # 4   : alwayscenter
   'alwayscenter',     # 9
   'centerkeybinding', # 20*
   'ru-bottomstack',   # 17*
   'statusallmons',    # 11
   'systray',          # 21  : zoomswap, scratchpad, wasfocus, statusallmons
-  'systray-toggle'    # 22*
+  'systray-toggle',   # 22*
+  'ru-fibonacci'      # 26* <-
 ]
 
 # For st

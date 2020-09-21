@@ -1,17 +1,15 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..750a185 100644
+index 1c0b587..def11ad 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -1,50 +1,116 @@
+@@ -1,50 +1,118 @@
  /* See LICENSE file for copyright and license details. */
  
 +#include <X11/XF86keysym.h>
 +
  /* appearance */
--static const unsigned int borderpx  = 1;        /* border pixel of windows */
+ static const unsigned int borderpx  = 1;        /* border pixel of windows */
 -static const unsigned int snap      = 32;       /* snap pixel */
-+static const int CORNER_RADIUS      = 10;
-+static const unsigned int borderpx  = 0;        /* border pixel of windows */
 +static const int gappx              = 0;        /* gaps between windows */
 +static const unsigned int snap      = 5;        /* snap pixel */
 +static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
@@ -127,6 +125,7 @@ index 1c0b587..750a185 100644
 -static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
 +static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
  
++#include "fibonacci.c"
  static const Layout layouts[] = {
  	/* symbol     arrange function */
  	{ "[]=",      tile },    /* first entry is default */
@@ -134,6 +133,8 @@ index 1c0b587..750a185 100644
  	{ "[M]",      monocle },
 +	{ "TTT",      bstack },
 +	{ "===",      bstackhoriz },
++ 	{ "[@]",      spiral },
++ 	{ "[\\]",     dwindle },
  };
  
  /* key definitions */
@@ -142,7 +143,7 @@ index 1c0b587..750a185 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -56,34 +122,54 @@ static const Layout layouts[] = {
+@@ -56,34 +124,56 @@ static const Layout layouts[] = {
  
  /* commands */
  static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -185,6 +186,8 @@ index 1c0b587..750a185 100644
  	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
 +	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[3]} },
 +	{ MODKEY|ShiftMask,             XK_u,      setlayout,      {.v = &layouts[4]} },
++	{ MODKEY,                       XK_r,      setlayout,      {.v = &layouts[5]} },
++	{ MODKEY|ShiftMask,             XK_r,      setlayout,      {.v = &layouts[6]} },
  	{ MODKEY,                       XK_space,  setlayout,      {0} },
  	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 +	{ MODKEY|ShiftMask,             XK_f,      togglefullscr,  {0} },
@@ -202,7 +205,7 @@ index 1c0b587..750a185 100644
  	TAGKEYS(                        XK_1,                      0)
  	TAGKEYS(                        XK_2,                      1)
  	TAGKEYS(                        XK_3,                      2)
-@@ -94,22 +180,48 @@ static Key keys[] = {
+@@ -94,22 +184,48 @@ static Key keys[] = {
  	TAGKEYS(                        XK_8,                      7)
  	TAGKEYS(                        XK_9,                      8)
  	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
