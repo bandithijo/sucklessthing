@@ -90,7 +90,8 @@ tabbed_branches = [
 dir_config_branches = [
   'pinentry-dmenu',
   'slstatus',
-  'sxiv'
+  'sxiv',
+  'dwmblocks'
 ]
 config_branches = ['config']
 
@@ -196,7 +197,7 @@ if dir_name == 'dwm' && option == '-i'
   | Bandithijo's DWM doesn't bring the status bar.                       |
   | You should bring your own. My personal preferences are use slstatus. |
   |                                                                      |
-  | Sample: https://s.id/bandithijo-slstatus                             |
+  | Sample: https://s.id/bandithijo-dwmblocks                            |
   +----------------------------------------------------------------------+
   +----------------------------------------------------------------------+
   | KEYBOARD:                                                            |
@@ -223,4 +224,3 @@ if dir_name == 'dwm' && option == '-i'
   +----------------------------------------------------------------------+
   """
 end
-
