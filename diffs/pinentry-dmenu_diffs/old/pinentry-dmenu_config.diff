@@ -1,5 +1,5 @@
 diff --git a/config.h b/config.h
-index 8e5d90a..a72aa49 100644
+index 8e5d90a..475268f 100644
 --- a/config.h
 +++ b/config.h
 @@ -3,17 +3,17 @@
@@ -10,8 +10,7 @@ index 8e5d90a..a72aa49 100644
 +static int minpwlen = 10;
  static int mon = -1;
  
--static const char *asterisk = "*";
-+static const char *asterisk = "#";
+ static const char *asterisk = "*";
  static const char *fonts[] = {
 -	"monospace:size=10"
 +	"JetBrainsMono Nerd Font:style=Medium,Regular:size=8"
