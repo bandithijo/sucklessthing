@@ -1,9 +1,13 @@
 diff --git a/config.def.h b/config.def.h
-index e06be66..6965397 100644
+index e06be66..de499a0 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -4,7 +4,7 @@
- const unsigned int interval = 1000;
+@@ -1,10 +1,10 @@
+ /* See LICENSE file for copyright and license details. */
+ 
+ /* interval between updates (in ms) */
+-const unsigned int interval = 1000;
++const unsigned int interval = 1;
  
  /* text to show if no value can be retrieved */
 -static const char unknown_str[] = "n/a";
@@ -17,7 +21,7 @@ index e06be66..6965397 100644
  static const struct arg args[] = {
 -	/* function format          argument */
 -	{ datetime, "%s",           "%F %T" },
-+	/* function format           argument */
++	/* function       format        argument */
 +	{ run_command,    "%s",         "echo ' '" },
 +	{ run_command,    "%s",         "$HOME/bin/status/record" },
 +	{ run_command,    "%s",         "$HOME/bin/status/tor" },
@@ -25,9 +29,9 @@ index e06be66..6965397 100644
 +	{ run_command,    "%s",         "$HOME/bin/status/key-mon" },
 +	{ run_command,    "%s",         "$HOME/bin/status/screenkey" },
 +	{ run_command,    "%s ",        "$HOME/bin/status/network-wlan-tfc" },
-+    { temp,           " %s ",      "/sys/class/thermal/thermal_zone0/temp" },
-+    { ram_perc,       " %s ",      NULL },
-+    { disk_perc,      " %s ",      "/" },
++    { run_command,    "%s ",        "$HOME/bin/status/cpu-temp" },
++    { run_command,    "%s ",        "$HOME/bin/status/memory" },
++    { run_command,    "%s ",        "$HOME/bin/status/filesystem" },
 +	{ run_command,    "%s ",        "$HOME/bin/status/volume" },
 +	{ run_command,    "%s ",        "$HOME/bin/status/mailbox" },
 +	{ run_command,    "%s ",        "$HOME/bin/status/datetime" },
