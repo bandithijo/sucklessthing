@@ -195,7 +195,7 @@ Options:
   -i for installing - Merge all selected branches, make, & make install
 
 Usage:
-  $ suckmerge2 -[i/d]
+  $ suckmerge2 -[d/i]
   '''
   puts '  Or,'
   puts
