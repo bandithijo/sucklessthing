@@ -582,7 +582,7 @@ index 0000000..7890500
 +	/* U+2571 - U+2573: unsupported (diagonals) */
 +};
 diff --git a/config.def.h b/config.def.h
-index 6f05dce..bd3b0d3 100644
+index 6f05dce..0128f83 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -43,18 +43,9 @@ static unsigned int tripleclicktimeout = 600;
@@ -631,7 +631,7 @@ index 6f05dce..bd3b0d3 100644
  unsigned int tabspaces = 8;
  
 +/* bg opacity */
-+float alpha = 0.98;
++float alpha = 1.00;
 +
  /* Terminal colors (16 first used in escape sequence) */
  static const char *colorname[] = {

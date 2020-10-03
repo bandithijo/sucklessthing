@@ -141,7 +141,7 @@ index d80eb47..c356c39 100644
  © 2014-2017 Quentin Rameau <quinq at fifth dot space>
  © 2009-2012 Aurélien APTEL <aurelien dot aptel at gmail dot com>
 diff --git a/config.def.h b/config.def.h
-index 6f05dce..c1b3952 100644
+index 6f05dce..f7c05bd 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -5,8 +5,15 @@
@@ -150,7 +150,7 @@ index 6f05dce..c1b3952 100644
   */
 -static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
 -static int borderpx = 2;
-+static char *font = "JetBrainsMono Nerd Font:style=Medium,Regular:pixelsize=10:antialias=true:autohint=true";
++static char *font = "JetBrainsMono Nerd Font Bandit:style=Medium,Regular:pixelsize=10:antialias=true:autohint=true";
 +/* Spare fonts */
 +static char *font2[] = {
 +/*	"Inconsolata for Powerline:pixelsize=12:antialias=true:autohint=true", */

@@ -1,8 +1,8 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..d36a699 100644
+index 1c0b587..d21953c 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -1,50 +1,121 @@
+@@ -1,50 +1,122 @@
  /* See LICENSE file for copyright and license details. */
  
 +#include <X11/XF86keysym.h>
@@ -116,6 +116,7 @@ index 1c0b587..d36a699 100644
 +    { "Kazam",                NULL,                 NULL,                         0,            1,           -1 },
 +    { "Pysheng-gui",          NULL,                 NULL,                         0,            1,           -1 },
 +    { "qtqr",                 NULL,                 NULL,                         0,            1,           -1 },
++    { "Mainwindow.py",        NULL,                 "PlayOnLinux",                0,            1,           -1 },
 +    { NULL,                   NULL,                 "xzoom x2",                   0,            1,           -1 },
 +    // Scratchpad
 +    { NULL,                   NULL,                 "hidden",       scratchpad_mask,            1,           -1 },
@@ -146,7 +147,7 @@ index 1c0b587..d36a699 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -56,34 +127,56 @@ static const Layout layouts[] = {
+@@ -56,34 +128,56 @@ static const Layout layouts[] = {
  
  /* commands */
  static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -208,7 +209,7 @@ index 1c0b587..d36a699 100644
  	TAGKEYS(                        XK_1,                      0)
  	TAGKEYS(                        XK_2,                      1)
  	TAGKEYS(                        XK_3,                      2)
-@@ -94,22 +187,48 @@ static Key keys[] = {
+@@ -94,22 +188,48 @@ static Key keys[] = {
  	TAGKEYS(                        XK_8,                      7)
  	TAGKEYS(                        XK_9,                      8)
  	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },

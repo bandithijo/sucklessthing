@@ -1,8 +1,8 @@
 diff --git a/config.def.h b/config.def.h
-index 1edb647..64e0808 100644
+index 1edb647..4d8d03e 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -4,14 +4,14 @@
+@@ -4,17 +4,18 @@
  static int topbar = 1;                      /* -b  option; if 0, dmenu appears at bottom     */
  /* -fn option overrides fonts[0]; default X11 font or font set */
  static const char *fonts[] = {
@@ -20,8 +20,13 @@ index 1edb647..64e0808 100644
 +	[SchemeSel]  = { "#eeeeee", "#005f87" },
 +	[SchemeOut]  = { "#000000", "#00ffff" },
  };
- /* -l option; if nonzero, dmenu uses vertical list with given number of lines */
+-/* -l option; if nonzero, dmenu uses vertical list with given number of lines */
++/* -l and -g options; controls number of lines and columns in grid if > 0 */
  static unsigned int lines      = 0;
++static unsigned int columns    = 0;
+ 
+ /*
+  * Characters not considered part of a word while deleting words
 diff --git a/config.mk b/config.mk
 index 05d5a3e..c77681a 100644
 --- a/config.mk

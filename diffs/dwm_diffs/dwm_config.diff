@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..d21953c 100644
+index 1c0b587..e4a81c3 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -1,50 +1,122 @@
@@ -30,8 +30,8 @@ index 1c0b587..d21953c 100644
 -	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
 -	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
 +static const int focusonwheel       = 0;
-+static const char *fonts[]          = { "JetBrainsMono Nerd Font:style=Medium:size=8" };
-+static const char dmenufont[]       = "JetBrainsMono Nerd Font:style=Medium:size=8";
++static const char *fonts[]          = { "JetBrainsMono Nerd Font Bandit:style=Medium:size=8" };
++static const char dmenufont[]       = "JetBrainsMono Nerd Font Bandit:style=Medium:size=8";
 +static char normbgcolor[]           = "#222222";
 +static char normbordercolor[]       = "#444444";
 +static char normfgcolor[]           = "#bbbbbb";
