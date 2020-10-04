@@ -141,10 +141,10 @@ index d80eb47..c356c39 100644
  © 2014-2017 Quentin Rameau <quinq at fifth dot space>
  © 2009-2012 Aurélien APTEL <aurelien dot aptel at gmail dot com>
 diff --git a/config.def.h b/config.def.h
-index 6f05dce..f7c05bd 100644
+index 6f05dce..d160973 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -5,8 +5,15 @@
+@@ -5,8 +5,16 @@
   *
   * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
   */
@@ -153,8 +153,9 @@ index 6f05dce..f7c05bd 100644
 +static char *font = "JetBrainsMono Nerd Font Bandit:style=Medium,Regular:pixelsize=10:antialias=true:autohint=true";
 +/* Spare fonts */
 +static char *font2[] = {
-+/*	"Inconsolata for Powerline:pixelsize=12:antialias=true:autohint=true", */
-+/*	"Hack Nerd Font Mono:pixelsize=11:antialias=true:autohint=true", */
++    "Font Awesome 5 Free:style=Regular:pixelsize=10:antialias=true:autohint=true",
++    "Font Awesome 5 Brands:style=Regular:pixelsize=10:antialias=true:autohint=true",
++    "octicons:style=Medium:pixelsize=10:antialias=true:autohint=true",
 +    "JoyPixels:pixelsize=10:antialias=true:autohint=true",
 +};
 +
@@ -162,7 +163,7 @@ index 6f05dce..f7c05bd 100644
  
  /*
   * What program is execed by st depends of these precedence rules:
-@@ -43,18 +50,9 @@ static unsigned int tripleclicktimeout = 600;
+@@ -43,18 +51,9 @@ static unsigned int tripleclicktimeout = 600;
  /* alt screens */
  int allowaltscreen = 1;
  
@@ -184,7 +185,7 @@ index 6f05dce..f7c05bd 100644
  
  /*
   * blinking timeout (set to 0 to disable blinking) for the terminal blinking
-@@ -145,8 +143,8 @@ static unsigned int cursorshape = 2;
+@@ -145,8 +144,8 @@ static unsigned int cursorshape = 2;
   * Default columns and rows numbers
   */
  
@@ -195,7 +196,7 @@ index 6f05dce..f7c05bd 100644
  
  /*
   * Default colour and shape of the mouse cursor
-@@ -175,9 +173,7 @@ static uint forcemousemod = ShiftMask;
+@@ -175,9 +174,7 @@ static uint forcemousemod = ShiftMask;
  static MouseShortcut mshortcuts[] = {
  	/* mask                 button   function        argument       release */
  	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
