@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 664c527..576852a 100644
+index 664c527..8b3c5a2 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -49,7 +49,7 @@
@@ -55,7 +55,7 @@ index 664c527..576852a 100644
  	int monitor;
  } Rule;
  
-+typedef struct Systray   Systray;
++typedef struct Systray Systray;
 +struct Systray {
 +	Window win;
 +	Client *icons;
