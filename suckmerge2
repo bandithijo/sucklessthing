@@ -144,6 +144,7 @@ def merge_selected(branches)
     print "Patching #{branch}... "
     system "git merge #{branch} -m #{branch}"
     print "DONE\n"
+    puts
   end
   puts '=> Patching COMPLETE!'
 end

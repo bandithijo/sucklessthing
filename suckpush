@@ -27,7 +27,7 @@ branches.each do |branch|
   git checkout #{branch}  > /dev/null 2>&1
   git push -u #{remote_repo} #{branch}
   """
-  puts "DONE!\n\n"
+  puts "DONE!\n"
 end
 
 %x(`git checkout master > /dev/null 2>&1`)
