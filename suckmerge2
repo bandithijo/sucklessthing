@@ -45,7 +45,7 @@ dwm_branches = [
   'systray',          # 22  : zoomswap, scratchpad, wasfocus, statusallmons
   'systray-toggle',   # 23*
   'ru-fibonacci',     # 27*
-  'nmaster-sym'       # 30  : pertag, cfacts, noborder ru-gaps
+  'nmaster-sym',      # 30  : pertag, cfacts <-
 ]
 
 # For st
