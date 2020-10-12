@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 664c527..e92a7c9 100644
+index 664c527..d6c9d0e 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -87,6 +87,7 @@ typedef struct Client Client;
@@ -34,7 +34,16 @@ index 664c527..e92a7c9 100644
  static void setmfact(const Arg *arg);
  static void setup(void);
  static void seturgent(Client *c, int urg);
-@@ -272,6 +276,15 @@ static Window root, wmcheckwin;
+@@ -210,6 +214,8 @@ static void spawn(const Arg *arg);
+ static void tag(const Arg *arg);
+ static void tagmon(const Arg *arg);
+ static void tile(Monitor *);
++static void bstack(Monitor *);
++static void bstackhoriz(Monitor *);
+ static void togglebar(const Arg *arg);
+ static void togglefloating(const Arg *arg);
+ static void toggletag(const Arg *arg);
+@@ -272,6 +278,15 @@ static Window root, wmcheckwin;
  /* configuration, allows nested code to access above variables */
  #include "config.h"
  
@@ -50,7 +59,7 @@ index 664c527..e92a7c9 100644
  /* compile-time check if all tags fit into an unsigned int bit array. */
  struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
  
-@@ -632,6 +645,7 @@ Monitor *
+@@ -632,6 +647,7 @@ Monitor *
  createmon(void)
  {
  	Monitor *m;
@@ -58,7 +67,7 @@ index 664c527..e92a7c9 100644
  
  	m = ecalloc(1, sizeof(Monitor));
  	m->tagset[0] = m->tagset[1] = 1;
-@@ -642,6 +656,20 @@ createmon(void)
+@@ -642,6 +658,20 @@ createmon(void)
  	m->lt[0] = &layouts[0];
  	m->lt[1] = &layouts[1 % LENGTH(layouts)];
  	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
@@ -79,19 +88,19 @@ index 664c527..e92a7c9 100644
  	return m;
  }
  
-@@ -967,7 +995,10 @@ grabkeys(void)
+@@ -967,7 +997,10 @@ grabkeys(void)
  void
  incnmaster(const Arg *arg)
  {
 -	selmon->nmaster = MAX(selmon->nmaster + arg->i, 0);
-+	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MAX(selmon->nmaster + arg->i, 0);
++	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MAX(selmon->nmaster + arg->i, 1);
 +    if (selmon->nmaster < 0) {
 +        selmon->nmaster = 0;
 +    }
  	arrange(selmon);
  }
  
-@@ -1030,6 +1061,7 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1030,6 +1063,7 @@ manage(Window w, XWindowAttributes *wa)
  	c->w = c->oldw = wa->width;
  	c->h = c->oldh = wa->height;
  	c->oldbw = wa->border_width;
@@ -99,7 +108,7 @@ index 664c527..e92a7c9 100644
  
  	updatetitle(c);
  	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
-@@ -1502,9 +1534,9 @@ void
+@@ -1502,9 +1536,9 @@ void
  setlayout(const Arg *arg)
  {
  	if (!arg || !arg->v || arg->v != selmon->lt[selmon->sellt])
@@ -111,7 +120,7 @@ index 664c527..e92a7c9 100644
  	strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, sizeof selmon->ltsymbol);
  	if (selmon->sel)
  		arrange(selmon);
-@@ -1512,6 +1544,23 @@ setlayout(const Arg *arg)
+@@ -1512,6 +1546,23 @@ setlayout(const Arg *arg)
  		drawbar(selmon);
  }
  
@@ -135,7 +144,7 @@ index 664c527..e92a7c9 100644
  /* arg > 1.0 will set mfact absolutely */
  void
  setmfact(const Arg *arg)
-@@ -1523,7 +1572,7 @@ setmfact(const Arg *arg)
+@@ -1523,7 +1574,7 @@ setmfact(const Arg *arg)
  	f = arg->f < 1.0 ? arg->f + selmon->mfact : arg->f - 1.0;
  	if (f < 0.05 || f > 0.95)
  		return;
@@ -144,7 +153,7 @@ index 664c527..e92a7c9 100644
  	arrange(selmon);
  }
  
-@@ -1675,9 +1724,19 @@ void
+@@ -1675,9 +1726,21 @@ void
  tile(Monitor *m)
  {
  	unsigned int i, n, h, mw, my, ty;
@@ -152,8 +161,10 @@ index 664c527..e92a7c9 100644
  	Client *c;
  
 -	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
-+    /* override layout symbol */
-+    snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]=", selmon->nmaster);
++    if (selmon->nmaster > 1) {
++        /* override layout symbol */
++        snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d=", selmon->nmaster);
++    }
 +
 +	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++) {
 +		if (n < m->nmaster)
@@ -165,7 +176,7 @@ index 664c527..e92a7c9 100644
  	if (n == 0)
  		return;
  
-@@ -1687,22 +1746,24 @@ tile(Monitor *m)
+@@ -1687,22 +1750,126 @@ tile(Monitor *m)
  		mw = m->ww;
  	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
  		if (i < m->nmaster) {
@@ -181,7 +192,109 @@ index 664c527..e92a7c9 100644
  			if (ty + HEIGHT(c) < m->wh)
  				ty += HEIGHT(c);
 +			sfacts -= c->cfact;
++		}
++}
++
++void
++bstack(Monitor *m)
++{
++	unsigned int i, n, w, mh, mx, tx, ns;
++    float mfacts = 0, sfacts = 0;
++	Client *c;
++
++    if (selmon->nmaster > 1) {
++        /* override layout symbol */
++        snprintf(m->ltsymbol, sizeof m->ltsymbol, "T%dT", selmon->nmaster);
++    }
++
++	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++) {
++		if (n < m->nmaster)
++			mfacts += c->cfact;
++		else
++			sfacts += c->cfact;
++	}
++	if (n == 0)
++		return;
++	if(n == 1){
++		c = nexttiled(m->clients);
++		resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, 0);
++		return;
++	}
++
++	if (n > m->nmaster){
++		mh = m->nmaster ? m->wh * m->mfact : m->gappx;
++		ns = 2;
++	}
++	else{
++		mh = m->wh;
++		ns = 1;
++	}
++	for (i = 0, mx = tx = m->gappx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
++		if (i < m->nmaster) {
++			w = (m->ww - mx) * (c->cfact / mfacts) - m->gappx;
++			resize(c, m->wx + mx, m->wy + m->gappx, w - 2*c->bw, mh - 2*c->bw - m->gappx*(5-ns)/2, 0);
++			if(mx + WIDTH(c) + m->gappx < m->mw)
++				mx += WIDTH(c) + m->gappx;
++			mfacts -= c->cfact;
++		} else {
++			w = (m->ww - tx) * (c->cfact / sfacts) - m->gappx;
++			if(m->nmaster == 0)
++				resize(c, m->wx + tx, m->wy + mh, w - (2*c->bw), m->wh - mh - 2*c->bw - m->gappx, False);
++			else
++				resize(c, m->wx + tx, m->wy + mh + m->gappx/ns, w - (2*c->bw), m->wh - mh - 2*c->bw - m->gappx*(5-ns)/2, False);
++			if (tx + WIDTH(c) + m->gappx < m->mw)
++				tx += WIDTH(c) + m->gappx;
++			sfacts -= c->cfact;
++		}
++}
++
++void
++bstackhoriz(Monitor *m)
++{
++	unsigned int i, n;
++	int mx = 0, my = 0, mh = 0, mw = 0;
++	int sx = 0, sy = 0, sh = 0, sw = 0;
++	Client *c;
++
++    if (selmon->nmaster > 1) {
++        /* override layout symbol */
++        snprintf(m->ltsymbol, sizeof m->ltsymbol, "=%d=", selmon->nmaster);
++    }
++
++	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
++	if (n == 0)
++		return;
++
++	if (n == 1) {
++		c = nexttiled(m->clients);
++		resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, 0);
++		return;
++	}
++
++	sx = mx = m->wx + m->gappx;
++	sy = my = m->wy + m->gappx;
++	sh = mh = m->wh - 2*m->gappx;
++	sw = mw = m->ww - 2*m->gappx - m->gappx * (MIN(n, m->nmaster) - 1);
++
++	if (m->nmaster && n > m->nmaster) {
++		sh = (mh - m->gappx) * (1 - m->mfact);
++		mh = (mh - m->gappx) * m->mfact;
++		sy = my + mh + m->gappx;
++		sh = m->wh - mh - 2*m->gappx - m->gappx * (n - m->nmaster);
++		sw = m->ww - 2*m->gappx;
++	}
++
++	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
++		if (i < m->nmaster) {
++			resize(c, mx, my, mw / MIN(n, m->nmaster) - (2*c->bw), mh - (2*c->bw), 0);
++			if(mx + WIDTH(c) + m->gappx < m->mw)
++				mx += WIDTH(c) + m->gappx;
++		} else {
++			resize(c, sx, sy, sw - (2*c->bw), sh / (n - MIN(n, m->nmaster)) - (2*c->bw), 0);
++			if(sy + HEIGHT(c) + m->gappx < m->mh)
++				sy += HEIGHT(c) + m->gappx;
  		}
++	}
  }
  
  void
@@ -192,7 +305,7 @@ index 664c527..e92a7c9 100644
  	updatebarpos(selmon);
  	XMoveResizeWindow(dpy, selmon->barwin, selmon->wx, selmon->by, selmon->ww, bh);
  	arrange(selmon);
-@@ -1741,9 +1802,33 @@ void
+@@ -1741,9 +1908,33 @@ void
  toggleview(const Arg *arg)
  {
  	unsigned int newtagset = selmon->tagset[selmon->seltags] ^ (arg->ui & TAGMASK);
@@ -226,7 +339,7 @@ index 664c527..e92a7c9 100644
  		focus(NULL);
  		arrange(selmon);
  	}
-@@ -2038,11 +2123,37 @@ updatewmhints(Client *c)
+@@ -2038,11 +2229,37 @@ updatewmhints(Client *c)
  void
  view(const Arg *arg)
  {
