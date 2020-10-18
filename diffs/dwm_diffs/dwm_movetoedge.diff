@@ -1,21 +1,61 @@
 diff --git a/dwm.c b/dwm.c
-index 664c527..179cacc 100644
+index 664c527..e7edd6a 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -183,6 +183,7 @@ static void mappingnotify(XEvent *e);
+@@ -183,7 +183,9 @@ static void mappingnotify(XEvent *e);
  static void maprequest(XEvent *e);
  static void monocle(Monitor *m);
  static void motionnotify(XEvent *e);
 +static void moveresize(const Arg *arg);
  static void movemouse(const Arg *arg);
++static void movetoedge(const Arg *arg);
  static Client *nexttiled(Client *c);
  static void pop(Client *);
-@@ -1193,6 +1194,71 @@ movemouse(const Arg *arg)
+ static void propertynotify(XEvent *e);
+@@ -1193,6 +1195,109 @@ movemouse(const Arg *arg)
  	}
  }
  
 +void
-+moveresize(const Arg *arg) {
++movetoedge(const Arg *arg) {
++	/* only floating windows can be moved */
++	Client *c;
++	c = selmon->sel;
++	int x, y, nx, ny;
++
++	if (!c || !arg)
++		return;
++	if (selmon->lt[selmon->sellt]->arrange && !c->isfloating)
++		return;
++	if (sscanf((char *)arg->v, "%d %d", &x, &y) != 2)
++		return;
++
++	if(x == 0)
++		nx = (selmon->mw - c->w)/2;
++	else if(x == -1)
++		nx = borderpx;
++	else if(x == 1)
++		nx = selmon->mw - (c->w + 2 * borderpx);
++	else
++		nx = c->x;
++
++	if(y == 0)
++		ny = (selmon->mh - (c->h + bh))/2;
++	else if(y == -1)
++		ny = bh + borderpx;
++	else if(y == 1)
++		ny = selmon->mh - (c->h + 2 * borderpx);
++	else
++		ny = c->y;
++
++
++	XRaiseWindow(dpy, c->win);
++	resize(c, nx, ny, c->w, c->h, True);
++}
++
++void
++moveresize(const Arg *arg)
++{
 +	/* only floating windows can be moved */
 +	Client *c;
 +	c = selmon->sel;

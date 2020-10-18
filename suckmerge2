@@ -47,7 +47,8 @@ dwm_branches = [
   'ru-fibonacci',     # 27*
   'nmaster-sym',      # 30  : pertag, cfacts-dragcfact^1
   'decorhints',       # 31* : systray^5, center^3
-  'warp',             # 32 <-
+  'warp',             # 32
+  'movetoedge',       # 33* : moveresize <-
 ]
 
 # For st

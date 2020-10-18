@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..97343da 100644
+index 1c0b587..122f626 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -1,50 +1,129 @@
@@ -216,7 +216,7 @@ index 1c0b587..97343da 100644
  	TAGKEYS(                        XK_1,                      0)
  	TAGKEYS(                        XK_2,                      1)
  	TAGKEYS(                        XK_3,                      2)
-@@ -94,22 +195,48 @@ static Key keys[] = {
+@@ -94,22 +195,40 @@ static Key keys[] = {
  	TAGKEYS(                        XK_8,                      7)
  	TAGKEYS(                        XK_9,                      8)
  	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
@@ -235,14 +235,6 @@ index 1c0b587..97343da 100644
 +	{ MODKEY|Mod1Mask,              XK_Up,     moveresize,     {.v = "  0x   0y   0w -10h" } },
 +	{ MODKEY|Mod1Mask,              XK_Right,  moveresize,     {.v = "  0x   0y  10w   0h" } },
 +	{ MODKEY|Mod1Mask,              XK_Left,   moveresize,     {.v = "  0x   0y -10w   0h" } },
-+	{ MODKEY|ControlMask,           XK_Up,     moveresizeedge, {.v = "t"} },
-+	{ MODKEY|ControlMask,           XK_Down,   moveresizeedge, {.v = "b"} },
-+	{ MODKEY|ControlMask,           XK_Left,   moveresizeedge, {.v = "l"} },
-+	{ MODKEY|ControlMask,           XK_Right,  moveresizeedge, {.v = "r"} },
-+	{ MODKEY|ControlMask|ShiftMask, XK_Up,     moveresizeedge, {.v = "T"} },
-+	{ MODKEY|ControlMask|ShiftMask, XK_Down,   moveresizeedge, {.v = "B"} },
-+	{ MODKEY|ControlMask|ShiftMask, XK_Left,   moveresizeedge, {.v = "L"} },
-+	{ MODKEY|ControlMask|ShiftMask, XK_Right,  moveresizeedge, {.v = "R"} },
 +
 +    // Custom Keys
 +    /* I have migrated all this custom keys for using with SXHKD */

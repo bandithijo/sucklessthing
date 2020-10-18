@@ -1,0 +1,76 @@
+diff --git a/config.def.h b/config.def.h
+index 1c0b587..7e8436f 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -84,6 +84,15 @@ static Key keys[] = {
+ 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+ 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+ 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
++	{ MODKEY, 			XK_KP_End,    movetoedge,       {.v = "-1 1" } },
++	{ MODKEY, 			XK_KP_Down,   movetoedge,       {.v = "0 1" } },
++	{ MODKEY, 			XK_KP_Next,   movetoedge,       {.v = "1 1" } },
++	{ MODKEY, 			XK_KP_Left,   movetoedge,       {.v = "-1 0" } },
++	{ MODKEY, 			XK_KP_Begin,  movetoedge,       {.v = "0 0" } },
++	{ MODKEY, 			XK_KP_Right,  movetoedge,       {.v = "1 0" } },
++	{ MODKEY, 			XK_KP_Home,   movetoedge,       {.v = "-1 -1" } },
++	{ MODKEY, 			XK_KP_Up,     movetoedge,       {.v = "0 -1" } },
++	{ MODKEY, 			XK_KP_Prior,  movetoedge,       {.v = "1 -1" } },
+ 	TAGKEYS(                        XK_1,                      0)
+ 	TAGKEYS(                        XK_2,                      1)
+ 	TAGKEYS(                        XK_3,                      2)
+diff --git a/dwm.c b/dwm.c
+index 9fd0286..b9030fe 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -184,6 +184,7 @@ static void maprequest(XEvent *e);
+ static void monocle(Monitor *m);
+ static void motionnotify(XEvent *e);
+ static void movemouse(const Arg *arg);
++static void movetoedge(const Arg *arg);
+ static Client *nexttiled(Client *c);
+ static void pop(Client *);
+ static void propertynotify(XEvent *e);
+@@ -1193,6 +1194,43 @@ movemouse(const Arg *arg)
+ 	}
+ }
+ 
++void
++movetoedge(const Arg *arg) {
++	/* only floating windows can be moved */
++	Client *c;
++	c = selmon->sel;
++	int x, y, nx, ny;
++
++	if (!c || !arg)
++		return;
++	if (selmon->lt[selmon->sellt]->arrange && !c->isfloating)
++		return;
++	if (sscanf((char *)arg->v, "%d %d", &x, &y) != 2)
++		return;
++
++	if(x == 0)
++		nx = (selmon->mw - c->w)/2;
++	else if(x == -1)
++		nx = borderpx;
++	else if(x == 1)
++		nx = selmon->mw - (c->w + 2 * borderpx);
++	else
++		nx = c->x;
++
++	if(y == 0)
++		ny = (selmon->mh - (c->h + bh))/2;
++	else if(y == -1)
++		ny = bh + borderpx;
++	else if(y == 1)
++		ny = selmon->mh - (c->h + 2 * borderpx);
++	else 
++		ny = c->y;
++
++
++	XRaiseWindow(dpy, c->win);
++	resize(c, nx, ny, c->w, c->h, True);
++}
++
+ Client *
+ nexttiled(Client *c)
+ {
