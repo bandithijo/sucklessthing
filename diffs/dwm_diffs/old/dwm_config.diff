@@ -1,8 +1,8 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..122f626 100644
+index 1c0b587..33ef2b1 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -1,50 +1,129 @@
+@@ -1,50 +1,130 @@
  /* See LICENSE file for copyright and license details. */
  
 +#include <X11/XF86keysym.h>
@@ -91,6 +91,7 @@ index 1c0b587..122f626 100644
 +    { "St",                   NULL,                 "st+",                        0,             1,            1,           -1 },
 +    { "St",                   NULL,                 "st+:",                       0,             0,            1,           -1 },
 +    { "Arandr",               NULL,                 NULL,                         0,             1,            1,           -1 },
++    { "Gcolor3",              NULL,                 "Color Picker",               0,             0,            1,           -1 },
 +    { "Gcolor3",              NULL,                 "Color picker",               0,             0,            1,           -1 },
 +    { "Gnome-calculator",     NULL,                 "Calculator",                 0,             0,            1,           -1 },
 +    { "Hexchat",              NULL,                 "Network List - HexChat",     1 << 5,        1,            1,           -1 },
@@ -154,7 +155,7 @@ index 1c0b587..122f626 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -56,34 +135,56 @@ static const Layout layouts[] = {
+@@ -56,34 +136,56 @@ static const Layout layouts[] = {
  
  /* commands */
  static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -216,7 +217,7 @@ index 1c0b587..122f626 100644
  	TAGKEYS(                        XK_1,                      0)
  	TAGKEYS(                        XK_2,                      1)
  	TAGKEYS(                        XK_3,                      2)
-@@ -94,22 +195,40 @@ static Key keys[] = {
+@@ -94,22 +196,45 @@ static Key keys[] = {
  	TAGKEYS(                        XK_8,                      7)
  	TAGKEYS(                        XK_9,                      8)
  	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
@@ -235,6 +236,11 @@ index 1c0b587..122f626 100644
 +	{ MODKEY|Mod1Mask,              XK_Up,     moveresize,     {.v = "  0x   0y   0w -10h" } },
 +	{ MODKEY|Mod1Mask,              XK_Right,  moveresize,     {.v = "  0x   0y  10w   0h" } },
 +	{ MODKEY|Mod1Mask,              XK_Left,   moveresize,     {.v = "  0x   0y -10w   0h" } },
++    { MODKEY|ControlMask,           XK_Up,     movethrow,      {.ui = WIN_N  }},
++    { MODKEY|ControlMask,           XK_Down,   movethrow,      {.ui = WIN_S  }},
++    { MODKEY|ControlMask,           XK_Left,   movethrow,      {.ui = WIN_W  }},
++    { MODKEY|ControlMask,           XK_Right,  movethrow,      {.ui = WIN_E  }},
++    { MODKEY|ControlMask,           XK_m,      movethrow,      {.ui = WIN_C  }},
 +
 +    // Custom Keys
 +    /* I have migrated all this custom keys for using with SXHKD */
