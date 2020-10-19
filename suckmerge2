@@ -39,7 +39,7 @@ dwm_branches = [
   'autostart',        # 26  : zoomswap
   'savefloats',       # 28
   'center',           # 29  : savefloats, wasfocus^1
-  'centerkeybinding', # 21*
+  # 'centerkeybinding', # 21*
   'ru-bottomstack',   # 18*
   'statusallmons',    # 12
   'systray',          # 22  : zoomswap, scratchpad, wasfocus^1, statusallmons

@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 664c527..d448222 100644
+index 664c527..696a753 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -66,6 +66,7 @@ enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
@@ -10,15 +10,17 @@ index 664c527..d448222 100644
  
  typedef union {
  	int i;
-@@ -183,6 +184,7 @@ static void mappingnotify(XEvent *e);
+@@ -183,7 +184,9 @@ static void mappingnotify(XEvent *e);
  static void maprequest(XEvent *e);
  static void monocle(Monitor *m);
  static void motionnotify(XEvent *e);
 +static void moveresize(const Arg *arg);
  static void movemouse(const Arg *arg);
++static void movethrow(const Arg *arg);
  static Client *nexttiled(Client *c);
  static void pop(Client *);
-@@ -1193,6 +1195,110 @@ movemouse(const Arg *arg)
+ static void propertynotify(XEvent *e);
+@@ -1193,6 +1196,110 @@ movemouse(const Arg *arg)
  	}
  }
  

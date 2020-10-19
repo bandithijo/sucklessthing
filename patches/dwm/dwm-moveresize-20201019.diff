@@ -1,61 +1,50 @@
+From: BanditHijo <bandithijo@gmail.com>
+Date: Mon, 19 Oct 2020 10:12
+Subject: [PATCH] [dwm][patch][moveresize] Added moveresizeedge function which
+ allows moving/resizing floating window to edge of screen
+
+---
+ config.def.h |  16 ++++++
+ dwm.c        | 149 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 165 insertions(+)
+
+diff --git a/config.def.h b/config.def.h
+index 1c0b587..4195232 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -78,6 +78,22 @@ static Key keys[] = {
+ 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
+ 	{ MODKEY,                       XK_space,  setlayout,      {0} },
+ 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
++	{ MODKEY,                       XK_Down,   moveresize,     {.v = "0x 25y 0w 0h" } },
++	{ MODKEY,                       XK_Up,     moveresize,     {.v = "0x -25y 0w 0h" } },
++	{ MODKEY,                       XK_Right,  moveresize,     {.v = "25x 0y 0w 0h" } },
++	{ MODKEY,                       XK_Left,   moveresize,     {.v = "-25x 0y 0w 0h" } },
++	{ MODKEY|ShiftMask,             XK_Down,   moveresize,     {.v = "0x 0y 0w 25h" } },
++	{ MODKEY|ShiftMask,             XK_Up,     moveresize,     {.v = "0x 0y 0w -25h" } },
++	{ MODKEY|ShiftMask,             XK_Right,  moveresize,     {.v = "0x 0y 25w 0h" } },
++	{ MODKEY|ShiftMask,             XK_Left,   moveresize,     {.v = "0x 0y -25w 0h" } },
+ 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
+ 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
+ 	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
 diff --git a/dwm.c b/dwm.c
-index 664c527..e7edd6a 100644
+index 9fd0286..00fd78a 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -183,7 +183,9 @@ static void mappingnotify(XEvent *e);
+@@ -183,6 +183,8 @@ static void mappingnotify(XEvent *e);
  static void maprequest(XEvent *e);
  static void monocle(Monitor *m);
  static void motionnotify(XEvent *e);
 +static void moveresize(const Arg *arg);
  static void movemouse(const Arg *arg);
-+static void movetoedge(const Arg *arg);
  static Client *nexttiled(Client *c);
  static void pop(Client *);
- static void propertynotify(XEvent *e);
-@@ -1193,6 +1195,109 @@ movemouse(const Arg *arg)
+@@ -1193,6 +1195,153 @@ movemouse(const Arg *arg)
  	}
  }
  
 +void
-+movetoedge(const Arg *arg) {
-+	/* only floating windows can be moved */
-+	Client *c;
-+	c = selmon->sel;
-+	int x, y, nx, ny;
-+
-+	if (!c || !arg)
-+		return;
-+	if (selmon->lt[selmon->sellt]->arrange && !c->isfloating)
-+		return;
-+	if (sscanf((char *)arg->v, "%d %d", &x, &y) != 2)
-+		return;
-+
-+	if(x == 0)
-+		nx = (selmon->mw - c->w)/2;
-+	else if(x == -1)
-+		nx = borderpx;
-+	else if(x == 1)
-+		nx = selmon->mw - (c->w + 2 * borderpx);
-+	else
-+		nx = c->x;
-+
-+	if(y == 0)
-+		ny = (selmon->mh - (c->h + bh))/2;
-+	else if(y == -1)
-+		ny = bh + borderpx;
-+	else if(y == 1)
-+		ny = selmon->mh - (c->h + 2 * borderpx);
-+	else
-+		ny = c->y;
-+
-+
-+	XRaiseWindow(dpy, c->win);
-+	resize(c, nx, ny, c->w, c->h, True);
-+}
-+
-+void
-+moveresize(const Arg *arg)
-+{
++moveresize(const Arg *arg) {
 +	/* only floating windows can be moved */
 +	Client *c;
 +	c = selmon->sel;
@@ -122,3 +111,6 @@ index 664c527..e7edd6a 100644
  Client *
  nexttiled(Client *c)
  {
+-- 
+2.20.1
+
