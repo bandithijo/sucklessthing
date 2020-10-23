@@ -1,0 +1,47 @@
+From a77edbf57712195189d07b2fdce661fce80e3b94 Mon Sep 17 00:00:00 2001
+From: aleks <aleks.stier@icloud.com>
+Date: Sun, 11 Aug 2019 02:54:49 +0200
+Subject: [PATCH] Remove hardcoded dmenu-integration
+
+Enable modifying dmenu in config.def.h which resulted previously in a
+compilation error because two lines of code hardcode dmenu into dwm.
+This includes:
+
+- removing dmenumon-variable
+- renaming dmenucmd-variable
+- removing dmenu completly
+---
+ config.def.h | 3 +--
+ dwm.c        | 2 --
+ 2 files changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/config.def.h b/config.def.h
+index 1c0b587..da4b71d 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -55,8 +55,7 @@ static const Layout layouts[] = {
+ #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+ 
+ /* commands */
+-static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
+-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
++static const char *dmenucmd[] = { "dmenu_run", "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+ static const char *termcmd[]  = { "st", NULL };
+ 
+ static Key keys[] = {
+diff --git a/dwm.c b/dwm.c
+index 4465af1..b9e14c0 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -1639,8 +1639,6 @@ sigchld(int unused)
+ void
+ spawn(const Arg *arg)
+ {
+-	if (arg->v == dmenucmd)
+-		dmenumon[0] = '0' + selmon->num;
+ 	if (fork() == 0) {
+ 		if (dpy)
+ 			close(ConnectionNumber(dpy));
+-- 
+2.22.0
+
