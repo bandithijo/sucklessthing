@@ -1,8 +1,8 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..ba9bbd2 100644
+index 1c0b587..3f09e3a 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -1,50 +1,125 @@
+@@ -1,50 +1,126 @@
  /* See LICENSE file for copyright and license details. */
  
 +#include <X11/XF86keysym.h>
@@ -82,6 +82,7 @@ index 1c0b587..ba9bbd2 100644
 +    { "winword.exe",          NULL,                 NULL,                         0,             0,            0,           -1 },
 +    /* class                  instance              title                         tags mask      iscentered    isfloating   monitor */
 +    // Floating
++    { "TelegramDesktop",      NULL,                 "Media viewer",               1 << 7,        0,            1,           -1 },
 +    { "Tor Browser",          "Navigator",          NULL,                         2,             1,            1,           -1 },
 +    { "St",                   NULL,                 "st+",                        0,             1,            1,           -1 },
 +    { "St",                   NULL,                 "st+:",                       0,             0,            1,           -1 },
@@ -150,7 +151,7 @@ index 1c0b587..ba9bbd2 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -55,35 +130,53 @@ static const Layout layouts[] = {
+@@ -55,35 +131,53 @@ static const Layout layouts[] = {
  #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
  
  /* commands */
@@ -210,7 +211,7 @@ index 1c0b587..ba9bbd2 100644
  	TAGKEYS(                        XK_1,                      0)
  	TAGKEYS(                        XK_2,                      1)
  	TAGKEYS(                        XK_3,                      2)
-@@ -94,22 +187,45 @@ static Key keys[] = {
+@@ -94,22 +188,45 @@ static Key keys[] = {
  	TAGKEYS(                        XK_8,                      7)
  	TAGKEYS(                        XK_9,                      8)
  	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
