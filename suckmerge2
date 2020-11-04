@@ -45,7 +45,9 @@ dwm_branches = [
   'nmaster-sym',      # 30  : pertag, cfacts-dragcfact^1
   'warp',             # 32
   'movethrow',        # 33* : moveresize
-  'status2d',         # 34  : autostart, statusallmons, focusonclick <-
+  'status2d',         # 34  : autostart, statusallmons, focusonclick
+  'focusmaster',      # 35*
+  'resetlayout',      # 36* : noborder <-
 ]
 
 # For st
@@ -223,9 +225,10 @@ if dir_name == 'dwm' && (option == '-i' || second_option == 'i')
   | STATUSBAR:                                                           |
   +----------------------------------------------------------------------+
   | Bandithijo's DWM doesn't bring the status bar.                       |
-  | You should bring your own. My personal preferences are use slstatus. |
+  | You should bring your own. My recommendation is dwmblocks.           |
+  | But, I prefer built my own status.                                   |
   |                                                                      |
-  | Sample: https://s.id/bandithijo-slstatus                             |
+  | Sample: https://s.id/bandithijo-dwmbar                               |
   +----------------------------------------------------------------------+
   +----------------------------------------------------------------------+
   | KEYBOARD:                                                            |

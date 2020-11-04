@@ -28,7 +28,7 @@ index 8e5d90a..ffed145 100644
 +	[SchemeDesc]   = { "#eeeeee", "#005f87" }
  };
 diff --git a/config.mk b/config.mk
-index 4c71211..aef0ea1 100644
+index 4c71211..ae1b0ea 100644
 --- a/config.mk
 +++ b/config.mk
 @@ -7,8 +7,8 @@ BUGREPORT = https:\/\/github.com\/ritze\/pinentry-dmenu
@@ -42,3 +42,12 @@ index 4c71211..aef0ea1 100644
  
  # Xinerama, comment if you don't want it
  XINERAMALIBS  = -lXinerama
+@@ -26,7 +26,7 @@ LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS}
+ 
+ # Flags
+ CPPFLAGS = -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS} -DPACKAGE_VERSION=\"${VERSION}\" -DPACKAGE_BUGREPORT=\"${BUGREPORT}\"
+-CFLAGS   = -std=c99 -pedantic -Wall -Os ${INCS} ${CPPFLAGS}
++CFLAGS   = -std=c99 -pedantic -fcommon -Wall -Os ${INCS} ${CPPFLAGS}
+ LDFLAGS  = -s ${LIBS}
+ 
+ # Compiler and linker

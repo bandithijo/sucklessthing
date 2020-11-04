@@ -1,14 +1,18 @@
 diff --git a/config.h b/config.h
-index 8e5d90a..ffed145 100644
+index 8e5d90a..1141576 100644
 --- a/config.h
 +++ b/config.h
-@@ -3,17 +3,17 @@
+@@ -1,19 +1,19 @@
+ /* See LICENSE file for copyright and license details. */
+ /* Default settings; can be overriden by command line. */
  
- static int bottom = 0;
+-static int bottom = 0;
++static int bottom   = 0;
  static int embedded = 0;
 -static int minpwlen = 32;
+-static int mon = -1;
 +static int minpwlen = 10;
- static int mon = -1;
++static int mon      = 0;
  
 -static const char *asterisk = "*";
 +static const char *asterisk = "#";

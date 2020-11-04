@@ -1,0 +1,33 @@
+diff --git a/dwm.c b/dwm.c
+index 664c527..f617679 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -169,6 +169,7 @@ static void focus(Client *c);
+ static void focusin(XEvent *e);
+ static void focusmon(const Arg *arg);
+ static void focusstack(const Arg *arg);
++static void focusmaster(const Arg *arg);
+ static Atom getatomprop(Client *c, Atom prop);
+ static int getrootptr(int *x, int *y);
+ static long getstate(Window w);
+@@ -856,6 +857,20 @@ focusstack(const Arg *arg)
+ 	}
+ }
+ 
++void
++focusmaster(const Arg *arg)
++{
++	Client *c;
++
++	if (selmon->nmaster < 1)
++		return;
++
++	c = nexttiled(selmon->clients);
++
++	if (c)
++		focus(c);
++}
++
+ Atom
+ getatomprop(Client *c, Atom prop)
+ {
