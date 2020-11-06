@@ -1,8 +1,8 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..5f4a21a 100644
+index 1c0b587..f1981d4 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -1,50 +1,128 @@
+@@ -1,50 +1,131 @@
  /* See LICENSE file for copyright and license details. */
  
 +#include <X11/XF86keysym.h>
@@ -80,6 +80,8 @@ index 1c0b587..5f4a21a 100644
 +    { "Guvcview",             NULL,                 NULL,                         1 << 4,        0,            0,           -1 },
 +    { "winword.exe",          NULL,                 NULL,                         0,             0,            0,           -1 },
 +    { "calibre",              NULL,                 NULL,                         0,             1,            0,           -1 },
++    { "Soffice",              "soffice",            NULL,                         0,             0,            0,            0 },
++    { "Soffice",              "soffice",            "Presenting: ",               0,             0,            0,            1 },
 +    /* class                  instance              title                         tags mask      iscentered    isfloating   monitor */
 +    // Floating
 +    { "TelegramDesktop",      NULL,                 "Media viewer",               1 << 7,        2,            1,           -1 },
@@ -107,6 +109,7 @@ index 1c0b587..5f4a21a 100644
 +    { "scrcpy",               NULL,                 NULL,                         0,             0,            1,           -1 },
 +    { "GParted",              NULL,                 NULL,                         0,             1,            1,           -1 },
 +    { "zoom",                 NULL,                 "Question and Answer",        0,             0,            1,           -1 },
++    { "zoom",                 NULL,                 "as_toolbar",                 0,             0,            1,           -1 },
 +    { "guvcview",             NULL,                 NULL,                         0,             0,            1,           -1 },
 +    { "Key-mon",              NULL,                 NULL,                         0,             1,            1,           -1 },
 +    { "Gnome-power-statistics", NULL,               NULL,                         0,             1,            1,           -1 },
@@ -153,7 +156,7 @@ index 1c0b587..5f4a21a 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -55,35 +133,54 @@ static const Layout layouts[] = {
+@@ -55,35 +136,55 @@ static const Layout layouts[] = {
  #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
  
  /* commands */
@@ -186,6 +189,7 @@ index 1c0b587..5f4a21a 100644
 +	{ MODKEY|ControlMask,           XK_o,      setcfact,       {.f =  0.00} },
 +	{ MODKEY|ShiftMask,             XK_j,      movestack,      {.i = +1 } },
 +	{ MODKEY|ShiftMask,             XK_k,      movestack,      {.i = -1 } },
++	{ MODKEY|ShiftMask,             XK_o,      resetlayout,    {0} },
  	{ MODKEY,                       XK_Return, zoom,           {0} },
  	{ MODKEY,                       XK_Tab,    view,           {0} },
  	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
@@ -214,7 +218,7 @@ index 1c0b587..5f4a21a 100644
  	TAGKEYS(                        XK_1,                      0)
  	TAGKEYS(                        XK_2,                      1)
  	TAGKEYS(                        XK_3,                      2)
-@@ -94,22 +191,45 @@ static Key keys[] = {
+@@ -94,22 +195,45 @@ static Key keys[] = {
  	TAGKEYS(                        XK_8,                      7)
  	TAGKEYS(                        XK_9,                      8)
  	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
