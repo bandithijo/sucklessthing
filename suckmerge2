@@ -42,12 +42,13 @@ dwm_branches = [
   'ru-bottomstack',   # 18*
   'statusallmons',    # 12
   'ru-fibonacci',     # 27*
-  'nmaster-sym',      # 30  : pertag, cfacts-dragcfact^1
   'warp',             # 32
+  'nmaster-sym',      # 30  : pertag, cfacts-dragcfact^1, warp
   'movethrow',        # 33* : moveresize
   'status2d',         # 34  : autostart, statusallmons, focusonclick
   'focusmaster',      # 35*
-  'resetlayout',      # 36* : noborder <-
+  'resetlayout',      # 36* : noborder
+  'ru-centeredmaster',# 37* <-
 ]
 
 # For st
