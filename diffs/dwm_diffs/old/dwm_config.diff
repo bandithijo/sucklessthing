@@ -1,8 +1,8 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..e64936c 100644
+index 1c0b587..4b3433d 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -1,50 +1,135 @@
+@@ -1,50 +1,137 @@
  /* See LICENSE file for copyright and license details. */
  
 +#include <X11/XF86keysym.h>
@@ -152,6 +152,8 @@ index 1c0b587..e64936c 100644
 +	{ "===",      bstackhoriz },
 + 	{ "[@]",      spiral },
 + 	{ "[\\]",     dwindle },
++	{ "|M|",      centeredmaster },
++	{ ">M>",      centeredfloatingmaster },
  };
  
  /* key definitions */
@@ -160,7 +162,7 @@ index 1c0b587..e64936c 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -55,61 +140,104 @@ static const Layout layouts[] = {
+@@ -55,61 +142,106 @@ static const Layout layouts[] = {
  #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
  
  /* commands */
@@ -233,6 +235,8 @@ index 1c0b587..e64936c 100644
 +	{ MODKEY|ShiftMask,             XK_u,      setlayout,         {.v = &layouts[4]} },
 +	{ MODKEY,                       XK_r,      setlayout,         {.v = &layouts[5]} },
 +	{ MODKEY|ShiftMask,             XK_r,      setlayout,         {.v = &layouts[6]} },
++	{ MODKEY,                       XK_n,      setlayout,         {.v = &layouts[7]} },
++	{ MODKEY|ShiftMask,             XK_n,      setlayout,         {.v = &layouts[8]} },
 +	{ MODKEY,                       XK_space,  setlayout,         {0} },
 +	{ MODKEY|ShiftMask,             XK_space,  togglefloating,    {0} },
 +	{ MODKEY|ShiftMask,             XK_f,      togglefullscr,     {0} },
