@@ -1,12 +1,9 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..348c0f1 100644
+index 1c0b587..1f1e1e3 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -1,50 +1,137 @@
- /* See LICENSE file for copyright and license details. */
+@@ -2,49 +2,134 @@
  
-+#include <X11/XF86keysym.h>
-+
  /* appearance */
  static const unsigned int borderpx  = 1;        /* border pixel of windows */
 -static const unsigned int snap      = 32;       /* snap pixel */
@@ -37,7 +34,7 @@ index 1c0b587..348c0f1 100644
 +static char selfgcolor[]            = "#eeeeee";
 +static char selbordercolor[]        = "#005f87";
 +static char selbgcolor[]            = "#005f87";
-+static char *colors[][3] = {
++static char *colors[][3]            = {
 +       /*               fg           bg           border   */
 +       [SchemeNorm] = { normfgcolor, normbgcolor, normbordercolor },
 +       [SchemeSel]  = { selfgcolor,  selbgcolor,  selbordercolor  },
@@ -57,10 +54,10 @@ index 1c0b587..348c0f1 100644
 -	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
 +    /* xprop(1):
 +     *	WM_CLASS(STRING) = instance, class
-+     *	WM_NAME(STRING) = title
++     *	WM_NAME(STRING)  = title
 +     */
 +    /* class                  instance              title                         tags mask      iscentered    isfloating   monitor */
-+    // Non FLoating
++    /* Non FLoating */
 +    { "Gimp-2.10",            NULL,                 NULL,                         0,             0,            0,           -1 },
 +    { "firefox",              NULL,                 NULL,                         2,             0,            0,           -1 },
 +    { "Chromium-browser",     NULL,                 NULL,                         2,             0,            0,           -1 },
@@ -73,10 +70,10 @@ index 1c0b587..348c0f1 100644
 +    { NULL,                   "libreoffice",        NULL,                         0,             0,            0,           -1 },
 +    { "Thunar",               "thunar",             NULL,                         1 << 2,        0,            0,           -1 },
 +    { "Org.gnome.Nautilus",   NULL,                 NULL,                         1 << 2,        0,            0,           -1 },
-+    { "St",                   NULL,                 "neomutt",                    1 << 6,        0,            0,           -1 },
-+    { "St",                   NULL,                 "ranger",                     0,             0,            0,           -1 },
-+    { "St",                   NULL,                 "newsboat",                   1 << 5,        0,            0,           -1 },
-+    { "St",                   NULL,                 "WeeChat",                    1 << 5,        0,            0,           -1 },
++    { "st-256color",          NULL,                 "NeoMutt",                    1 << 6,        0,            0,           -1 },
++    { "st-256color",          NULL,                 "Ranger",                     0,             0,            0,           -1 },
++    { "st-256color",          NULL,                 "Newsboat",                   1 << 5,        0,            0,           -1 },
++    { "st-256color",          NULL,                 "WeeChat",                    1 << 5,        0,            0,           -1 },
 +    { "Transmission-gtk",     NULL,                 NULL,                         1 << 4,        0,            0,           -1 },
 +    { "Postbird",             NULL,                 NULL,                         0,             0,            0,           -1 },
 +    { "xdman-Main",           NULL,                 "XDM 2020",                   0,             0,            0,           -1 },
@@ -86,7 +83,7 @@ index 1c0b587..348c0f1 100644
 +    { "Soffice",              "soffice",            NULL,                         0,             0,            0,            0 },
 +    { "Soffice",              "soffice",            "Presenting: ",               0,             0,            0,            1 },
 +    /* class                  instance              title                         tags mask      iscentered    isfloating   monitor */
-+    // Floating
++    /* Floating */
 +    { "TelegramDesktop",      NULL,                 "Media viewer",               1 << 7,        2,            1,           -1 },
 +    { "Tor Browser",          "Navigator",          NULL,                         2,             1,            1,           -1 },
 +    { "st-256color",          NULL,                 "st+",                        0,             1,            1,           -1 },
@@ -132,8 +129,8 @@ index 1c0b587..348c0f1 100644
 +    { "Pidgin",               NULL,                 NULL,                         0,             0,            1,           -1 },
 +    { "Pidgin",               NULL,                 "Buddy List",                 0,             0,            1,           -1 },
 +    /* class                  instance              title                         tags mask      iscentered    isfloating   monitor */
-+    // Scratchpad
-+    { NULL,                   NULL,                 "hidden",       scratchpad_mask,             0,            1,           -1 },
++    /* Scratchpad */
++    { NULL,                   NULL,                 "hidden",               scratchpad_mask,     0,            1,           -1 },
  };
  
  /* layout(s) */
@@ -163,7 +160,7 @@ index 1c0b587..348c0f1 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -55,61 +142,107 @@ static const Layout layouts[] = {
+@@ -55,61 +140,107 @@ static const Layout layouts[] = {
  #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
  
  /* commands */

@@ -1,9 +1,9 @@
 diff --git a/fibonacci.c b/fibonacci.c
 new file mode 100644
-index 0000000..c293698
+index 0000000..c4f834e
 --- /dev/null
 +++ b/fibonacci.c
-@@ -0,0 +1,74 @@
+@@ -0,0 +1,75 @@
 +static void
 +fibonacci(Monitor *m, int s)
 +{
@@ -16,7 +16,8 @@ index 0000000..c293698
 +		return;
 +	if (n == 1) {
 +		c = nexttiled(m->clients);
-+		resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, 0);
++		/* resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, 0); */
++        resize(c, m->wx + m->gappx, m->wy + m->gappx, m->ww - (2 * c->bw) - m->gappx * 2, m->wh - (2 * c->bw) - m->gappx * 2, 0);
 +		return;
 +	}
 +
