@@ -443,7 +443,7 @@ index 0000000..7890500
 +	/* U+2571 - U+2573: unsupported (diagonals) */
 +};
 diff --git a/config.def.h b/config.def.h
-index 6f05dce..e70fc2b 100644
+index 6f05dce..ed95860 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -5,8 +5,8 @@
@@ -578,7 +578,7 @@ index 6f05dce..e70fc2b 100644
  	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
  	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
  	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
-+	{ XK_ANY_MOD,           XK_F6,          swapcolors,     {.i =  0} },
++	{ TERMMOD,              XK_F6,          swapcolors,     {.i =  0} },
 +	{ TERMMOD,              XK_Return,      newterm,        {.i =  0} },
 +	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
 +	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },

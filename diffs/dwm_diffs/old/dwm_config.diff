@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..1f1e1e3 100644
+index 1c0b587..1311dc1 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -2,49 +2,134 @@
@@ -93,7 +93,7 @@ index 1c0b587..1f1e1e3 100644
 +    { "Gcolor3",              NULL,                 "Color picker",               0,             0,            1,           -1 },
 +    { "Gnome-calculator",     NULL,                 "Calculator",                 0,             0,            1,           -1 },
 +    { "Hexchat",              NULL,                 "Network List - HexChat",     1 << 5,        1,            1,           -1 },
-+    { "SimpleScreenRecorder", NULL,                 NULL,                         0,             0,            1,           -1 },
++    { "SimpleScreenRecorder", NULL,                 NULL,                         0,             1,            1,           -1 },
 +    { "Soffice",              NULL,                 "Print",                      0,             1,            1,           -1 },
 +    { "Chrome",               NULL,                 "Save File",                  2,             0,            1,           -1 },
 +    { "Barrier",              NULL,                 NULL,                         1 << 4,        0,            1,           -1 },

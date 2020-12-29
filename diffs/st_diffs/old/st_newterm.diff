@@ -141,7 +141,7 @@ index d80eb47..c356c39 100644
  © 2014-2017 Quentin Rameau <quinq at fifth dot space>
  © 2009-2012 Aurélien APTEL <aurelien dot aptel at gmail dot com>
 diff --git a/config.def.h b/config.def.h
-index 6f05dce..04deeb2 100644
+index 6f05dce..28ec7ea 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -43,18 +43,9 @@ static unsigned int tripleclicktimeout = 600;
@@ -176,7 +176,7 @@ index 6f05dce..04deeb2 100644
  	{ XK_ANY_MOD,           Button5, ttysend,        {.s = "\005"} },
  };
  
-@@ -199,6 +188,10 @@ static Shortcut shortcuts[] = {
+@@ -199,6 +188,11 @@ static Shortcut shortcuts[] = {
  	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
  	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
  	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
@@ -184,6 +184,7 @@ index 6f05dce..04deeb2 100644
 +	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
 +	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
 +	{ MODKEY,               XK_o,           opencopied,     {.v = "xdg-open"} },
++	{ TERMMOD,              XK_X,           invert,         { }       },
  };
  
  /*
@@ -856,10 +857,77 @@ index 8201ad6..e2abc98 100644
  	Tc,
  	Ms=\E]52;%p1%s;%p2%s\007,
 diff --git a/x.c b/x.c
-index 210f184..13ccb5e 100644
+index 210f184..e7127f4 100644
 --- a/x.c
 +++ b/x.c
-@@ -1526,9 +1526,8 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
+@@ -58,6 +58,7 @@ static void selpaste(const Arg *);
+ static void zoom(const Arg *);
+ static void zoomabs(const Arg *);
+ static void zoomreset(const Arg *);
++static void invert(const Arg *);
+ static void ttysend(const Arg *);
+ 
+ /* config.h for applying patches and the configuration. */
+@@ -252,8 +253,28 @@ static char *opt_line  = NULL;
+ static char *opt_name  = NULL;
+ static char *opt_title = NULL;
+ 
++static int invertcolors = 0;
+ static int oldbutton = 3; /* button event on startup: 3 = release */
+ 
++void
++invert(const Arg *dummy)
++{
++	invertcolors = !invertcolors;
++	redraw();
++}
++
++Color
++invertedcolor(Color *clr) {
++	XRenderColor rc;
++	Color inverted;
++	rc.red = ~clr->color.red;
++	rc.green = ~clr->color.green;
++	rc.blue = ~clr->color.blue;
++	rc.alpha = clr->color.alpha;
++	XftColorAllocValue(xw.dpy, xw.vis, xw.cmap, &rc, &inverted);
++	return inverted;
++}
++
+ void
+ clipcopy(const Arg *dummy)
+ {
+@@ -820,9 +841,12 @@ xsetcolorname(int x, const char *name)
+ void
+ xclear(int x1, int y1, int x2, int y2)
+ {
+-	XftDrawRect(xw.draw,
+-			&dc.col[IS_SET(MODE_REVERSE)? defaultfg : defaultbg],
+-			x1, y1, x2-x1, y2-y1);
++	Color c;
++	c = dc.col[IS_SET(MODE_REVERSE)? defaultfg : defaultbg];
++	if (invertcolors) {
++		c = invertedcolor(&c);
++	}
++	XftDrawRect(xw.draw, &c, x1, y1, x2-x1, y2-y1);
+ }
+ 
+ void
+@@ -1431,6 +1455,13 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
+ 	if (base.mode & ATTR_INVISIBLE)
+ 		fg = bg;
+ 
++	if (invertcolors) {
++		revfg = invertedcolor(fg);
++		revbg = invertedcolor(bg);
++		fg = &revfg;
++		bg = &revbg;
++	}
++
+ 	/* Intelligent cleaning up of the borders. */
+ 	if (x == 0) {
+ 		xclear(0, (y == 0)? 0 : winy, borderpx,
+@@ -1526,9 +1557,8 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
  	/* draw the new one */
  	if (IS_SET(MODE_FOCUSED)) {
  		switch (win.cursor) {
@@ -871,7 +939,7 @@ index 210f184..13ccb5e 100644
  		case 0: /* Blinking Block */
  		case 1: /* Blinking Block (Default) */
  		case 2: /* Steady Block */
-@@ -1690,7 +1689,8 @@ xsetmode(int set, unsigned int flags)
+@@ -1690,7 +1720,8 @@ xsetmode(int set, unsigned int flags)
  int
  xsetcursor(int cursor)
  {
@@ -881,7 +949,7 @@ index 210f184..13ccb5e 100644
  		return 1;
  	win.cursor = cursor;
  	return 0;
-@@ -1867,9 +1867,10 @@ run(void)
+@@ -1867,9 +1898,10 @@ run(void)
  	XEvent ev;
  	int w = win.w, h = win.h;
  	fd_set rfd;
@@ -895,7 +963,7 @@ index 210f184..13ccb5e 100644
  
  	/* Waiting for window mapping */
  	do {
-@@ -1890,77 +1891,82 @@ run(void)
+@@ -1890,77 +1922,82 @@ run(void)
  	ttyfd = ttynew(opt_line, shell, opt_io, opt_cmd);
  	cresize(w, h);
  
@@ -1032,7 +1100,7 @@ index 210f184..13ccb5e 100644
  	}
  }
  
-@@ -1982,7 +1988,7 @@ main(int argc, char *argv[])
+@@ -1982,7 +2019,7 @@ main(int argc, char *argv[])
  {
  	xw.l = xw.t = 0;
  	xw.isfixed = False;
@@ -1041,7 +1109,7 @@ index 210f184..13ccb5e 100644
  
  	ARGBEGIN {
  	case 'a':
-@@ -2047,3 +2053,26 @@ run:
+@@ -2047,3 +2084,26 @@ run:
  
  	return 0;
  }
