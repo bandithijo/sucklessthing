@@ -1,8 +1,8 @@
 diff --git a/config.def.h b/config.def.h
-index defa426..b136fff 100644
+index defa426..f6f0882 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -1,17 +1,17 @@
+@@ -1,15 +1,15 @@
  /* See LICENSE file for copyright and license details. */
  
  /* appearance */
@@ -16,20 +16,17 @@ index defa426..b136fff 100644
 -static const char before[]      = "<";
 -static const char after[]       = ">";
 +static const char font[]        = "JetBrainsMono Nerd Font Bandit:size=8";
-+static const char* normbgcolor  = "#303030";
-+static const char* normfgcolor  = "#eeeeee";
-+static const char* selbgcolor   = "#1e1e1e";
-+static const char* selfgcolor   = "#eeeeee";
-+static const char* urgbgcolor   = "#ffffff";
-+static const char* urgfgcolor   = "#ff0000";
++static const char* normbgcolor  = "#073642";
++static const char* normfgcolor  = "#93A1A1";
++static const char* selbgcolor   = "#002B36";
++static const char* selfgcolor   = "#586E75";
++static const char* urgbgcolor   = "#DC322F";
++static const char* urgfgcolor   = "#EEE8D5";
 +static const char before[]      = "";
 +static const char after[]       = "";
  static const char titletrim[]   = "...";
--static const int  tabwidth      = 200;
-+static const int  tabwidth      = 100;
+ static const int  tabwidth      = 200;
  static const Bool foreground    = True;
- static       Bool urgentswitch  = False;
- 
 @@ -33,7 +33,7 @@ static Bool npisrelative  = False;
          } \
  }

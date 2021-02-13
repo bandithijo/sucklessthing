@@ -1,8 +1,8 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..1311dc1 100644
+index 1c0b587..cd72c67 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -2,49 +2,134 @@
+@@ -2,49 +2,136 @@
  
  /* appearance */
  static const unsigned int borderpx  = 1;        /* border pixel of windows */
@@ -60,6 +60,7 @@ index 1c0b587..1311dc1 100644
 +    /* Non FLoating */
 +    { "Gimp-2.10",            NULL,                 NULL,                         0,             0,            0,           -1 },
 +    { "firefox",              NULL,                 NULL,                         2,             0,            0,           -1 },
++    { "qutebrowser",          NULL,                 NULL,                         2,             0,            0,           -1 },
 +    { "Chromium-browser",     NULL,                 NULL,                         2,             0,            0,           -1 },
 +    { "Google-chrome",        NULL,                 NULL,                         2,             0,            0,           -1 },
 +    { "TelegramDesktop",      NULL,                 NULL,                         1 << 7,        0,            0,           -1 },
@@ -128,6 +129,7 @@ index 1c0b587..1311dc1 100644
 +    { "Colorgrab",            NULL,                 NULL,                         0,             0,            1,           -1 },
 +    { "Pidgin",               NULL,                 NULL,                         0,             0,            1,           -1 },
 +    { "Pidgin",               NULL,                 "Buddy List",                 0,             0,            1,           -1 },
++    { "Winconn",              NULL,                 "WinConn",                    0,             1,            1,           -1 },
 +    /* class                  instance              title                         tags mask      iscentered    isfloating   monitor */
 +    /* Scratchpad */
 +    { NULL,                   NULL,                 "hidden",               scratchpad_mask,     0,            1,           -1 },
@@ -160,7 +162,7 @@ index 1c0b587..1311dc1 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -55,61 +140,107 @@ static const Layout layouts[] = {
+@@ -55,61 +142,107 @@ static const Layout layouts[] = {
  #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
  
  /* commands */

@@ -208,7 +208,7 @@ index c070a4a..0cbb002 100644
  # compiler and linker
  # CC = c99
 diff --git a/st.c b/st.c
-index 76b7e0d..641edc0 100644
+index abbbe4b..641edc0 100644
 --- a/st.c
 +++ b/st.c
 @@ -35,13 +35,17 @@
@@ -585,7 +585,21 @@ index 76b7e0d..641edc0 100644
  					term.c.y+1, term.c.x+1);
  			ttywrite(buf, len, 0);
  		}
-@@ -1859,7 +1926,7 @@ strhandle(void)
+@@ -1853,21 +1920,13 @@ strhandle(void)
+ 	case ']': /* OSC -- Operating System Command */
+ 		switch (par) {
+ 		case 0:
+-			if (narg > 1) {
+-				xsettitle(strescseq.args[1]);
+-				xseticontitle(strescseq.args[1]);
+-			}
+-			return;
+ 		case 1:
+-			if (narg > 1)
+-				xseticontitle(strescseq.args[1]);
+-			return;
+ 		case 2:
+ 			if (narg > 1)
  				xsettitle(strescseq.args[1]);
  			return;
  		case 52:
@@ -594,7 +608,7 @@ index 76b7e0d..641edc0 100644
  				dec = base64dec(strescseq.args[2]);
  				if (dec) {
  					xsetsel(dec);
-@@ -1895,6 +1962,7 @@ strhandle(void)
+@@ -1903,6 +1962,7 @@ strhandle(void)
  		xsettitle(strescseq.args[0]);
  		return;
  	case 'P': /* DCS -- Device Control String */
@@ -602,7 +616,7 @@ index 76b7e0d..641edc0 100644
  	case '_': /* APC -- Application Program Command */
  	case '^': /* PM -- Privacy Message */
  		return;
-@@ -2017,7 +2085,7 @@ tdumpline(int n)
+@@ -2025,7 +2085,7 @@ tdumpline(int n)
  	bp = &term.line[n][0];
  	end = &bp[MIN(tlinelen(n), term.col) - 1];
  	if (bp != end || bp->u != ' ') {
@@ -611,7 +625,7 @@ index 76b7e0d..641edc0 100644
  			tprinter(buf, utf8encode(bp->u, buf));
  	}
  	tprinter("\n", 1);
-@@ -2088,9 +2156,12 @@ tdectest(char c)
+@@ -2096,9 +2156,12 @@ tdectest(char c)
  void
  tstrsequence(uchar c)
  {
@@ -624,7 +638,7 @@ index 76b7e0d..641edc0 100644
  		break;
  	case 0x9f:   /* APC -- Application Program Command */
  		c = '_';
-@@ -2102,7 +2173,6 @@ tstrsequence(uchar c)
+@@ -2110,7 +2173,6 @@ tstrsequence(uchar c)
  		c = ']';
  		break;
  	}
@@ -632,7 +646,7 @@ index 76b7e0d..641edc0 100644
  	strescseq.type = c;
  	term.esc |= ESC_STR;
  }
-@@ -2145,7 +2215,6 @@ tcontrolcode(uchar ascii)
+@@ -2153,7 +2215,6 @@ tcontrolcode(uchar ascii)
  		return;
  	case '\032': /* SUB */
  		tsetchar('?', &term.c.attr, term.c.x, term.c.y);
@@ -640,7 +654,7 @@ index 76b7e0d..641edc0 100644
  	case '\030': /* CAN */
  		csireset();
  		break;
-@@ -2241,7 +2310,7 @@ eschandle(uchar ascii)
+@@ -2249,7 +2310,7 @@ eschandle(uchar ascii)
  		return 0;
  	case 'D': /* IND -- Linefeed */
  		if (term.c.y == term.bot) {
@@ -649,7 +663,7 @@ index 76b7e0d..641edc0 100644
  		} else {
  			tmoveto(term.c.x, term.c.y+1);
  		}
-@@ -2254,7 +2323,7 @@ eschandle(uchar ascii)
+@@ -2262,7 +2323,7 @@ eschandle(uchar ascii)
  		break;
  	case 'M': /* RI -- Reverse index */
  		if (term.c.y == term.top) {
@@ -658,7 +672,7 @@ index 76b7e0d..641edc0 100644
  		} else {
  			tmoveto(term.c.x, term.c.y-1);
  		}
-@@ -2300,13 +2369,15 @@ tputc(Rune u)
+@@ -2308,13 +2369,15 @@ tputc(Rune u)
  	Glyph *gp;
  
  	control = ISCONTROL(u);
@@ -676,7 +690,7 @@ index 76b7e0d..641edc0 100644
  	}
  
  	if (IS_SET(MODE_PRINT))
-@@ -2321,11 +2392,23 @@ tputc(Rune u)
+@@ -2329,11 +2392,23 @@ tputc(Rune u)
  	if (term.esc & ESC_STR) {
  		if (u == '\a' || u == 030 || u == 032 || u == 033 ||
  		   ISCONTROLC1(u)) {
@@ -701,7 +715,7 @@ index 76b7e0d..641edc0 100644
  		if (strescseq.len+len >= strescseq.siz) {
  			/*
  			 * Here is a bug in terminals. If the user never sends
-@@ -2362,8 +2445,6 @@ check_control_code:
+@@ -2370,8 +2445,6 @@ check_control_code:
  		/*
  		 * control codes are not shown ever
  		 */
@@ -710,7 +724,7 @@ index 76b7e0d..641edc0 100644
  		return;
  	} else if (term.esc & ESC_START) {
  		if (term.esc & ESC_CSI) {
-@@ -2394,7 +2475,7 @@ check_control_code:
+@@ -2402,7 +2475,7 @@ check_control_code:
  		 */
  		return;
  	}
@@ -719,7 +733,7 @@ index 76b7e0d..641edc0 100644
  		selclear();
  
  	gp = &term.line[term.c.y][term.c.x];
-@@ -2413,7 +2494,6 @@ check_control_code:
+@@ -2421,7 +2494,6 @@ check_control_code:
  	}
  
  	tsetchar(u, &term.c.attr, term.c.x, term.c.y);
@@ -727,7 +741,7 @@ index 76b7e0d..641edc0 100644
  
  	if (width == 2) {
  		gp->mode |= ATTR_WIDE;
-@@ -2437,7 +2517,7 @@ twrite(const char *buf, int buflen, int show_ctrl)
+@@ -2445,7 +2517,7 @@ twrite(const char *buf, int buflen, int show_ctrl)
  	int n;
  
  	for (n = 0; n < buflen; n += charsize) {
@@ -736,7 +750,7 @@ index 76b7e0d..641edc0 100644
  			/* process a complete utf8 char */
  			charsize = utf8decode(buf + n, &u, buflen - n);
  			if (charsize == 0)
-@@ -2464,7 +2544,7 @@ twrite(const char *buf, int buflen, int show_ctrl)
+@@ -2472,7 +2544,7 @@ twrite(const char *buf, int buflen, int show_ctrl)
  void
  tresize(int col, int row)
  {
@@ -745,7 +759,7 @@ index 76b7e0d..641edc0 100644
  	int minrow = MIN(row, term.row);
  	int mincol = MIN(col, term.col);
  	int *bp;
-@@ -2501,6 +2581,14 @@ tresize(int col, int row)
+@@ -2509,6 +2581,14 @@ tresize(int col, int row)
  	term.dirty = xrealloc(term.dirty, row * sizeof(*term.dirty));
  	term.tabs = xrealloc(term.tabs, col * sizeof(*term.tabs));
  
@@ -760,7 +774,7 @@ index 76b7e0d..641edc0 100644
  	/* resize each row to new width, zero-pad if needed */
  	for (i = 0; i < minrow; i++) {
  		term.line[i] = xrealloc(term.line[i], col * sizeof(Glyph));
-@@ -2559,7 +2647,7 @@ drawregion(int x1, int y1, int x2, int y2)
+@@ -2567,7 +2647,7 @@ drawregion(int x1, int y1, int x2, int y2)
  			continue;
  
  		term.dirty[y] = 0;
@@ -769,7 +783,7 @@ index 76b7e0d..641edc0 100644
  	}
  }
  
-@@ -2580,8 +2668,9 @@ draw(void)
+@@ -2588,8 +2668,9 @@ draw(void)
  		cx--;
  
  	drawregion(0, 0, term.col, term.row);
@@ -823,11 +837,40 @@ index 8201ad6..e2abc98 100644
  # tmux extensions, see TERMINFO EXTENSIONS in tmux(1)
  	Tc,
  	Ms=\E]52;%p1%s;%p2%s\007,
+diff --git a/win.h b/win.h
+index e6e4369..a6ef1b9 100644
+--- a/win.h
++++ b/win.h
+@@ -30,7 +30,6 @@ void xdrawline(Line, int, int, int);
+ void xfinishdraw(void);
+ void xloadcols(void);
+ int xsetcolorname(int, const char *);
+-void xseticontitle(char *);
+ void xsettitle(char *);
+ int xsetcursor(int);
+ void xsetmode(int, unsigned int);
 diff --git a/x.c b/x.c
-index 210f184..e5f1737 100644
+index 120e495..e5f1737 100644
 --- a/x.c
 +++ b/x.c
-@@ -1526,9 +1526,8 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
+@@ -93,7 +93,7 @@ typedef struct {
+ 	Window win;
+ 	Drawable buf;
+ 	GlyphFontSpec *specbuf; /* font spec buffer used for rendering */
+-	Atom xembed, wmdeletewin, netwmname, netwmiconname, netwmpid;
++	Atom xembed, wmdeletewin, netwmname, netwmpid;
+ 	struct {
+ 		XIM xim;
+ 		XIC xic;
+@@ -1186,7 +1186,6 @@ xinit(int cols, int rows)
+ 	xw.xembed = XInternAtom(xw.dpy, "_XEMBED", False);
+ 	xw.wmdeletewin = XInternAtom(xw.dpy, "WM_DELETE_WINDOW", False);
+ 	xw.netwmname = XInternAtom(xw.dpy, "_NET_WM_NAME", False);
+-	xw.netwmiconname = XInternAtom(xw.dpy, "_NET_WM_ICON_NAME", False);
+ 	XSetWMProtocols(xw.dpy, xw.win, &xw.wmdeletewin, 1);
+ 
+ 	xw.netwmpid = XInternAtom(xw.dpy, "_NET_WM_PID", False);
+@@ -1527,9 +1526,8 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
  	/* draw the new one */
  	if (IS_SET(MODE_FOCUSED)) {
  		switch (win.cursor) {
@@ -839,7 +882,27 @@ index 210f184..e5f1737 100644
  		case 0: /* Blinking Block */
  		case 1: /* Blinking Block (Default) */
  		case 2: /* Steady Block */
-@@ -1690,7 +1689,8 @@ xsetmode(int set, unsigned int flags)
+@@ -1580,19 +1578,6 @@ xsetenv(void)
+ 	setenv("WINDOWID", buf, 1);
+ }
+ 
+-void
+-xseticontitle(char *p)
+-{
+-	XTextProperty prop;
+-	DEFAULT(p, opt_title);
+-
+-	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
+-			&prop);
+-	XSetWMIconName(xw.dpy, xw.win, &prop);
+-	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmiconname);
+-	XFree(prop.value);
+-}
+-
+ void
+ xsettitle(char *p)
+ {
+@@ -1704,7 +1689,8 @@ xsetmode(int set, unsigned int flags)
  int
  xsetcursor(int cursor)
  {
@@ -849,7 +912,7 @@ index 210f184..e5f1737 100644
  		return 1;
  	win.cursor = cursor;
  	return 0;
-@@ -1867,9 +1867,10 @@ run(void)
+@@ -1881,9 +1867,10 @@ run(void)
  	XEvent ev;
  	int w = win.w, h = win.h;
  	fd_set rfd;
@@ -863,7 +926,7 @@ index 210f184..e5f1737 100644
  
  	/* Waiting for window mapping */
  	do {
-@@ -1890,77 +1891,82 @@ run(void)
+@@ -1904,77 +1891,82 @@ run(void)
  	ttyfd = ttynew(opt_line, shell, opt_io, opt_cmd);
  	cresize(w, h);
  
@@ -1000,7 +1063,7 @@ index 210f184..e5f1737 100644
  	}
  }
  
-@@ -1982,7 +1988,7 @@ main(int argc, char *argv[])
+@@ -1996,7 +1988,7 @@ main(int argc, char *argv[])
  {
  	xw.l = xw.t = 0;
  	xw.isfixed = False;

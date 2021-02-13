@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 9981ca3..8dd604d 100644
+index 9981ca3..6ed5a87 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -48,10 +48,10 @@ static const bool ALPHA_LAYER = false;
@@ -11,7 +11,7 @@ index 9981ca3..8dd604d 100644
  
  /* thumbnail size at startup, index into thumb_sizes[]: */
 -static const int THUMB_SIZE = 3;
-+static const int THUMB_SIZE = 5;
++static const int THUMB_SIZE = 4;
  
  #endif
  #ifdef _MAPPINGS_CONFIG

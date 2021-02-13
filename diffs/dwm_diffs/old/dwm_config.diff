@@ -1,8 +1,8 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..1311dc1 100644
+index 1c0b587..de224d5 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -2,49 +2,134 @@
+@@ -2,49 +2,135 @@
  
  /* appearance */
  static const unsigned int borderpx  = 1;        /* border pixel of windows */
@@ -128,6 +128,7 @@ index 1c0b587..1311dc1 100644
 +    { "Colorgrab",            NULL,                 NULL,                         0,             0,            1,           -1 },
 +    { "Pidgin",               NULL,                 NULL,                         0,             0,            1,           -1 },
 +    { "Pidgin",               NULL,                 "Buddy List",                 0,             0,            1,           -1 },
++    { "Winconn",              NULL,                 "WinConn",                    0,             1,            1,           -1 },
 +    /* class                  instance              title                         tags mask      iscentered    isfloating   monitor */
 +    /* Scratchpad */
 +    { NULL,                   NULL,                 "hidden",               scratchpad_mask,     0,            1,           -1 },
@@ -160,7 +161,7 @@ index 1c0b587..1311dc1 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -55,61 +140,107 @@ static const Layout layouts[] = {
+@@ -55,61 +141,107 @@ static const Layout layouts[] = {
  #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
  
  /* commands */

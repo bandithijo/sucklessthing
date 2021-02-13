@@ -67,6 +67,7 @@ st_branches = [
   'alpha',                # : boxdraw
   'ligatures-boxdraw-alpha-scrollback', # : alpha
   'solarized-both',       # : ligatures-boxdraw-alpha-scrollback^, newterm^ <-
+  'w3m'
 ]
 
 # For slock

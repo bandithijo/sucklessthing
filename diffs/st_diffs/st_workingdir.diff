@@ -31,10 +31,51 @@ index 39120b4..b82beb3 100644
  .BI \-f " font"
  defines the
  .I font
+diff --git a/st.c b/st.c
+index abbbe4b..76b7e0d 100644
+--- a/st.c
++++ b/st.c
+@@ -1853,15 +1853,7 @@ strhandle(void)
+ 	case ']': /* OSC -- Operating System Command */
+ 		switch (par) {
+ 		case 0:
+-			if (narg > 1) {
+-				xsettitle(strescseq.args[1]);
+-				xseticontitle(strescseq.args[1]);
+-			}
+-			return;
+ 		case 1:
+-			if (narg > 1)
+-				xseticontitle(strescseq.args[1]);
+-			return;
+ 		case 2:
+ 			if (narg > 1)
+ 				xsettitle(strescseq.args[1]);
+diff --git a/win.h b/win.h
+index e6e4369..a6ef1b9 100644
+--- a/win.h
++++ b/win.h
+@@ -30,7 +30,6 @@ void xdrawline(Line, int, int, int);
+ void xfinishdraw(void);
+ void xloadcols(void);
+ int xsetcolorname(int, const char *);
+-void xseticontitle(char *);
+ void xsettitle(char *);
+ int xsetcursor(int);
+ void xsetmode(int, unsigned int);
 diff --git a/x.c b/x.c
-index 210f184..22fba07 100644
+index 120e495..22fba07 100644
 --- a/x.c
 +++ b/x.c
+@@ -93,7 +93,7 @@ typedef struct {
+ 	Window win;
+ 	Drawable buf;
+ 	GlyphFontSpec *specbuf; /* font spec buffer used for rendering */
+-	Atom xembed, wmdeletewin, netwmname, netwmiconname, netwmpid;
++	Atom xembed, wmdeletewin, netwmname, netwmpid;
+ 	struct {
+ 		XIM xim;
+ 		XIC xic;
 @@ -251,6 +251,7 @@ static char *opt_io    = NULL;
  static char *opt_line  = NULL;
  static char *opt_name  = NULL;
@@ -43,7 +84,35 @@ index 210f184..22fba07 100644
  
  static int oldbutton = 3; /* button event on startup: 3 = release */
  
-@@ -1967,12 +1968,12 @@ run(void)
+@@ -1186,7 +1187,6 @@ xinit(int cols, int rows)
+ 	xw.xembed = XInternAtom(xw.dpy, "_XEMBED", False);
+ 	xw.wmdeletewin = XInternAtom(xw.dpy, "WM_DELETE_WINDOW", False);
+ 	xw.netwmname = XInternAtom(xw.dpy, "_NET_WM_NAME", False);
+-	xw.netwmiconname = XInternAtom(xw.dpy, "_NET_WM_ICON_NAME", False);
+ 	XSetWMProtocols(xw.dpy, xw.win, &xw.wmdeletewin, 1);
+ 
+ 	xw.netwmpid = XInternAtom(xw.dpy, "_NET_WM_PID", False);
+@@ -1580,19 +1580,6 @@ xsetenv(void)
+ 	setenv("WINDOWID", buf, 1);
+ }
+ 
+-void
+-xseticontitle(char *p)
+-{
+-	XTextProperty prop;
+-	DEFAULT(p, opt_title);
+-
+-	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
+-			&prop);
+-	XSetWMIconName(xw.dpy, xw.win, &prop);
+-	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmiconname);
+-	XFree(prop.value);
+-}
+-
+ void
+ xsettitle(char *p)
+ {
+@@ -1981,12 +1968,12 @@ run(void)
  void
  usage(void)
  {
@@ -60,7 +129,7 @@ index 210f184..22fba07 100644
  	    "          [-T title] [-t title] [-w windowid] -l line"
  	    " [stty_args ...]\n", argv0, argv0);
  }
-@@ -2024,6 +2025,9 @@ main(int argc, char *argv[])
+@@ -2038,6 +2025,9 @@ main(int argc, char *argv[])
  	case 'v':
  		die("%s " VERSION "\n", argv0);
  		break;
@@ -70,7 +139,7 @@ index 210f184..22fba07 100644
  	default:
  		usage();
  	} ARGEND;
-@@ -2043,6 +2047,7 @@ run:
+@@ -2057,6 +2047,7 @@ run:
  	xinit(cols, rows);
  	xsetenv();
  	selinit();
