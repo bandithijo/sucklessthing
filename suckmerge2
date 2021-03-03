@@ -55,7 +55,7 @@ dwm_branches = [
   'ipc',               # 40* : pertag, cfacts-dragcfact
   'ewmhtags',          # 42  : ipc
   'canfocusfloating',  # 43* : center^3, actualfullscreen^1
-  'decorhints'         # 44* <-
+  'decorhints'         # 44* : ipc, ewmhtags, center <-
 ]
 
 # For st
