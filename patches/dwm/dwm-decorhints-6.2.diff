@@ -23,7 +23,7 @@ index 1c0b587..2a32635 100644
  static const int nmaster     = 1;    /* number of clients in master area */
  static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
 +static const int decorhints  = 1;    /* 1 means respect decoration hints */
- 
+
  static const Layout layouts[] = {
  	/* symbol     arrange function */
 diff --git a/dwm.c b/dwm.c
@@ -33,7 +33,7 @@ index 4465af1..95873c7 100644
 @@ -57,6 +57,13 @@
  #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
  #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
- 
+
 +#define MWM_HINTS_FLAGS_FIELD       0
 +#define MWM_HINTS_DECORATIONS_FIELD 2
 +#define MWM_HINTS_DECORATIONS       (1 << 1)
@@ -77,7 +77,7 @@ index 4465af1..95873c7 100644
 +			updatemotifhints(c);
  	}
  }
- 
+
 @@ -1562,6 +1573,7 @@ setup(void)
  	netatom[NetWMWindowType] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
  	netatom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
@@ -89,7 +89,7 @@ index 4465af1..95873c7 100644
 @@ -1925,6 +1937,39 @@ updategeom(void)
  	return dirty;
  }
- 
+
 +void
 +updatemotifhints(Client *c)
 +{
@@ -126,6 +126,6 @@ index 4465af1..95873c7 100644
  void
  updatenumlockmask(void)
  {
--- 
+--
 2.26.2
 

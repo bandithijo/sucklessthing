@@ -54,7 +54,8 @@ dwm_branches = [
   'dualstatus',        # 39* : statusallmons
   'ipc',               # 40* : pertag, cfacts-dragcfact
   'ewmhtags',          # 42  : ipc
-  'canfocusfloating'   # 43* : center^3, actualfullscreen^1 <-
+  'canfocusfloating',  # 43* : center^3, actualfullscreen^1
+  'decorhints'         # 44* <-
 ]
 
 # For st
