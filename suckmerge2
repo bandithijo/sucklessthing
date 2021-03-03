@@ -53,7 +53,8 @@ dwm_branches = [
   'bar-height',        # 41*
   'dualstatus',        # 39* : statusallmons
   'ipc',               # 40* : pertag, cfacts-dragcfact
-  'ewmhtags',          # 42  : ipc <-
+  'ewmhtags',          # 42  : ipc
+  'canfocusfloating'   # 43* : center^3, actualfullscreen^1 <-
 ]
 
 # For st
