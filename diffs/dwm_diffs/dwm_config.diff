@@ -1,8 +1,8 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..fc20417 100644
+index 1c0b587..a4fc20d 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -2,49 +2,138 @@
+@@ -2,49 +2,139 @@
  
  /* appearance */
  static const unsigned int borderpx  = 1;        /* border pixel of windows */
@@ -27,6 +27,7 @@ index 1c0b587..fc20417 100644
 +static const int focusonwheel       = 0;
 +static const int maxnmaster         = 4;        /* define limit number of nmaster */
 +static const int warpcursorposition = 0;        /* 0 means center, 1 means bottom right, 2 means bottom center */
++static const int decorhints         = 1;        /* 1 means respect decoration hints */
 +static const char *fonts[]          = { "JetBrainsMono Nerd Font Bandit:style=Medium:size=8",
 +                                        "Font Awesome 5 Brands:style=Regular:size=8",
 +                                        "octicons:style=Medium:size=8" };
@@ -164,7 +165,7 @@ index 1c0b587..fc20417 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -55,61 +144,128 @@ static const Layout layouts[] = {
+@@ -55,61 +145,128 @@ static const Layout layouts[] = {
  #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
  
  /* commands */
