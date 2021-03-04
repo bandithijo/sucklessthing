@@ -1,5 +1,17 @@
+diff --git a/config.def.h b/config.def.h
+index 7054c06..9b5d5b8 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -76,6 +76,7 @@ static Key keys[] = {
+ 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
+ 	{ MODKEY,                       XK_space,  setlayout,      {0} },
+ 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
++	{ MODKEY,                       XK_s,      togglesticky,   {0} },
+ 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
+ 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
+ 	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
 diff --git a/dwm.c b/dwm.c
-index 664c527..ef0c3b8 100644
+index 0362114..0ef5c7f 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -49,7 +49,7 @@
@@ -20,16 +32,28 @@ index 664c527..ef0c3b8 100644
  	Client *next;
  	Client *snext;
  	Monitor *mon;
-@@ -212,6 +212,8 @@ static void tagmon(const Arg *arg);
+@@ -211,6 +211,7 @@ static void tagmon(const Arg *arg);
  static void tile(Monitor *);
  static void togglebar(const Arg *arg);
  static void togglefloating(const Arg *arg);
-+static void togglefullscr(const Arg *arg);
 +static void togglesticky(const Arg *arg);
  static void toggletag(const Arg *arg);
  static void toggleview(const Arg *arg);
  static void unfocus(Client *c, int setfocus);
-@@ -1357,6 +1359,17 @@ restack(Monitor *m)
+@@ -801,8 +802,11 @@ drawbar(Monitor *m)
+ 		if (m->sel) {
+ 			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
+ 			drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
+-			if (m->sel->isfloating)
++			if (m->sel->isfloating) {
+ 				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
++				if (m->sel->isalwaysontop)
++					drw_rect(drw, x + boxs, bh - boxw, boxw, boxw, 0, 0);
++			}
+ 		} else {
+ 			drw_setscheme(drw, scheme[SchemeNorm]);
+ 			drw_rect(drw, x, 0, w, bh, 1, 1);
+@@ -1430,6 +1434,17 @@ restack(Monitor *m)
  		return;
  	if (m->sel->isfloating || !m->lt[m->sellt]->arrange)
  		XRaiseWindow(dpy, m->sel->win);
@@ -47,22 +71,18 @@ index 664c527..ef0c3b8 100644
  	if (m->lt[m->sellt]->arrange) {
  		wc.stack_mode = Below;
  		wc.sibling = m->barwin;
-@@ -1719,9 +1732,43 @@ togglefloating(const Arg *arg)
+@@ -1800,6 +1815,32 @@ togglefloating(const Arg *arg)
  	if (selmon->sel->isfloating)
  		resize(selmon->sel, selmon->sel->x, selmon->sel->y,
  			selmon->sel->w, selmon->sel->h, 0);
 +	else
 +		selmon->sel->isalwaysontop = 0; /* disabled, turn this off too */
- 	arrange(selmon);
+	arrange(selmon);
+ }
+
+@@ -1713,6 +1714,15 @@ togglefloating(const Arg *arg)
  }
  
-+void
-+togglefullscr(const Arg *arg)
-+{
-+  if(selmon->sel)
-+    setfullscreen(selmon->sel, !selmon->sel->isfullscreen);
-+}
-+
 +void
 +togglesticky(const Arg *arg)
 +{
@@ -91,3 +111,4 @@ index 664c527..ef0c3b8 100644
  void
  toggletag(const Arg *arg)
  {
+ 	unsigned int newtags;

@@ -37,7 +37,7 @@ dwm_branches = [
   'scratchpad',        # 13*
   'zoomswap',          # 4
   'autostart',         # 26  : zoomswap
-  'savefloats',        # 28
+  'savefloats',        # 28  : center
   'center',            # 29  : savefloats, wasfocus^1
   'ru-bottomstack',    # 18*
   'statusallmons',     # 12
