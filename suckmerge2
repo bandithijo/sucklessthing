@@ -19,43 +19,43 @@
 # For dwm
 dwm_branches = [
   'config',            # 1*  : nodmenu
-  'sticky',            # 19*
-  'wasfocus',          # 20  : sticky
-  'ru-gaps',           # 17* : cfacts, noborder
-  'cfacts',            # 15*
-  'cfacts-dragcfact',  # 16* : cfacts
-  'actualfullscreen',  # 13* : sticky
+  'sticky',            # 17*
+  'wasfocus',          # 18  : sticky
+  'ru-gaps',           # 15* : cfacts, noborder
+  'cfacts',            # 13*
+  'cfacts-dragcfact',  # 14* : cfacts
+  'actualfullscreen',  # 12* : sticky
   'xrdb',              # 3*
   'pertag',            # 2
-  'noborder',          # 11
-  'movestack',         # 8*
-  'moveresize',        # 9*
-  'resizecorners',     # 6
-  'focusonnetactive',  # 7
-  'focusonclick',      # 24* : moveresize
-  'fixborders',        # 25
-  'scratchpad',        # 13*
+  'noborder',          # 9
+  'movestack',         # 7*
+  'moveresize',        # 8*
+  'resizecorners',     # 5
+  'focusonnetactive',  # 6
+  'focusonclick',      # 19* : moveresize
+  'fixborders',        # 20
+  'scratchpad',        # 11*
   'zoomswap',          # 4
-  'autostart',         # 26  : zoomswap
-  'savefloats',        # 28  : center
-  'center',            # 29  : savefloats, wasfocus^1
-  'ru-bottomstack',    # 18*
-  'statusallmons',     # 12
-  'ru-fibonacci',      # 27*
-  'warp',              # 32
-  'nmaster-sym',       # 30  : pertag, cfacts-dragcfact^1, warp
-  'movethrow',         # 33* : moveresize
-  'status2d',          # 34  : autostart, statusallmons, focusonclick
-  'focusmaster',       # 35*
-  'resetlayout',       # 36* : noborder
-  'ru-centeredmaster', # 37*
-  'aspectresize',      # 38*
-  'bar-height',        # 41*
-  'dualstatus',        # 39* : statusallmons
-  'ipc',               # 40* : pertag, cfacts-dragcfact
-  'ewmhtags',          # 42  : ipc
-  'canfocusfloating',  # 43* : center^3, actualfullscreen^1
-  'decorhints'         # 44* : ipc, ewmhtags, center <-
+  'autostart',         # 21  : zoomswap
+  'savefloats',        # 23  : center
+  'center',            # 24  : savefloats, wasfocus^1
+  'ru-bottomstack',    # 16*
+  'statusallmons',     # 10
+  'ru-fibonacci',      # 22*
+  'warp',              # 26
+  'nmaster-sym',       # 25  : pertag, cfacts-dragcfact^1, warp
+  'movethrow',         # 27* : moveresize
+  'status2d',          # 28  : autostart, statusallmons, focusonclick
+  'focusmaster',       # 29*
+  'resetlayout',       # 30* : noborder
+  'ru-centeredmaster', # 31*
+  'aspectresize',      # 32*
+  'bar-height',        # 35*
+  'dualstatus',        # 33* : statusallmons
+  'ipc',               # 34* : pertag, cfacts-dragcfact
+  'ewmhtags',          # 36  : ipc
+  'canfocusfloating',  # 37* : center^3, actualfullscreen^1
+  'decorhints'         # 38* : ipc, ewmhtags, center <-
 ]
 
 # For st
