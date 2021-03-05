@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 664c527..07f7804 100644
+index 664c527..839b3cf 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -49,7 +49,7 @@
@@ -21,7 +21,7 @@ index 664c527..07f7804 100644
  	int bw, oldbw;
  	unsigned int tags;
 -	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
-+	int isfixed, iscentered, isfloating, isurgent, neverfocus, oldstate, isfullscreen, issticky, wasfocused;
++	int isfixed, iscentered, isfloating, isurgent, neverfocus, oldstate, isfullscreen, issticky, isalwaysontop, wasfocused;
  	Client *next;
  	Client *snext;
  	Monitor *mon;
@@ -81,7 +81,25 @@ index 664c527..07f7804 100644
  	XSelectInput(dpy, w, EnterWindowMask|FocusChangeMask|PropertyChangeMask|StructureNotifyMask);
  	grabbuttons(c, 0);
  	if (!c->isfloating)
-@@ -1467,6 +1482,7 @@ setfocus(Client *c)
+@@ -1357,6 +1372,17 @@ restack(Monitor *m)
+ 		return;
+ 	if (m->sel->isfloating || !m->lt[m->sellt]->arrange)
+ 		XRaiseWindow(dpy, m->sel->win);
++
++	/* raise the aot window */
++	for(Monitor *m_search = mons; m_search; m_search = m_search->next){
++		for(c = m_search->clients; c; c = c->next){
++			if(c->isalwaysontop){
++				XRaiseWindow(dpy, c->win);
++				break;
++			}
++		}
++	}
++
+ 	if (m->lt[m->sellt]->arrange) {
+ 		wc.stack_mode = Below;
+ 		wc.sibling = m->barwin;
+@@ -1467,6 +1493,7 @@ setfocus(Client *c)
  			XA_WINDOW, 32, PropModeReplace,
  			(unsigned char *) &(c->win), 1);
  	}
@@ -89,7 +107,7 @@ index 664c527..07f7804 100644
  	sendevent(c, wmatom[WMTakeFocus]);
  }
  
-@@ -1717,8 +1733,25 @@ togglefloating(const Arg *arg)
+@@ -1717,9 +1744,43 @@ togglefloating(const Arg *arg)
  		return;
  	selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
  	if (selmon->sel->isfloating)
@@ -104,6 +122,7 @@ index 664c527..07f7804 100644
 +		selmon->sel->sfy = selmon->sel->y;
 +		selmon->sel->sfw = selmon->sel->w;
 +		selmon->sel->sfh = selmon->sel->h;
++		selmon->sel->isalwaysontop = 0; /* disabled, turn this off too */
 +	}
 +	arrange(selmon);
 +}
@@ -115,9 +134,26 @@ index 664c527..07f7804 100644
 +		return;
 +	selmon->sel->issticky = !selmon->sel->issticky;
  	arrange(selmon);
++
++	if (selmon->sel->isfullscreen)
++		return;
++
++	if(selmon->sel->isalwaysontop){
++		selmon->sel->isalwaysontop = 0;
++	}else{
++		/* disable others */
++		for(Monitor *m = mons; m; m = m->next)
++			for(Client *c = m->clients; c; c = c->next)
++				c->isalwaysontop = 0;
++
++		/* turn on, make it float too */
++		selmon->sel->isfloating = 1;
++		selmon->sel->isalwaysontop = 1;
++	}
  }
  
-@@ -1754,6 +1787,7 @@ unfocus(Client *c, int setfocus)
+ void
+@@ -1754,6 +1815,7 @@ unfocus(Client *c, int setfocus)
  {
  	if (!c)
  		return;
@@ -125,7 +161,7 @@ index 664c527..07f7804 100644
  	grabbuttons(c, 0);
  	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
  	if (setfocus) {
-@@ -2012,8 +2046,10 @@ updatewindowtype(Client *c)
+@@ -2012,8 +2074,10 @@ updatewindowtype(Client *c)
  
  	if (state == netatom[NetWMFullscreen])
  		setfullscreen(c, 1);
