@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 664c527..0a7e067 100644
+index 664c527..d05106e 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -141,6 +141,13 @@ typedef struct {
@@ -81,7 +81,7 @@ index 664c527..0a7e067 100644
  		}
  	}
  	drw_map(drw, m->barwin, 0, 0, m->ww, bh);
-+	drw_setscheme(drw, &scheme[SchemeNorm]);
++	drw_setscheme(drw, scheme[SchemeNorm]);
 +	drw_text(drw, 0, 0, mons->ww, bh, 0, eb.text, 0);
 +	drw_map(drw, eb.win, 0, 0, mons->ww, bh);
  }

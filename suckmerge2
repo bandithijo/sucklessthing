@@ -45,7 +45,7 @@ dwm_branches = [
   'warp',              # 26
   'nmaster-sym',       # 25  : pertag, cfacts-dragcfact^1, warp
   'movethrow',         # 27* : moveresize
-  'status2d',          # 28  : autostart, statusallmons, focusonclick
+  # 'status2d',          # 28  : autostart, statusallmons, focusonclick
   'focusmaster',       # 29*
   'resetlayout',       # 30* : noborder
   'ru-centeredmaster', # 31*
@@ -53,9 +53,8 @@ dwm_branches = [
   'bar-height',        # 35*
   'dualstatus',        # 33* : statusallmons
   'ipc',               # 34* : pertag, cfacts-dragcfact
-  'ewmhtags',          # 36  : ipc
-  'canfocusfloating',  # 37* : center^3, actualfullscreen^1
-  'decorhints'         # 38* : ipc, ewmhtags, center <-
+  'canfocusfloating',  # 36* : center^3, actualfullscreen^1
+  'decorhints'         # 37* : ipc, center <-
 ]
 
 # For st

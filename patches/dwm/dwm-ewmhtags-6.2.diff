@@ -57,11 +57,13 @@ index 4465af1..92022a1 100644
  		PropModeReplace, (unsigned char *)data, 2);
  }
 +void
-+setcurrentdesktop(void){
++setcurrentdesktop(void)
++{
 +	long data[] = { 0 };
 +	XChangeProperty(dpy, root, netatom[NetCurrentDesktop], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 1);
 +}
-+void setdesktopnames(void){
++void setdesktopnames(void)
++{
 +	XTextProperty text;
 +	Xutf8TextListToTextProperty(dpy, tags, TAGSLENGTH, XUTF8StringStyle, &text);
 +	XSetTextProperty(dpy, root, &text, netatom[NetDesktopNames]);
@@ -74,7 +76,8 @@ index 4465af1..92022a1 100644
  }
  
 +void
-+setnumdesktops(void){
++setnumdesktops(void)
++{
 +	long data[] = { TAGSLENGTH };
 +	XChangeProperty(dpy, root, netatom[NetNumberOfDesktops], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 1);
 +}
@@ -139,7 +142,7 @@ index 4465af1..92022a1 100644
 +void updatecurrentdesktop(void){
 +	long rawdata[] = { selmon->tagset[selmon->seltags] };
 +	int i=0;
-+	while(*rawdata >> i+1){
++	while(*rawdata >> (i + 1)){
 +		i++;
 +	}
 +	long data[] = { i };
