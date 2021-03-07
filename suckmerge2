@@ -58,21 +58,36 @@ dwm_branches = [
 ]
 
 # For st
+# st_branches = [
+#   'config',
+#   'clipboard',
+#   'font2',
+#   'workingdir',
+#   'boxdraw',
+#   'newterm',              # : scrollback, open-copied-url
+#   'scrollback',
+#   'scrollback-mouse',
+#   'open-copied-url',
+#   'bold-is-not-bright',
+#   'alpha',                #* : boxdraw
+#   'ligatures-boxdraw-alpha-scrollback', # : alpha
+#   'solarized-both',       # : ligatures-boxdraw-alpha-scrollback^, newterm^
+#   'w3m',                  # <-
+# ]
+
 st_branches = [
-  'config',
-  'clipboard',
-  'font2',
-  'workingdir',
-  'boxdraw',
-  'newterm',              # : scrollback, open-copied-url
-  'scrollback',
-  'scrollback-mouse',
-  'open-copied-url',
-  'bold-is-not-bright',
-  'alpha',                # : boxdraw
-  'ligatures-boxdraw-alpha-scrollback', # : alpha
-  'solarized-both',       # : ligatures-boxdraw-alpha-scrollback^, newterm^ <-
-  'w3m'
+  'config',            # 1
+  'clipboard',         # 2
+  'font2',             # 3*
+  'workingdir',        # 4
+  'boxdraw',           # 5*
+  'scrollback',        # 6*
+  'openclipboard',     # 7* : scrollback
+  'newterm',           # 8* : openclipboard^1
+  'bold-is-not-bright',# 9
+  'alpha',             # 10* : boxdraw
+  'xresources',        # 11*
+  'ligatures'          # 12  : alpha^1, scrollback <-
 ]
 
 # For slock
