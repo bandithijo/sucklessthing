@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 6f05dce..8fabcfb 100644
+index 6f05dce..13f80cd 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -5,8 +5,15 @@
@@ -20,102 +20,109 @@ index 6f05dce..8fabcfb 100644
  
  /*
   * What program is execed by st depends of these precedence rules:
-@@ -145,8 +152,8 @@ static unsigned int cursorshape = 2;
-  * Default columns and rows numbers
+@@ -67,6 +74,18 @@ static unsigned int blinktimeout = 800;
   */
+ static unsigned int cursorthickness = 2;
  
--static unsigned int cols = 80;
--static unsigned int rows = 24;
-+static unsigned int cols = 85;
-+static unsigned int rows = 25;
++/*
++ * 1: render most of the lines/blocks characters without using the font for
++ *    perfect alignment between cells (U2500 - U259F except dashes/diagonals).
++ *    Bold affects lines thickness if boxdraw_bold is not 0. Italic is ignored.
++ * 0: disable (render all U25XX glyphs normally from the font).
++ */
++const int boxdraw = 1;
++const int boxdraw_bold = 1;
++
++/* braille (U28XX):  1: render as adjacent "pixels",  0: use font */
++const int boxdraw_braille = 0;
++
+ /*
+  * bell volume. It must be a value between -100 and 100. Use 0 for disabling
+  * it
+@@ -93,6 +112,9 @@ char *termname = "st-256color";
+  */
+ unsigned int tabspaces = 8;
+ 
++/* bg opacity */
++float alpha = 0.98;
++
+ /* Terminal colors (16 first used in escape sequence) */
+ static const char *colorname[] = {
+ 	/* 8 normal colors */
+@@ -127,10 +149,10 @@ static const char *colorname[] = {
+  * Default colors (colorname index)
+  * foreground, background, cursor, reverse cursor
+  */
+-unsigned int defaultfg = 7;
+-unsigned int defaultbg = 0;
+-static unsigned int defaultcs = 256;
+-static unsigned int defaultrcs = 257;
++unsigned int defaultfg = 14;
++unsigned int defaultbg = 8;
++static unsigned int defaultcs = 14;
++static unsigned int defaultrcs = 8;
  
  /*
-  * Default colour and shape of the mouse cursor
-diff --git a/config.mk b/config.mk
-index c070a4a..395e912 100644
---- a/config.mk
-+++ b/config.mk
-@@ -7,8 +7,8 @@ VERSION = 0.8.4
- PREFIX = /usr/local
- MANPREFIX = $(PREFIX)/share/man
+  * Default shape of cursor
+@@ -168,12 +190,50 @@ static unsigned int defaultattr = 11;
+  */
+ static uint forcemousemod = ShiftMask;
  
--X11INC = /usr/X11R6/include
--X11LIB = /usr/X11R6/lib
-+X11INC = /usr/local/include
-+X11LIB = /usr/local/lib
++/*
++ * Xresources preferences to load at startup
++ */
++ResourcePref resources[] = {
++		{ "font",         STRING,  &font },
++		{ "color0",       STRING,  &colorname[0] },
++		{ "color1",       STRING,  &colorname[1] },
++		{ "color2",       STRING,  &colorname[2] },
++		{ "color3",       STRING,  &colorname[3] },
++		{ "color4",       STRING,  &colorname[4] },
++		{ "color5",       STRING,  &colorname[5] },
++		{ "color6",       STRING,  &colorname[6] },
++		{ "color7",       STRING,  &colorname[7] },
++		{ "color8",       STRING,  &colorname[8] },
++		{ "color9",       STRING,  &colorname[9] },
++		{ "color10",      STRING,  &colorname[10] },
++		{ "color11",      STRING,  &colorname[11] },
++		{ "color12",      STRING,  &colorname[12] },
++		{ "color13",      STRING,  &colorname[13] },
++		{ "color14",      STRING,  &colorname[14] },
++		{ "color15",      STRING,  &colorname[15] },
++		{ "background",   STRING,  &colorname[8] },
++		{ "foreground",   STRING,  &colorname[14] },
++		{ "cursorColor",  STRING,  &colorname[14] },
++		{ "termname",     STRING,  &termname },
++		{ "shell",        STRING,  &shell },
++		{ "minlatency",   INTEGER, &minlatency },
++		{ "maxlatency",   INTEGER, &maxlatency },
++		{ "blinktimeout", INTEGER, &blinktimeout },
++		{ "bellvolume",   INTEGER, &bellvolume },
++		{ "tabspaces",    INTEGER, &tabspaces },
++		{ "borderpx",     INTEGER, &borderpx },
++		{ "cwscale",      FLOAT,   &cwscale },
++		{ "chscale",      FLOAT,   &chscale },
++};
++
+ /*
+  * Internal mouse shortcuts.
+  * Beware that overloading Button1 will disable the selection.
+  */
+ static MouseShortcut mshortcuts[] = {
+ 	/* mask                 button   function        argument       release */
++	{ ShiftMask,            Button4, kscrollup,      {.i = 1} },
++	{ ShiftMask,            Button5, kscrolldown,    {.i = 1} },
+ 	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
+ 	{ ShiftMask,            Button4, ttysend,        {.s = "\033[5;2~"} },
+ 	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
+@@ -199,6 +259,10 @@ static Shortcut shortcuts[] = {
+ 	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
+ 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
+ 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
++	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
++	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
++	{ MODKEY,               XK_o,           opencopied,     {.v = "xdg-open"} },
++	{ TERMMOD,              XK_Return,      newterm,        {.i =  0} },
+ };
  
- PKG_CONFIG = pkg-config
- 
-diff --git a/st.c b/st.c
-index abbbe4b..76b7e0d 100644
---- a/st.c
-+++ b/st.c
-@@ -1853,15 +1853,7 @@ strhandle(void)
- 	case ']': /* OSC -- Operating System Command */
- 		switch (par) {
- 		case 0:
--			if (narg > 1) {
--				xsettitle(strescseq.args[1]);
--				xseticontitle(strescseq.args[1]);
--			}
--			return;
- 		case 1:
--			if (narg > 1)
--				xseticontitle(strescseq.args[1]);
--			return;
- 		case 2:
- 			if (narg > 1)
- 				xsettitle(strescseq.args[1]);
-diff --git a/win.h b/win.h
-index e6e4369..a6ef1b9 100644
---- a/win.h
-+++ b/win.h
-@@ -30,7 +30,6 @@ void xdrawline(Line, int, int, int);
- void xfinishdraw(void);
- void xloadcols(void);
- int xsetcolorname(int, const char *);
--void xseticontitle(char *);
- void xsettitle(char *);
- int xsetcursor(int);
- void xsetmode(int, unsigned int);
-diff --git a/x.c b/x.c
-index 120e495..210f184 100644
---- a/x.c
-+++ b/x.c
-@@ -93,7 +93,7 @@ typedef struct {
- 	Window win;
- 	Drawable buf;
- 	GlyphFontSpec *specbuf; /* font spec buffer used for rendering */
--	Atom xembed, wmdeletewin, netwmname, netwmiconname, netwmpid;
-+	Atom xembed, wmdeletewin, netwmname, netwmpid;
- 	struct {
- 		XIM xim;
- 		XIC xic;
-@@ -1186,7 +1186,6 @@ xinit(int cols, int rows)
- 	xw.xembed = XInternAtom(xw.dpy, "_XEMBED", False);
- 	xw.wmdeletewin = XInternAtom(xw.dpy, "WM_DELETE_WINDOW", False);
- 	xw.netwmname = XInternAtom(xw.dpy, "_NET_WM_NAME", False);
--	xw.netwmiconname = XInternAtom(xw.dpy, "_NET_WM_ICON_NAME", False);
- 	XSetWMProtocols(xw.dpy, xw.win, &xw.wmdeletewin, 1);
- 
- 	xw.netwmpid = XInternAtom(xw.dpy, "_NET_WM_PID", False);
-@@ -1580,19 +1579,6 @@ xsetenv(void)
- 	setenv("WINDOWID", buf, 1);
- }
- 
--void
--xseticontitle(char *p)
--{
--	XTextProperty prop;
--	DEFAULT(p, opt_title);
--
--	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
--			&prop);
--	XSetWMIconName(xw.dpy, xw.win, &prop);
--	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmiconname);
--	XFree(prop.value);
--}
--
- void
- xsettitle(char *p)
- {
+ /*
