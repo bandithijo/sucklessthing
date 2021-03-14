@@ -68,10 +68,9 @@ st_branches = [
   'openclipboard',     # 7* : scrollback
   'newterm',           # 8* : openclipboard^1
   'bold-is-not-bright',# 9
-  'alpha',             # 10* : boxdraw
-  'xresources',        # 11*
-  'ligatures',         # 12  : alpha^1, scrollback
-  'dynamic-cursor-color' # 13 <-
+  'xresources',        # 10*
+  'ligatures',         # 11 : boxdraw, scrollback
+  'w3m',               # 12 <-
 ]
 
 # For slock

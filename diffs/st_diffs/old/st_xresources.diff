@@ -1,62 +1,5 @@
-diff --git a/config.def.h b/config.def.h
-index 6f05dce..2b1c39b 100644
---- a/config.def.h
-+++ b/config.def.h
-@@ -199,6 +199,7 @@ static Shortcut shortcuts[] = {
- 	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
- 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
- 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
-+	{ MODKEY,               XK_o,           opencopied,     {.v = "xdg-open"} },
- };
- 
- /*
-diff --git a/st.1 b/st.1
-index 39120b4..b82beb3 100644
---- a/st.1
-+++ b/st.1
-@@ -6,6 +6,8 @@ st \- simple terminal
- .RB [ \-aiv ]
- .RB [ \-c
- .IR class ]
-+.RB [ \-d
-+.IR path ]
- .RB [ \-f
- .IR font ]
- .RB [ \-g
-@@ -30,6 +32,8 @@ st \- simple terminal
- .RB [ \-aiv ]
- .RB [ \-c
- .IR class ]
-+.RB [ \-d
-+.IR path ]
- .RB [ \-f
- .IR font ]
- .RB [ \-g
-@@ -58,6 +62,10 @@ disable alternate screens in terminal
- .BI \-c " class"
- defines the window class (default $TERM).
- .TP
-+.BI \-d " path"
-+changes the working directory to
-+.IR path .
-+.TP
- .BI \-f " font"
- defines the
- .I font
-diff --git a/st.h b/st.h
-index 3d351b6..8f09856 100644
---- a/st.h
-+++ b/st.h
-@@ -81,6 +81,7 @@ void die(const char *, ...);
- void redraw(void);
- void draw(void);
- 
-+void opencopied(const Arg *);
- void printscreen(const Arg *);
- void printsel(const Arg *);
- void sendbreak(const Arg *);
 diff --git a/x.c b/x.c
-index 120e495..54cf7a8 100644
+index 120e495..c9fb4e5 100644
 --- a/x.c
 +++ b/x.c
 @@ -14,6 +14,7 @@
@@ -87,23 +30,7 @@ index 120e495..54cf7a8 100644
  /* X modifiers */
  #define XK_ANY_MOD    UINT_MAX
  #define XK_NO_MOD     0
-@@ -251,6 +265,7 @@ static char *opt_io    = NULL;
- static char *opt_line  = NULL;
- static char *opt_name  = NULL;
- static char *opt_title = NULL;
-+static char *opt_dir   = NULL;
- 
- static int oldbutton = 3; /* button event on startup: 3 = release */
- 
-@@ -673,6 +688,7 @@ setsel(char *str, Time t)
- 	XSetSelectionOwner(xw.dpy, XA_PRIMARY, xw.win, t);
- 	if (XGetSelectionOwner(xw.dpy, XA_PRIMARY) != xw.win)
- 		selclear();
-+	clipcopy(NULL);
- }
- 
- void
-@@ -828,8 +844,8 @@ xclear(int x1, int y1, int x2, int y2)
+@@ -828,8 +842,8 @@ xclear(int x1, int y1, int x2, int y2)
  void
  xhints(void)
  {
@@ -114,7 +41,7 @@ index 120e495..54cf7a8 100644
  	XWMHints wm = {.flags = InputHint, .input = 1};
  	XSizeHints *sizeh;
  
-@@ -1104,8 +1120,6 @@ xinit(int cols, int rows)
+@@ -1104,8 +1118,6 @@ xinit(int cols, int rows)
  	pid_t thispid = getpid();
  	XColor xmousefg, xmousebg;
  
@@ -123,7 +50,7 @@ index 120e495..54cf7a8 100644
  	xw.scr = XDefaultScreen(xw.dpy);
  	xw.vis = XDefaultVisual(xw.dpy, xw.scr);
  
-@@ -1978,15 +1992,68 @@ run(void)
+@@ -1978,6 +1990,59 @@ run(void)
  	}
  }
  
@@ -183,30 +110,7 @@ index 120e495..54cf7a8 100644
  void
  usage(void)
  {
--	die("usage: %s [-aiv] [-c class] [-f font] [-g geometry]"
--	    " [-n name] [-o file]\n"
-+	die("usage: %s [-aiv] [-c class] [-d path] [-f font]"
-+	    " [-g geometry] [-n name] [-o file]\n"
- 	    "          [-T title] [-t title] [-w windowid]"
- 	    " [[-e] command [args ...]]\n"
--	    "       %s [-aiv] [-c class] [-f font] [-g geometry]"
--	    " [-n name] [-o file]\n"
-+	    "       %s [-aiv] [-c class] [-d path] [-f font]"
-+	    " [-g geometry] [-n name] [-o file]\n"
- 	    "          [-T title] [-t title] [-w windowid] -l line"
- 	    " [stty_args ...]\n", argv0, argv0);
- }
-@@ -2038,6 +2105,9 @@ main(int argc, char *argv[])
- 	case 'v':
- 		die("%s " VERSION "\n", argv0);
- 		break;
-+	case 'd':
-+		opt_dir = EARGF(usage());
-+		break;
- 	default:
- 		usage();
- 	} ARGEND;
-@@ -2051,13 +2121,42 @@ run:
+@@ -2051,6 +2116,11 @@ run:
  
  	setlocale(LC_CTYPE, "");
  	XSetLocaleModifiers("");
@@ -218,34 +122,3 @@ index 120e495..54cf7a8 100644
  	cols = MAX(cols, 1);
  	rows = MAX(rows, 1);
  	tnew(cols, rows);
- 	xinit(cols, rows);
- 	xsetenv();
- 	selinit();
-+	chdir(opt_dir);
- 	run();
- 
- 	return 0;
- }
-+
-+void
-+opencopied(const Arg *arg)
-+{
-+	const size_t max_cmd = 2048;
-+	const char *clip = xsel.clipboard;
-+	if(!clip) {
-+		fprintf(stderr, "Warning: nothing copied to clipboard\n");
-+		return;
-+	}
-+
-+	/* account for space/quote (3) and \0 (1) and & (1) */
-+	char cmd[max_cmd + strlen(clip) + 5];
-+	strncpy(cmd, (char *)arg->v, max_cmd);
-+	cmd[max_cmd] = '\0';
-+
-+	strcat(cmd, " \"");
-+	strcat(cmd, clip);
-+	strcat(cmd, "\"");
-+	strcat(cmd, "&");
-+
-+	system(cmd);
-+}

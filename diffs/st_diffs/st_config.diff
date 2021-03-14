@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 6f05dce..13f80cd 100644
+index 6f05dce..a9477d5 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -5,8 +5,15 @@
@@ -39,17 +39,7 @@ index 6f05dce..13f80cd 100644
  /*
   * bell volume. It must be a value between -100 and 100. Use 0 for disabling
   * it
-@@ -93,6 +112,9 @@ char *termname = "st-256color";
-  */
- unsigned int tabspaces = 8;
- 
-+/* bg opacity */
-+float alpha = 0.98;
-+
- /* Terminal colors (16 first used in escape sequence) */
- static const char *colorname[] = {
- 	/* 8 normal colors */
-@@ -127,10 +149,10 @@ static const char *colorname[] = {
+@@ -127,10 +146,10 @@ static const char *colorname[] = {
   * Default colors (colorname index)
   * foreground, background, cursor, reverse cursor
   */
@@ -64,7 +54,18 @@ index 6f05dce..13f80cd 100644
  
  /*
   * Default shape of cursor
-@@ -168,12 +190,50 @@ static unsigned int defaultattr = 11;
+@@ -145,8 +164,8 @@ static unsigned int cursorshape = 2;
+  * Default columns and rows numbers
+  */
+ 
+-static unsigned int cols = 80;
+-static unsigned int rows = 24;
++static unsigned int cols = 84;
++static unsigned int rows = 26;
+ 
+ /*
+  * Default colour and shape of the mouse cursor
+@@ -168,12 +187,50 @@ static unsigned int defaultattr = 11;
   */
  static uint forcemousemod = ShiftMask;
  
@@ -115,7 +116,7 @@ index 6f05dce..13f80cd 100644
  	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
  	{ ShiftMask,            Button4, ttysend,        {.s = "\033[5;2~"} },
  	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
-@@ -199,6 +259,10 @@ static Shortcut shortcuts[] = {
+@@ -199,6 +256,10 @@ static Shortcut shortcuts[] = {
  	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
  	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
  	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
