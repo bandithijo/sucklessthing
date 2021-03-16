@@ -82,12 +82,12 @@ slock_branches = [
 
 # For dmenu
 dmenu_branches = [
-  'config',          # 1
-  'password',        # 2
-  'xresources',      # 3
-  'numbers',         # 4
-  'grid',            # 5*
-  'symbols'          # 6*
+  'config',            # 1
+  'password',          # 2
+  'xresources',        # 3
+  'numbers',           # 4
+  'grid',              # 5*
+  'symbols'            # 6*
 ]
 
 # For tabbed
@@ -193,14 +193,7 @@ def option_for_installing(branches)
   make_install
 end
 
-option = ARGV[0]
-
-if option == '-d'
-  option_for_debugging(branches)
-elsif option == '-i'
-  option_for_installing(branches)
-else
-  puts "\nERROR: You enter the wrong option!"
+def option_for_help
   puts "
 Options:
   -d for debugging  - Merge all selected branches and make only.
@@ -214,15 +207,30 @@ Usage:
   puts '  Press (d) for debugging'
   puts '  Press (i) for installing'
   print "\n=> "
+
   second_option = gets.chomp
-  if second_option == 'd'
+  case second_option
+  when 'd'
     option_for_debugging(branches)
-  elsif second_option == 'i'
+  when 'i'
     option_for_installing(branches)
   else
     puts "\nERROR: You enter the wrong option!"
     exit
   end
+end
+
+option = ARGV[0]
+case option
+when '-d'
+  option_for_debugging(branches)
+when '-i'
+  option_for_installing(branches)
+when nil
+  option_for_help
+else
+  puts "\nERROR: You enter the wrong option!"
+  option_for_help
 end
 
 if dir_name == 'dwm' && (option == '-i' || second_option == 'i')
