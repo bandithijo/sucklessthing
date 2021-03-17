@@ -193,7 +193,7 @@ def option_for_installing(branches)
   make_install
 end
 
-def option_for_help
+def option_for_help(branches)
   puts "
 Options:
   -d for debugging  - Merge all selected branches and make only.
@@ -227,7 +227,7 @@ when '-d'
 when '-i'
   option_for_installing(branches)
 when nil
-  option_for_help
+  option_for_help(branches)
 else
   puts "\nERROR: You enter the wrong option!"
   option_for_help
