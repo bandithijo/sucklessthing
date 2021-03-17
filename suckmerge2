@@ -169,72 +169,9 @@ def make_install
   puts '=> Installation COMPLETE!'
 end
 
-def option_for_debugging(branches)
-  puts "
-+-----------------------+
-| SUCKMERGE2: DEBUGGING |
-+-----------------------+
-  "
-  sleep 1
-  clean_reset
-  merge_selected(branches)
-  make_only
-end
-
-def option_for_installing(branches)
-  puts "
-+------------------------+
-| SUCKMERGE2: INSTALLING |
-+------------------------+
-  "
-  sleep 1
-  clean_diff_reset
-  merge_selected(branches)
-  make_install
-end
-
-def option_for_help(branches)
-  puts "
-Options:
-  -d for debugging  - Merge all selected branches and make only.
-  -i for installing - Merge all selected branches, make, & make install
-
-Usage:
-  $ suckmerge2 -[d/i]
-  "
-  puts '  Or,'
-  puts
-  puts '  Press (d) for debugging'
-  puts '  Press (i) for installing'
-  print "\n=> "
-
-  second_option = gets.chomp
-  case second_option
-  when 'd'
-    option_for_debugging(branches)
-  when 'i'
-    option_for_installing(branches)
-  else
-    puts "\nERROR: You enter the wrong option!"
-    exit
-  end
-end
-
-option = ARGV[0]
-case option
-when '-d'
-  option_for_debugging(branches)
-when '-i'
-  option_for_installing(branches)
-when nil
-  option_for_help(branches)
-else
-  puts "\nERROR: You enter the wrong option!"
-  option_for_help
-end
-
-if dir_name == 'dwm' && (option == '-i' || second_option == 'i')
-  puts "
+def guide_info(dir_name)
+  if dir_name == 'dwm'
+    puts "
   +----------------------------------------------------------------------+
   | STATUSBAR:                                                           |
   +----------------------------------------------------------------------+
@@ -268,4 +205,71 @@ if dir_name == 'dwm' && (option == '-i' || second_option == 'i')
   | Sample: https://s.id/bandithijo-autostart                            |
   +----------------------------------------------------------------------+
   "
+  end
+end
+
+def option_for_debugging(branches)
+  puts "
++-----------------------+
+| SUCKMERGE2: DEBUGGING |
++-----------------------+
+  "
+  sleep 1
+  clean_reset
+  merge_selected(branches)
+  make_only
+end
+
+def option_for_installing(branches, dir_name)
+  puts "
++------------------------+
+| SUCKMERGE2: INSTALLING |
++------------------------+
+  "
+  sleep 1
+  clean_diff_reset
+  merge_selected(branches)
+  make_install
+  guide_info(dir_name)
+end
+
+def option_for_help(branches, dir_name)
+  puts "
+Options:
+  -d for debugging  - Merge all selected branches and make only.
+  -i for installing - Merge all selected branches, make, & make install
+
+Usage:
+  $ suckmerge2 -[d/i]
+  "
+  puts '  Or,'
+  puts
+  puts '  Press (d) for debugging'
+  puts '  Press (i) for installing'
+  print "\n=> "
+
+  option = gets.chomp
+  case option
+  when 'd'
+    option_for_debugging(branches)
+  when 'i'
+    option_for_installing(branches, dir_name)
+  else
+    puts "\nERROR: You enter the wrong option!"
+    exit
+  end
+end
+
+option = ARGV[0]
+
+case option
+when '-d'
+  option_for_debugging(branches)
+when '-i'
+  option_for_installing(branches, dir_name)
+when nil
+  option_for_help(branches, dir_name)
+else
+  puts "\nERROR: You enter the wrong option!"
+  option_for_help
 end
