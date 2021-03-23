@@ -71,7 +71,8 @@ st_branches = [
   'bold-is-not-bright',# 9
   'xresources',        # 10*
   'ligatures',         # 11 : boxdraw, scrollback
-  'w3m',               # 12 <-
+  'w3m',               # 12
+  'cursorblink',       # 13 <-
 ]
 
 # For slock
