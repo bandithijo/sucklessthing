@@ -1,8 +1,19 @@
 diff --git a/x.c b/x.c
-index 120e495..ab66364 100644
+index 8bf998e..ab66364 100644
 --- a/x.c
 +++ b/x.c
-@@ -1489,6 +1489,7 @@ void
+@@ -387,9 +387,7 @@ mousereport(XEvent *e)
+ 			button = 3;
+ 		} else {
+ 			button -= Button1;
+-			if (button >= 7)
+-				button += 128 - 7;
+-			else if (button >= 3)
++			if (button >= 3)
+ 				button += 64 - 3;
+ 		}
+ 		if (e->xbutton.type == ButtonPress) {
+@@ -1491,6 +1489,7 @@ void
  xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
  {
  	Color drawcol;
@@ -10,7 +21,7 @@ index 120e495..ab66364 100644
  
  	/* remove the old cursor */
  	if (selected(ox, oy))
-@@ -1518,10 +1519,24 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
+@@ -1520,10 +1519,24 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
  			g.fg = defaultfg;
  			g.bg = defaultrcs;
  		} else {

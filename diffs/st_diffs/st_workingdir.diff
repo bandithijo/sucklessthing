@@ -32,7 +32,7 @@ index 39120b4..5fd7aff 100644
  defines the
  .I font
 diff --git a/x.c b/x.c
-index 120e495..95a174a 100644
+index 8bf998e..95a174a 100644
 --- a/x.c
 +++ b/x.c
 @@ -251,6 +251,7 @@ static char *opt_io    = NULL;
@@ -43,7 +43,18 @@ index 120e495..95a174a 100644
  
  static int oldbutton = 3; /* button event on startup: 3 = release */
  
-@@ -1981,12 +1982,12 @@ run(void)
+@@ -387,9 +388,7 @@ mousereport(XEvent *e)
+ 			button = 3;
+ 		} else {
+ 			button -= Button1;
+-			if (button >= 7)
+-				button += 128 - 7;
+-			else if (button >= 3)
++			if (button >= 3)
+ 				button += 64 - 3;
+ 		}
+ 		if (e->xbutton.type == ButtonPress) {
+@@ -1983,12 +1982,12 @@ run(void)
  void
  usage(void)
  {
@@ -60,7 +71,7 @@ index 120e495..95a174a 100644
  	    "          [-T title] [-t title] [-w windowid] -l line"
  	    " [stty_args ...]\n", argv0, argv0);
  }
-@@ -2038,6 +2039,9 @@ main(int argc, char *argv[])
+@@ -2040,6 +2039,9 @@ main(int argc, char *argv[])
  	case 'v':
  		die("%s " VERSION "\n", argv0);
  		break;
@@ -70,7 +81,7 @@ index 120e495..95a174a 100644
  	default:
  		usage();
  	} ARGEND;
-@@ -2057,6 +2061,7 @@ run:
+@@ -2059,6 +2061,7 @@ run:
  	xinit(cols, rows);
  	xsetenv();
  	selinit();

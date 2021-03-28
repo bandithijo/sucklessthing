@@ -367,10 +367,21 @@ index 3d351b6..73596a3 100644
  void printsel(const Arg *);
  void sendbreak(const Arg *);
 diff --git a/x.c b/x.c
-index 120e495..5032a60 100644
+index 8bf998e..5032a60 100644
 --- a/x.c
 +++ b/x.c
-@@ -1991,6 +1991,29 @@ usage(void)
+@@ -387,9 +387,7 @@ mousereport(XEvent *e)
+ 			button = 3;
+ 		} else {
+ 			button -= Button1;
+-			if (button >= 7)
+-				button += 128 - 7;
+-			else if (button >= 3)
++			if (button >= 3)
+ 				button += 64 - 3;
+ 		}
+ 		if (e->xbutton.type == ButtonPress) {
+@@ -1993,6 +1991,29 @@ usage(void)
  	    " [stty_args ...]\n", argv0, argv0);
  }
  
