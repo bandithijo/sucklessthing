@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..d352739 100644
+index 1c0b587..706bc72 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -1,50 +1,144 @@
@@ -137,7 +137,7 @@ index 1c0b587..d352739 100644
 +    { "Pidgin",               NULL,                 "Buddy List",                 0,             0,            1,           -1 },
 +    { "Wihotspot-gui",        NULL,                 "Wi Hotspot",                 0,             0,            1,           -1 },
 +    { "Polkit-mate-authentication-agent-1", NULL,   "Authenticate",               0,             1,            1,           -1 },
-+    { "Python3",              "SoundConverter",     "SoundConverter",             0,             1,            1,           -1 },
++    { "Soundconverter",       "Soundconverter",     "SoundConverter",             0,             1,            1,           -1 },
 +    { "mpv",                  "gl",                 NULL,                         0,             1,            1,           -1 },
 +    /* class                  instance              title                         tags mask      iscentered    isfloating   monitor */
 +    /* Scratchpad */
