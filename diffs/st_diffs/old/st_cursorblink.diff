@@ -1,5 +1,5 @@
 diff --git a/x.c b/x.c
-index 120e495..0a0865f 100644
+index 8bf998e..0a0865f 100644
 --- a/x.c
 +++ b/x.c
 @@ -253,6 +253,7 @@ static char *opt_name  = NULL;
@@ -10,7 +10,18 @@ index 120e495..0a0865f 100644
  
  void
  clipcopy(const Arg *dummy)
-@@ -1527,16 +1528,19 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
+@@ -387,9 +388,7 @@ mousereport(XEvent *e)
+ 			button = 3;
+ 		} else {
+ 			button -= Button1;
+-			if (button >= 7)
+-				button += 128 - 7;
+-			else if (button >= 3)
++			if (button >= 3)
+ 				button += 64 - 3;
+ 		}
+ 		if (e->xbutton.type == ButtonPress) {
+@@ -1529,16 +1528,19 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
  	/* draw the new one */
  	if (IS_SET(MODE_FOCUSED)) {
  		switch (win.cursor) {
@@ -37,7 +48,7 @@ index 120e495..0a0865f 100644
  			XftDrawRect(xw.draw, &drawcol,
  					borderpx + cx * win.cw,
  					borderpx + (cy + 1) * win.ch - \
-@@ -1544,12 +1548,23 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
+@@ -1546,12 +1548,23 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
  					win.cw, cursorthickness);
  			break;
  		case 5: /* Blinking bar */
@@ -61,7 +72,7 @@ index 120e495..0a0865f 100644
  		}
  	} else {
  		XftDrawRect(xw.draw, &drawcol,
-@@ -1704,9 +1719,12 @@ xsetmode(int set, unsigned int flags)
+@@ -1706,9 +1719,12 @@ xsetmode(int set, unsigned int flags)
  int
  xsetcursor(int cursor)
  {
@@ -75,7 +86,7 @@ index 120e495..0a0865f 100644
  	return 0;
  }
  
-@@ -1950,6 +1968,10 @@ run(void)
+@@ -1952,6 +1968,10 @@ run(void)
  		if (FD_ISSET(ttyfd, &rfd) || xev) {
  			if (!drawing) {
  				trigger = now;
@@ -86,7 +97,7 @@ index 120e495..0a0865f 100644
  				drawing = 1;
  			}
  			timeout = (maxlatency - TIMEDIFF(now, trigger)) \
-@@ -1960,7 +1982,7 @@ run(void)
+@@ -1962,7 +1982,7 @@ run(void)
  
  		/* idle detected or maxlatency exhausted -> draw */
  		timeout = -1;
@@ -95,7 +106,7 @@ index 120e495..0a0865f 100644
  			timeout = blinktimeout - TIMEDIFF(now, lastblink);
  			if (timeout <= 0) {
  				if (-timeout > blinktimeout) /* start visible */
-@@ -1996,7 +2018,7 @@ main(int argc, char *argv[])
+@@ -1998,7 +2018,7 @@ main(int argc, char *argv[])
  {
  	xw.l = xw.t = 0;
  	xw.isfixed = False;

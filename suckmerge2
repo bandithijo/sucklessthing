@@ -55,8 +55,7 @@ dwm_branches = [
   'ipc',               # 34* : pertag, cfacts-dragcfact
   'canfocusfloating',  # 36* : center^3, actualfullscreen^1
   'decorhints',        # 37* : ipc, center
-  'dwmc',              # 38* : zoomswap, ipc^2
-  'setborderpx',       # 39* : ru-gaps^2, autostart^1 <-
+  'dwmc',              # 38* : zoomswap, ipc^2 <-
 ]
 
 # For st
@@ -220,7 +219,7 @@ def option_for_debugging(branches)
   sleep 1
   clean_reset
   merge_selected(branches)
-  # make_only
+  make_only
 end
 
 def option_for_installing(branches, dir_name)

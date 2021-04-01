@@ -147,3 +147,18 @@ index 6f05dce..e3f8770 100644
  };
  
  /*
+diff --git a/x.c b/x.c
+index 8bf998e..120e495 100644
+--- a/x.c
++++ b/x.c
+@@ -387,9 +387,7 @@ mousereport(XEvent *e)
+ 			button = 3;
+ 		} else {
+ 			button -= Button1;
+-			if (button >= 7)
+-				button += 128 - 7;
+-			else if (button >= 3)
++			if (button >= 3)
+ 				button += 64 - 3;
+ 		}
+ 		if (e->xbutton.type == ButtonPress) {

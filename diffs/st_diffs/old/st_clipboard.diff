@@ -1,8 +1,19 @@
 diff --git a/x.c b/x.c
-index 120e495..647ed1b 100644
+index 8bf998e..647ed1b 100644
 --- a/x.c
 +++ b/x.c
-@@ -673,6 +673,7 @@ setsel(char *str, Time t)
+@@ -387,9 +387,7 @@ mousereport(XEvent *e)
+ 			button = 3;
+ 		} else {
+ 			button -= Button1;
+-			if (button >= 7)
+-				button += 128 - 7;
+-			else if (button >= 3)
++			if (button >= 3)
+ 				button += 64 - 3;
+ 		}
+ 		if (e->xbutton.type == ButtonPress) {
+@@ -675,6 +673,7 @@ setsel(char *str, Time t)
  	XSetSelectionOwner(xw.dpy, XA_PRIMARY, xw.win, t);
  	if (XGetSelectionOwner(xw.dpy, XA_PRIMARY) != xw.win)
  		selclear();
