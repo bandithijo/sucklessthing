@@ -1,0 +1,277 @@
+#!/usr/bin/env ruby
+
+# Suckmerge2 was inspired by suckmerge by HexDSL. This script has functionality
+# to merge selected branches, make, & make install.
+
+# Options:
+# -d for debugging. Merge all selected branches and make only.
+# -i for installing. Merge all selected branches, make, & make install
+
+# Usage:
+# $ suckmerge2 -[i/d]
+
+# Legend:
+# n    => branch without config
+# n*   => branch with config on config branch
+# n :  => branch has merge with other branch (patch^n : n stack patches)
+# n <- => latest branch on the fleet
+
+# For dwm
+dwm_branches = [
+  'config',            # 1*  : nodmenu
+  'sticky',            # 17*
+  'wasfocus',          # 18  : sticky
+  'ru-gaps',           # 15* : cfacts, noborder
+  'cfacts',            # 13*
+  'cfacts-dragcfact',  # 14* : cfacts
+  'actualfullscreen',  # 12* : sticky
+  'xrdb',              # 3*
+  'pertag',            # 2
+  'noborder',          # 9
+  'movestack',         # 7*
+  'moveresize',        # 8*
+  'resizecorners',     # 5
+  'focusonnetactive',  # 6
+  'focusonclick',      # 19* : moveresize
+  'fixborders',        # 20
+  'scratchpad',        # 11*
+  'zoomswap',          # 4
+  'autostart',         # 21  : zoomswap
+  'savefloats',        # 23  : center
+  'center',            # 24  : savefloats, wasfocus^1
+  'ru-bottomstack',    # 16*
+  'statusallmons',     # 10
+  'ru-fibonacci',      # 22*
+  'warp',              # 26
+  'nmaster-sym',       # 25  : pertag, cfacts-dragcfact^1, warp
+  'movethrow',         # 27* : moveresize
+  'status2d',          # 28  : autostart, statusallmons, focusonclick
+  'focusmaster',       # 29*
+  'resetlayout',       # 30* : noborder
+  'ru-centeredmaster', # 31*
+  'aspectresize',      # 32*
+  'bar-height',        # 35*
+  'dualstatus',        # 33* : statusallmons
+  'ipc',               # 34* : pertag, cfacts-dragcfact
+  'canfocusfloating',  # 36* : center^3, actualfullscreen^1
+  'decorhints',        # 37* : ipc, center
+  'dwmc',              # 38* : zoomswap, ipc^2 <-
+]
+
+# For st
+st_branches = [
+  'config',            # 1
+  'clipboard',         # 2
+  'font2',             # 3*
+  'workingdir',        # 4
+  'boxdraw',           # 5*
+  'scrollback',        # 6*
+  'openclipboard',     # 7* : scrollback
+  'newterm',           # 8* : openclipboard^1
+  'bold-is-not-bright',# 9
+  'xresources',        # 10*
+  'ligatures',         # 11 : boxdraw, scrollback
+  'w3m',               # 12
+  'cursorblink',       # 13 <-
+]
+
+# For slock
+slock_branches = [
+  'config',
+  'capscolor',
+  'message'
+]
+
+# For dmenu
+dmenu_branches = [
+  'config',            # 1
+  'password',          # 2
+  'xresources',        # 3
+  'numbers',           # 4
+  'grid',              # 5*
+  'symbols'            # 6*
+]
+
+# For tabbed
+tabbed_branches = [
+  'config',
+  'autohide',
+  'clientnumber',
+  'alpha'
+]
+
+# For etc. with config branch
+dir_config_branches = [
+  'pinentry-dmenu',
+  'slstatus',
+  'sxiv',
+  'dwmblocks'
+]
+config_branches = ['config']
+
+# For etc. only master branch
+dir_only_master_branches = [
+  'wmname'
+]
+only_master_branch = ['master']
+
+# Define dir_name based on cwd
+dir_name = `basename $PWD`.strip
+if dir_name == 'dwm'
+  branches = dwm_branches
+elsif dir_name == 'st'
+  branches = st_branches
+elsif dir_name == 'slock'
+  branches = slock_branches
+elsif dir_name == 'dmenu'
+  branches = dmenu_branches
+elsif dir_name == 'tabbed'
+  branches = tabbed_branches
+elsif dir_config_branches.include? dir_name
+  branches = config_branches
+elsif dir_only_master_branches.include? dir_name
+  branches = only_master_branch
+else
+  puts 'You are not in Suckless directory!'
+  exit
+end
+
+def clean_reset
+  puts '=> Convert All Branch to Diff'
+  system 'suckclean && git reset --hard origin/master'
+  puts '=> Converting COMPLETE!'
+end
+
+def clean_diff_reset
+  puts '=> Convert All Branch to Diff'
+  system 'suckclean && suckdiff && git reset --hard origin/master'
+  puts '=> Converting COMPLETE!'
+end
+
+def merge_selected(branches)
+  puts "\n=> Patching All Branch to Master"
+  branches.each do |branch|
+    print "Patching #{branch}... "
+    system "git merge #{branch} -m #{branch}"
+    print "DONE\n"
+    puts
+  end
+  puts '=> Patching COMPLETE!'
+end
+
+def make_only
+  puts "\n=> Making"
+  system 'make'
+  puts '=> Making COMPLETE!'
+end
+
+def make_install
+  puts "\n=> Installing"
+  system 'make && sudo make clean install'
+  puts '=> Installation COMPLETE!'
+end
+
+def guide_info(dir_name)
+  if dir_name == 'dwm'
+    puts "
+  +----------------------------------------------------------------------+
+  | STATUSBAR:                                                           |
+  +----------------------------------------------------------------------+
+  | Bandithijo's DWM doesn't bring the status bar.                       |
+  | You should bring your own. My recommendation is dwmblocks.           |
+  | But, I prefer built my own status.                                   |
+  |                                                                      |
+  | Sample: https://s.id/bandithijo-dwmbar                               |
+  +----------------------------------------------------------------------+
+  +----------------------------------------------------------------------+
+  | KEYBOARD:                                                            |
+  +----------------------------------------------------------------------+
+  | Bandithijo's DWM doesn't bring the keyboard shortcut for apps.       |
+  | You should bring your own. My personal preferences are use SXHKD.    |
+  |                                                                      |
+  | Sample: https://s.id/bandithijo-sxhkdrc-dwm                          |
+  +----------------------------------------------------------------------+
+  +----------------------------------------------------------------------+
+  | AUTOSTART:                                                           |
+  +----------------------------------------------------------------------+
+  | BanditHijo's DWM use autostart patch. But I modified the path.       |
+  | Please, provide the autostart file on:                               |
+  | ~/.local/bin/autostart.sh                                            |
+  |                                                                      |
+  | And the other one:                                                   |
+  | ~/.local/bin/autostart_blocking.sh (just empty file)                 |
+  |                                                                      |
+  | Don't forget to make all of them as executeable file, with:          |
+  | $ chmod +x ~/.local/bin/autostart*.sh                                |
+  |                                                                      |
+  | Sample: https://s.id/bandithijo-autostart                            |
+  +----------------------------------------------------------------------+
+  "
+  end
+end
+
+def option_for_debugging(branches)
+  puts "
++-----------------------+
+| SUCKMERGE2: DEBUGGING |
++-----------------------+
+  "
+  sleep 1
+  clean_reset
+  merge_selected(branches)
+  make_only
+end
+
+def option_for_installing(branches, dir_name)
+  puts "
++------------------------+
+| SUCKMERGE2: INSTALLING |
++------------------------+
+  "
+  sleep 1
+  clean_diff_reset
+  merge_selected(branches)
+  make_install
+  guide_info(dir_name)
+end
+
+def option_for_help(branches, dir_name)
+  puts "
+Options:
+  -d for debugging  - Merge all selected branches and make only.
+  -i for installing - Merge all selected branches, make, & make install
+
+Usage:
+  $ suckmerge2 -[d/i]
+  "
+  puts '  Or,'
+  puts
+  puts '  Press (d) for debugging'
+  puts '  Press (i) for installing'
+  print "\n=> "
+
+  option = gets.chomp
+  case option
+  when 'd'
+    option_for_debugging(branches)
+  when 'i'
+    option_for_installing(branches, dir_name)
+  else
+    puts "\nERROR: You enter the wrong option!"
+    exit
+  end
+end
+
+option = ARGV[0]
+
+case option
+when '-d'
+  option_for_debugging(branches)
+when '-i'
+  option_for_installing(branches, dir_name)
+when nil
+  option_for_help(branches, dir_name)
+else
+  puts "\nERROR: You enter the wrong option!"
+  option_for_help
+end
