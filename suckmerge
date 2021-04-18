@@ -72,7 +72,8 @@ st_branches = [
   'xresources',        # 10*
   'ligatures',         # 11 : boxdraw, scrollback
   'w3m',               # 12
-  'cursorblink',       # 13 <-
+  'cursorblink',       # 13
+  'invert',            # 14* <-
 ]
 
 # For slock
