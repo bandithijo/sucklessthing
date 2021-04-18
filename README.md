@@ -2,6 +2,10 @@
 
 BanditHijo's Suckless script for manage & maintain the suckless app.
 
+## Info!
+
+I've renamed `suckmerge2` to `suckmerge`.
+
 ## Installation
 
 Just run,
