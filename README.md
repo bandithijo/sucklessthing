@@ -17,3 +17,5 @@ If you doesn't have local path bin, it will create for you.
 If you does have, don't worry, it **will not** replace all your files inside local path.
 
 Just run it, you'll be safe.
+
+**IMPORTANT!** You should to define your local PATH first. Or all suckscript that copied on **~/.local/bin/** can't be accessed from your shell. I dont want to describe here, just googling yaa.
