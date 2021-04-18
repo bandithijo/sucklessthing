@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 664c527..f617679 100644
+index b0b3466..f617679 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -169,6 +169,7 @@ static void focus(Client *c);
@@ -10,6 +10,15 @@ index 664c527..f617679 100644
  static Atom getatomprop(Client *c, Atom prop);
  static int getrootptr(int *x, int *y);
  static long getstate(Window w);
+@@ -835,7 +836,7 @@ focusstack(const Arg *arg)
+ {
+ 	Client *c = NULL, *i;
+ 
+-	if (!selmon->sel || selmon->sel->isfullscreen)
++	if (!selmon->sel)
+ 		return;
+ 	if (arg->i > 0) {
+ 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
 @@ -856,6 +857,20 @@ focusstack(const Arg *arg)
  	}
  }

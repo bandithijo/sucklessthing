@@ -1,8 +1,8 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..574cf66 100644
+index 1c0b587..743d7bd 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -1,50 +1,144 @@
+@@ -1,50 +1,145 @@
  /* See LICENSE file for copyright and license details. */
  
  /* appearance */
@@ -105,7 +105,7 @@ index 1c0b587..574cf66 100644
 +    { "Barrier",              NULL,                 NULL,                         1 << 4,        0,            1,           -1 },
 +    { "Soffice",              "soffice",            NULL,                         0,             0,            0,           -1 },
 +    { "Thunar",               "thunar",             "File Operation Progress",    0,             0,            1,           -1 },
-+    { "System-config-printer.py", NULL,             NULL,                         0,             0,            1,           -1 },
++    { "System-config-printer.py", NULL,             NULL,                         0,             1,            1,           -1 },
 +    { "Nm-connection-editor", NULL,                 "Network Connections",        0,             0,            1,           -1 },
 +    { "Pavucontrol",          NULL,                 NULL,                         0,             1,            1,           -1 },
 +    { "Gpick",                NULL,                 NULL,                         0,             0,            1,           -1 },
@@ -139,6 +139,7 @@ index 1c0b587..574cf66 100644
 +    { "Polkit-mate-authentication-agent-1", NULL,   "Authenticate",               0,             1,            1,           -1 },
 +    { "Soundconverter",       "Soundconverter",     "SoundConverter",             0,             1,            1,           -1 },
 +    { "mpv",                  "gl",                 NULL,                         0,             1,            1,           -1 },
++    { "TelegramDesktop",      "telegram-desktop",   "MARPEL",                     0,             1,            1,           -1 },
 +    /* class                  instance              title                         tags mask      iscentered    isfloating   monitor */
 +    /* Scratchpad */
 +    { NULL,                   NULL,                 "hidden",               scratchpad_mask,     0,            1,           -1 },
@@ -171,7 +172,7 @@ index 1c0b587..574cf66 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -55,61 +149,197 @@ static const Layout layouts[] = {
+@@ -55,61 +150,197 @@ static const Layout layouts[] = {
  #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
  
  /* commands */
@@ -417,9 +418,18 @@ index 1c0b587..574cf66 100644
 +	{ "setlayoutex",    setlayoutex },
 +};
 diff --git a/dwm.c b/dwm.c
-index 664c527..92542ea 100644
+index b0b3466..92542ea 100644
 --- a/dwm.c
 +++ b/dwm.c
+@@ -835,7 +835,7 @@ focusstack(const Arg *arg)
+ {
+ 	Client *c = NULL, *i;
+ 
+-	if (!selmon->sel || selmon->sel->isfullscreen)
++	if (!selmon->sel)
+ 		return;
+ 	if (arg->i > 0) {
+ 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
 @@ -1640,8 +1640,6 @@ sigchld(int unused)
  void
  spawn(const Arg *arg)

@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 664c527..0210ae1 100644
+index b0b3466..0210ae1 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -152,6 +152,8 @@ static void buttonpress(XEvent *e);
@@ -152,3 +152,12 @@ index 664c527..0210ae1 100644
  void
  clientmessage(XEvent *e)
  {
+@@ -835,7 +971,7 @@ focusstack(const Arg *arg)
+ {
+ 	Client *c = NULL, *i;
+ 
+-	if (!selmon->sel || selmon->sel->isfullscreen)
++	if (!selmon->sel)
+ 		return;
+ 	if (arg->i > 0) {
+ 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);

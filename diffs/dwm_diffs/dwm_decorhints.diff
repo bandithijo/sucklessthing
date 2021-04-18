@@ -749,7 +749,7 @@ index 0000000..1971d32
 +  return 0;
 +}
 diff --git a/dwm.c b/dwm.c
-index 664c527..f8c2505 100644
+index b0b3466..f8c2505 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -30,6 +30,7 @@
@@ -1099,6 +1099,15 @@ index 664c527..f8c2505 100644
  		for (c = selmon->stack; c && !ISVISIBLE(c); c = c->snext);
  	if (selmon->sel && selmon->sel != c)
  		unfocus(selmon->sel, 0);
+@@ -835,7 +991,7 @@ focusstack(const Arg *arg)
+ {
+ 	Client *c = NULL, *i;
+ 
+-	if (!selmon->sel || selmon->sel->isfullscreen)
++	if (!selmon->sel)
+ 		return;
+ 	if (arg->i > 0) {
+ 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
 @@ -964,10 +1120,29 @@ grabkeys(void)
  	}
  }

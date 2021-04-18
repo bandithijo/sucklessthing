@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 664c527..be34578 100644
+index b0b3466..be34578 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -228,6 +228,7 @@ static void updatetitle(Client *c);
@@ -18,6 +18,15 @@ index 664c527..be34578 100644
  }
  
  void
+@@ -835,7 +837,7 @@ focusstack(const Arg *arg)
+ {
+ 	Client *c = NULL, *i;
+ 
+-	if (!selmon->sel || selmon->sel->isfullscreen)
++	if (!selmon->sel)
+ 		return;
+ 	if (arg->i > 0) {
+ 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
 @@ -2047,6 +2049,35 @@ view(const Arg *arg)
  	arrange(selmon);
  }
