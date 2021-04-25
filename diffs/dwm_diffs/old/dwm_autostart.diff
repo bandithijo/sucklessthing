@@ -40,7 +40,7 @@ index ddc8321..86e73f9 100644
  dwm is customized by creating a custom config.h and (re)compiling the source
  code. This keeps it fast, secure and simple.
 diff --git a/dwm.c b/dwm.c
-index 664c527..d42b4ad 100644
+index b0b3466..d42b4ad 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -29,6 +29,7 @@
@@ -105,6 +105,15 @@ index 664c527..d42b4ad 100644
  void
  focus(Client *c)
  {
+@@ -835,7 +852,7 @@ focusstack(const Arg *arg)
+ {
+ 	Client *c = NULL, *i;
+ 
+-	if (!selmon->sel || selmon->sel->isfullscreen)
++	if (!selmon->sel)
+ 		return;
+ 	if (arg->i > 0) {
+ 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
 @@ -1200,15 +1217,6 @@ nexttiled(Client *c)
  	return c;
  }

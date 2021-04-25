@@ -73,7 +73,8 @@ st_branches = [
   'ligatures',         # 11 : boxdraw, scrollback
   'w3m',               # 12
   'cursorblink',       # 13
-  'invert',            # 14* <-
+  'invert',            # 14*
+  'undercurl',         # 15 : ligatures^2 <-
 ]
 
 # For slock
@@ -97,8 +98,7 @@ dmenu_branches = [
 tabbed_branches = [
   'config',
   'autohide',
-  'clientnumber',
-  'alpha'
+  'clientnumber'
 ]
 
 # For etc. with config branch

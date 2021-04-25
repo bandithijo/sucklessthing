@@ -749,7 +749,7 @@ index 0000000..1971d32
 +  return 0;
 +}
 diff --git a/dwm.c b/dwm.c
-index 664c527..9cd8f2b 100644
+index b0b3466..9cd8f2b 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -30,6 +30,7 @@
@@ -1020,6 +1020,15 @@ index 664c527..9cd8f2b 100644
  void
  drawbar(Monitor *m)
  {
+@@ -835,7 +976,7 @@ focusstack(const Arg *arg)
+ {
+ 	Client *c = NULL, *i;
+ 
+-	if (!selmon->sel || selmon->sel->isfullscreen)
++	if (!selmon->sel)
+ 		return;
+ 	if (arg->i > 0) {
+ 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
 @@ -964,10 +1105,29 @@ grabkeys(void)
  	}
  }

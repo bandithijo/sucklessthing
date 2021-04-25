@@ -12,9 +12,18 @@ index 29caa84..590a937 100644
  # flags
  CPPFLAGS = -DVERSION=\"${VERSION}\" -D_DEFAULT_SOURCE
 diff --git a/tabbed.c b/tabbed.c
-index ff3ada0..ebf6b56 100644
+index eafe28a..ebf6b56 100644
 --- a/tabbed.c
 +++ b/tabbed.c
+@@ -152,7 +152,7 @@ static void (*handler[LASTEvent]) (const XEvent *) = {
+ 	[MapRequest] = maprequest,
+ 	[PropertyNotify] = propertynotify,
+ };
+-static int bh, obh, wx, wy, ww, wh;
++static int bh, wx, wy, ww, wh;
+ static unsigned int numlockmask;
+ static Bool running = True, nextfocus, doinitspawn = True,
+             fillagain = False, closelastclient = False,
 @@ -170,6 +170,9 @@ static char **cmd;
  static char *wmname = "tabbed";
  static const char *geometry;
@@ -25,18 +34,27 @@ index ff3ada0..ebf6b56 100644
  char *argv0;
  
  /* configuration, allows nested code to access above variables */
-@@ -254,8 +257,8 @@ configurenotify(const XEvent *e)
+@@ -254,17 +257,8 @@ configurenotify(const XEvent *e)
  		ww = ev->width;
  		wh = ev->height;
  		XFreePixmap(dpy, dc.drawable);
 -		dc.drawable = XCreatePixmap(dpy, root, ww, wh,
 -		              DefaultDepth(dpy, screen));
+-
+-		if (!obh && (wh <= bh)) {
+-			obh = bh;
+-			bh = 0;
+-		} else if (!bh && (wh > obh)) {
+-			bh = obh;
+-			obh = 0;
+-		}
+-
 +		dc.drawable = XCreatePixmap(dpy, win, ww, wh,
 +		              32);
  		if (sel > -1)
  			resize(sel, ww, wh - bh);
  		XSync(dpy, False);
-@@ -398,7 +401,7 @@ drawtext(const char *text, XftColor col[ColLast])
+@@ -407,7 +401,7 @@ drawtext(const char *text, XftColor col[ColLast])
  			;
  	}
  
@@ -45,7 +63,7 @@ index ff3ada0..ebf6b56 100644
  	XftDrawStringUtf8(d, &col[ColFG], dc.font.xfont, x, y, (XftChar8 *) buf, len);
  	XftDrawDestroy(d);
  }
-@@ -566,7 +569,7 @@ getcolor(const char *colstr)
+@@ -575,7 +569,7 @@ getcolor(const char *colstr)
  {
  	XftColor color;
  
@@ -54,7 +72,25 @@ index ff3ada0..ebf6b56 100644
  		die("%s: cannot allocate color '%s'\n", argv0, colstr);
  
  	return color;
-@@ -1021,18 +1024,59 @@ setup(void)
+@@ -881,7 +875,7 @@ resize(int c, int w, int h)
+ 	XWindowChanges wc;
+ 
+ 	ce.x = 0;
+-	ce.y = wc.y = bh;
++	ce.y = bh;
+ 	ce.width = wc.width = w;
+ 	ce.height = wc.height = h;
+ 	ce.type = ConfigureNotify;
+@@ -892,7 +886,7 @@ resize(int c, int w, int h)
+ 	ce.override_redirect = False;
+ 	ce.border_width = 0;
+ 
+-	XConfigureWindow(dpy, clients[c]->win, CWY | CWWidth | CWHeight, &wc);
++	XConfigureWindow(dpy, clients[c]->win, CWWidth | CWHeight, &wc);
+ 	XSendEvent(dpy, clients[c]->win, False, StructureNotifyMask,
+ 	           (XEvent *)&ce);
+ }
+@@ -1030,18 +1024,59 @@ setup(void)
  			wy = dh + wy - wh - 1;
  	}
  
@@ -119,3 +155,15 @@ index ff3ada0..ebf6b56 100644
  	XMapRaised(dpy, win);
  	XSelectInput(dpy, win, SubstructureNotifyMask | FocusChangeMask |
  	             ButtonPressMask | ExposureMask | KeyPressMask |
+@@ -1055,10 +1090,9 @@ setup(void)
+ 
+ 	size_hint = XAllocSizeHints();
+ 	if (!isfixed) {
+-		size_hint->flags = PSize | PMinSize;
++		size_hint->flags = PSize;
+ 		size_hint->height = wh;
+ 		size_hint->width = ww;
+-		size_hint->min_height = bh + 1;
+ 	} else {
+ 		size_hint->flags = PMaxSize | PMinSize;
+ 		size_hint->min_width = size_hint->max_width = ww;

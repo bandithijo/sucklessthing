@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 664c527..e153a8d 100644
+index b0b3466..e153a8d 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -87,6 +87,7 @@ typedef struct Client Client;
@@ -36,6 +36,15 @@ index 664c527..e153a8d 100644
  	m->lt[0] = &layouts[0];
  	m->lt[1] = &layouts[1 % LENGTH(layouts)];
  	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
+@@ -835,7 +840,7 @@ focusstack(const Arg *arg)
+ {
+ 	Client *c = NULL, *i;
+ 
+-	if (!selmon->sel || selmon->sel->isfullscreen)
++	if (!selmon->sel)
+ 		return;
+ 	if (arg->i > 0) {
+ 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
 @@ -1030,6 +1035,7 @@ manage(Window w, XWindowAttributes *wa)
  	c->w = c->oldw = wa->width;
  	c->h = c->oldh = wa->height;

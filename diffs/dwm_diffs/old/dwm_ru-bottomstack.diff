@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 664c527..fc9956a 100644
+index b0b3466..fc9956a 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -210,6 +210,8 @@ static void spawn(const Arg *arg);
@@ -11,6 +11,15 @@ index 664c527..fc9956a 100644
  static void togglebar(const Arg *arg);
  static void togglefloating(const Arg *arg);
  static void toggletag(const Arg *arg);
+@@ -835,7 +837,7 @@ focusstack(const Arg *arg)
+ {
+ 	Client *c = NULL, *i;
+ 
+-	if (!selmon->sel || selmon->sel->isfullscreen)
++	if (!selmon->sel)
+ 		return;
+ 	if (arg->i > 0) {
+ 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
 @@ -1699,6 +1701,98 @@ tile(Monitor *m)
  		}
  }

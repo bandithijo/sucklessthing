@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index defa426..66a1a42 100644
+index defa426..9a7cbec 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -1,15 +1,15 @@
@@ -16,12 +16,12 @@ index defa426..66a1a42 100644
 -static const char before[]      = "<";
 -static const char after[]       = ">";
 +static const char font[]        = "JetBrainsMono Nerd Font Bandit:size=8";
-+static const char* normbgcolor  = "#073642";
-+static const char* normfgcolor  = "#586E75";
-+static const char* selbgcolor   = "#002B36";
++static const char* normbgcolor  = "#262626";
++static const char* normfgcolor  = "#808080";
++static const char* selbgcolor   = "#1E1E1E";
 +static const char* selfgcolor   = "#93A1A1";
-+static const char* urgbgcolor   = "#DC322F";
-+static const char* urgfgcolor   = "#EEE8D5";
++static const char* urgbgcolor   = "#F24646";
++static const char* urgfgcolor   = "#E9E9E9";
 +static const char before[]      = "";
 +static const char after[]       = "";
  static const char titletrim[]   = "...";
@@ -36,3 +36,62 @@ index defa426..66a1a42 100644
  static Key keys[] = {
  	/* modifier             key        function     argument */
  	{ MODKEY|ShiftMask,     XK_Return, focusonce,   { 0 } },
+diff --git a/tabbed.c b/tabbed.c
+index eafe28a..ff3ada0 100644
+--- a/tabbed.c
++++ b/tabbed.c
+@@ -152,7 +152,7 @@ static void (*handler[LASTEvent]) (const XEvent *) = {
+ 	[MapRequest] = maprequest,
+ 	[PropertyNotify] = propertynotify,
+ };
+-static int bh, obh, wx, wy, ww, wh;
++static int bh, wx, wy, ww, wh;
+ static unsigned int numlockmask;
+ static Bool running = True, nextfocus, doinitspawn = True,
+             fillagain = False, closelastclient = False,
+@@ -256,15 +256,6 @@ configurenotify(const XEvent *e)
+ 		XFreePixmap(dpy, dc.drawable);
+ 		dc.drawable = XCreatePixmap(dpy, root, ww, wh,
+ 		              DefaultDepth(dpy, screen));
+-
+-		if (!obh && (wh <= bh)) {
+-			obh = bh;
+-			bh = 0;
+-		} else if (!bh && (wh > obh)) {
+-			bh = obh;
+-			obh = 0;
+-		}
+-
+ 		if (sel > -1)
+ 			resize(sel, ww, wh - bh);
+ 		XSync(dpy, False);
+@@ -881,7 +872,7 @@ resize(int c, int w, int h)
+ 	XWindowChanges wc;
+ 
+ 	ce.x = 0;
+-	ce.y = wc.y = bh;
++	ce.y = bh;
+ 	ce.width = wc.width = w;
+ 	ce.height = wc.height = h;
+ 	ce.type = ConfigureNotify;
+@@ -892,7 +883,7 @@ resize(int c, int w, int h)
+ 	ce.override_redirect = False;
+ 	ce.border_width = 0;
+ 
+-	XConfigureWindow(dpy, clients[c]->win, CWY | CWWidth | CWHeight, &wc);
++	XConfigureWindow(dpy, clients[c]->win, CWWidth | CWHeight, &wc);
+ 	XSendEvent(dpy, clients[c]->win, False, StructureNotifyMask,
+ 	           (XEvent *)&ce);
+ }
+@@ -1055,10 +1046,9 @@ setup(void)
+ 
+ 	size_hint = XAllocSizeHints();
+ 	if (!isfixed) {
+-		size_hint->flags = PSize | PMinSize;
++		size_hint->flags = PSize;
+ 		size_hint->height = wh;
+ 		size_hint->width = ww;
+-		size_hint->min_height = bh + 1;
+ 	} else {
+ 		size_hint->flags = PMaxSize | PMinSize;
+ 		size_hint->min_width = size_hint->max_width = ww;

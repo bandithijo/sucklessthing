@@ -1,3 +1,16 @@
+diff --git a/dwm.c b/dwm.c
+index b0b3466..664c527 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -835,7 +835,7 @@ focusstack(const Arg *arg)
+ {
+ 	Client *c = NULL, *i;
+ 
+-	if (!selmon->sel || selmon->sel->isfullscreen)
++	if (!selmon->sel)
+ 		return;
+ 	if (arg->i > 0) {
+ 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
 diff --git a/movestack.c b/movestack.c
 new file mode 100644
 index 0000000..c040462

@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 664c527..a28eb5a 100644
+index b0b3466..a28eb5a 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -49,7 +49,7 @@
@@ -37,6 +37,15 @@ index 664c527..a28eb5a 100644
  		for (c = selmon->stack; c && !ISVISIBLE(c); c = c->snext);
  	if (selmon->sel && selmon->sel != c)
  		unfocus(selmon->sel, 0);
+@@ -835,7 +838,7 @@ focusstack(const Arg *arg)
+ {
+ 	Client *c = NULL, *i;
+ 
+-	if (!selmon->sel || selmon->sel->isfullscreen)
++	if (!selmon->sel)
+ 		return;
+ 	if (arg->i > 0) {
+ 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
 @@ -1357,6 +1360,17 @@ restack(Monitor *m)
  		return;
  	if (m->sel->isfloating || !m->lt[m->sellt]->arrange)
@@ -63,22 +72,22 @@ index 664c527..a28eb5a 100644
  	sendevent(c, wmatom[WMTakeFocus]);
  }
  
-@@ -1719,9 +1734,36 @@ togglefloating(const Arg *arg)
+@@ -1719,7 +1734,34 @@ togglefloating(const Arg *arg)
  	if (selmon->sel->isfloating)
  		resize(selmon->sel, selmon->sel->x, selmon->sel->y,
  			selmon->sel->w, selmon->sel->h, 0);
 +	else
 +		selmon->sel->isalwaysontop = 0; /* disabled, turn this off too */
- 	arrange(selmon);
- }
- 
++	arrange(selmon);
++}
++
 +void
 +togglesticky(const Arg *arg)
 +{
 +	if (!selmon->sel)
 +		return;
 +	selmon->sel->issticky = !selmon->sel->issticky;
-+	arrange(selmon);
+ 	arrange(selmon);
 +
 +	if (selmon->sel->isfullscreen)
 +		return;
@@ -95,11 +104,9 @@ index 664c527..a28eb5a 100644
 +		selmon->sel->isfloating = 1;
 +		selmon->sel->isalwaysontop = 1;
 +	}
-+}
-+
+ }
+ 
  void
- toggletag(const Arg *arg)
- {
 @@ -1754,6 +1796,7 @@ unfocus(Client *c, int setfocus)
  {
  	if (!c)

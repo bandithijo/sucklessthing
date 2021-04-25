@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 664c527..ac8e4ec 100644
+index b0b3466..ac8e4ec 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -111,6 +111,7 @@ typedef struct {
@@ -63,6 +63,15 @@ index 664c527..ac8e4ec 100644
  	return m;
  }
  
+@@ -835,7 +861,7 @@ focusstack(const Arg *arg)
+ {
+ 	Client *c = NULL, *i;
+ 
+-	if (!selmon->sel || selmon->sel->isfullscreen)
++	if (!selmon->sel)
+ 		return;
+ 	if (arg->i > 0) {
+ 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
 @@ -967,7 +993,7 @@ grabkeys(void)
  void
  incnmaster(const Arg *arg)
