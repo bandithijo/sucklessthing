@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# TODO:
+# `TODO`:
 # 1. Solve PATH definition
 
 local_path = '~/.local/bin'
