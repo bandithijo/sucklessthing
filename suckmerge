@@ -54,7 +54,7 @@ dwm_branches = [
   'dualstatus',        # 33* : statusallmons
   'ipc',               # 34* : pertag, cfacts-dragcfact
   'canfocusfloating',  # 36* : center^3, actualfullscreen^1
-  'decorhints',        # 37* : ipc, center
+  'decorhints',        # 37* : ipc, center^3, canfocusfloating^6
   'dwmc',              # 38* : zoomswap, ipc^2 <-
 ]
 
@@ -91,7 +91,8 @@ dmenu_branches = [
   'xresources',        # 3
   'numbers',           # 4
   'grid',              # 5*
-  'symbols'            # 6*
+  'symbols',           # 6*
+  'center'             # 7*
 ]
 
 # For tabbed
@@ -220,7 +221,19 @@ def option_for_debugging(branches)
   sleep 1
   clean_reset
   merge_selected(branches)
-  make_only
+
+  puts "\nTIPS: If there is an error on patching, choose 'n' on question below."
+
+  print "\nDo you want to make? [Y/n] "
+  want = gets
+  if want.strip == "y" || want.strip == "Y" || want == "\n"
+    make_only
+  elsif want.strip == "n" || want.strip == "N"
+    exit
+  else
+    puts "Wrong option!"
+    exit
+  end
 end
 
 def option_for_installing(branches, dir_name)
