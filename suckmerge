@@ -74,7 +74,8 @@ st_branches = [
   'w3m',               # 12
   'cursorblink',       # 13
   'invert',            # 14*
-  'undercurl',         # 15 : ligatures^2 <-
+  'undercurl',         # 15 : ligatures^2
+  'appsync',           # 16* <-
 ]
 
 # For slock

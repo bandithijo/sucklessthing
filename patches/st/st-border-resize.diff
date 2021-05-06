@@ -1,0 +1,44 @@
+diff --git a/config.def.h b/config.def.h
+index 6f05dce..45b3255 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -199,6 +199,8 @@ static Shortcut shortcuts[] = {
+ 	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
+ 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
+ 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
++	{ TERMMOD,              XK_I,           borderesize,    {.f = +1} },
++	{ TERMMOD,              XK_D,           borderesize,    {.f = -1} },
+ };
+ 
+ /*
+diff --git a/x.c b/x.c
+index 120e495..14d7dd5 100644
+--- a/x.c
++++ b/x.c
+@@ -59,6 +59,7 @@ static void zoom(const Arg *);
+ static void zoomabs(const Arg *);
+ static void zoomreset(const Arg *);
+ static void ttysend(const Arg *);
++static void borderesize(const Arg *);
+ 
+ /* config.h for applying patches and the configuration. */
+ #include "config.h"
+@@ -328,6 +329,18 @@ ttysend(const Arg *arg)
+ 	ttywrite(arg->s, strlen(arg->s), 1);
+ }
+ 
++void
++borderesize(const Arg *arg)
++{
++	if ((borderpx + arg->f) >= 0)
++		borderpx += arg->f;
++	else
++		return;
++
++	redraw();
++	xhints();
++}
++
+ int
+ evcol(XEvent *e)
+ {
