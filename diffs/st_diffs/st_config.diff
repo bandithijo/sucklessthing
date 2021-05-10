@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 6f05dce..36d4288 100644
+index 6f05dce..5b899ec 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -5,8 +5,15 @@
@@ -149,7 +149,7 @@ index 6f05dce..36d4288 100644
  	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
  	{ ShiftMask,            Button4, ttysend,        {.s = "\033[5;2~"} },
  	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
-@@ -199,6 +269,11 @@ static Shortcut shortcuts[] = {
+@@ -199,6 +269,13 @@ static Shortcut shortcuts[] = {
  	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
  	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
  	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
@@ -158,6 +158,8 @@ index 6f05dce..36d4288 100644
 +	{ MODKEY,               XK_o,           opencopied,     {.v = "xdg-open"} },
 +	{ TERMMOD,              XK_Return,      newterm,        {.i =  0} },
 +	{ TERMMOD,              XK_X,           invert,         { }       },
++	{ TERMMOD,              XK_I,           borderesize,    {.f = +1} },
++	{ TERMMOD,              XK_D,           borderesize,    {.f = -1} },
  };
  
  /*

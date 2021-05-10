@@ -54,7 +54,7 @@ dwm_branches = [
   'dualstatus',        # 33* : statusallmons
   'ipc',               # 34* : pertag, cfacts-dragcfact
   'canfocusfloating',  # 36* : center^3, actualfullscreen^1
-  'decorhints',        # 37* : ipc, center^3, canfocusfloating^6
+  # 'decorhints',        # 37* : ipc, center^3, canfocusfloating^6
   'dwmc',              # 38* : zoomswap, ipc^2 <-
 ]
 
@@ -66,16 +66,19 @@ st_branches = [
   'workingdir',        # 4
   'boxdraw',           # 5*
   'scrollback',        # 6*
-  'openclipboard',     # 7* : scrollback
-  'newterm',           # 8* : openclipboard^1
+  'openclipboard',     # 7*  : scrollback
+  'newterm',           # 8*  : openclipboard^1
   'bold-is-not-bright',# 9
   'xresources',        # 10*
-  'ligatures',         # 11 : boxdraw, scrollback
+  'ligatures',         # 11  : boxdraw, scrollback
   'w3m',               # 12
   'cursorblink',       # 13
   'invert',            # 14*
-  'undercurl',         # 15 : ligatures^2
-  'appsync',           # 16* <-
+  'undercurl',         # 15  : ligatures^2
+  'appsync',           # 16*
+  'border-resize',     # 17* : invert
+  'xresources-livereload', # 18* : xresources
+  'universcroll',      # 19* <-
 ]
 
 # For slock

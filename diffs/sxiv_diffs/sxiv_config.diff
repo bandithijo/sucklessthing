@@ -15,3 +15,14 @@ index 9981ca3..6ed5a87 100644
  
  #endif
  #ifdef _MAPPINGS_CONFIG
+diff --git a/exec/key-handler b/exec/key-handler
+index 3b50e4c..f6080c4 100755
+--- a/exec/key-handler
++++ b/exec/key-handler
+@@ -31,5 +31,6 @@ case "$1" in
+ "C-comma")  rotate 270 ;;
+ "C-period") rotate  90 ;;
+ "C-slash")  rotate 180 ;;
++"C-d")      while read file; do mv "$file" ~/.trash; done ;;
+ esac
+ 
