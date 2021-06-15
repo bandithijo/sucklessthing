@@ -1,8 +1,33 @@
 diff --git a/tabbed.c b/tabbed.c
-index ff3ada0..c3826c2 100644
+index eafe28a..c3826c2 100644
 --- a/tabbed.c
 +++ b/tabbed.c
-@@ -317,6 +317,7 @@ drawbar(void)
+@@ -152,7 +152,7 @@ static void (*handler[LASTEvent]) (const XEvent *) = {
+ 	[MapRequest] = maprequest,
+ 	[PropertyNotify] = propertynotify,
+ };
+-static int bh, obh, wx, wy, ww, wh;
++static int bh, wx, wy, ww, wh;
+ static unsigned int numlockmask;
+ static Bool running = True, nextfocus, doinitspawn = True,
+             fillagain = False, closelastclient = False,
+@@ -256,15 +256,6 @@ configurenotify(const XEvent *e)
+ 		XFreePixmap(dpy, dc.drawable);
+ 		dc.drawable = XCreatePixmap(dpy, root, ww, wh,
+ 		              DefaultDepth(dpy, screen));
+-
+-		if (!obh && (wh <= bh)) {
+-			obh = bh;
+-			bh = 0;
+-		} else if (!bh && (wh > obh)) {
+-			bh = obh;
+-			obh = 0;
+-		}
+-
+ 		if (sel > -1)
+ 			resize(sel, ww, wh - bh);
+ 		XSync(dpy, False);
+@@ -326,6 +317,7 @@ drawbar(void)
  	XftColor *col;
  	int c, cc, fc, width;
  	char *name = NULL;
@@ -10,7 +35,7 @@ index ff3ada0..c3826c2 100644
  
  	if (nclients == 0) {
  		dc.x = 0;
-@@ -358,7 +359,9 @@ drawbar(void)
+@@ -367,7 +359,9 @@ drawbar(void)
  		} else {
  			col = clients[c]->urgent ? dc.urg : dc.norm;
  		}
@@ -21,3 +46,33 @@ index ff3ada0..c3826c2 100644
  		dc.x += dc.w;
  		clients[c]->tabx = dc.x;
  	}
+@@ -881,7 +875,7 @@ resize(int c, int w, int h)
+ 	XWindowChanges wc;
+ 
+ 	ce.x = 0;
+-	ce.y = wc.y = bh;
++	ce.y = bh;
+ 	ce.width = wc.width = w;
+ 	ce.height = wc.height = h;
+ 	ce.type = ConfigureNotify;
+@@ -892,7 +886,7 @@ resize(int c, int w, int h)
+ 	ce.override_redirect = False;
+ 	ce.border_width = 0;
+ 
+-	XConfigureWindow(dpy, clients[c]->win, CWY | CWWidth | CWHeight, &wc);
++	XConfigureWindow(dpy, clients[c]->win, CWWidth | CWHeight, &wc);
+ 	XSendEvent(dpy, clients[c]->win, False, StructureNotifyMask,
+ 	           (XEvent *)&ce);
+ }
+@@ -1055,10 +1049,9 @@ setup(void)
+ 
+ 	size_hint = XAllocSizeHints();
+ 	if (!isfixed) {
+-		size_hint->flags = PSize | PMinSize;
++		size_hint->flags = PSize;
+ 		size_hint->height = wh;
+ 		size_hint->width = ww;
+-		size_hint->min_height = bh + 1;
+ 	} else {
+ 		size_hint->flags = PMaxSize | PMinSize;
+ 		size_hint->min_width = size_hint->max_width = ww;

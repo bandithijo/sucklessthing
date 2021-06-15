@@ -1,5 +1,5 @@
 diff --git a/x.c b/x.c
-index 8bf998e..ffbec71 100644
+index 7186040..11f92f5 100644
 --- a/x.c
 +++ b/x.c
 @@ -156,6 +156,8 @@ static void xresize(int, int);
@@ -8,7 +8,7 @@ index 8bf998e..ffbec71 100644
  static int xloadfont(Font *, FcPattern *);
 +static int xloadsparefont(FcPattern *, int);
 +static void xloadsparefonts(void);
- static void xloadfonts(char *, double);
+ static void xloadfonts(const char *, double);
  static void xunloadfont(Font *);
  static void xunloadfonts(void);
 @@ -306,6 +308,7 @@ zoomabs(const Arg *arg)
@@ -19,18 +19,7 @@ index 8bf998e..ffbec71 100644
  	cresize(0, 0);
  	redraw();
  	xhints();
-@@ -387,9 +390,7 @@ mousereport(XEvent *e)
- 			button = 3;
- 		} else {
- 			button -= Button1;
--			if (button >= 7)
--				button += 128 - 7;
--			else if (button >= 3)
-+			if (button >= 3)
- 				button += 64 - 3;
- 		}
- 		if (e->xbutton.type == ButtonPress) {
-@@ -1021,6 +1022,101 @@ xloadfonts(char *fontstr, double fontsize)
+@@ -1021,6 +1024,101 @@ xloadfonts(const char *fontstr, double fontsize)
  	FcPatternDestroy(pattern);
  }
  
@@ -132,7 +121,7 @@ index 8bf998e..ffbec71 100644
  void
  xunloadfont(Font *f)
  {
-@@ -1118,6 +1214,9 @@ xinit(int cols, int rows)
+@@ -1118,6 +1216,9 @@ xinit(int cols, int rows)
  	usedfont = (opt_font == NULL)? font : opt_font;
  	xloadfonts(usedfont, 0);
  
