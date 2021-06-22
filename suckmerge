@@ -92,7 +92,8 @@ dmenu_branches = [
   'numbers',           # 4
   'grid',              # 5*
   'symbols',           # 6*
-  'center'             # 7*
+  'center',            # 7*
+  'fuzzymatch'         # 8* : center
 ]
 
 # For tabbed

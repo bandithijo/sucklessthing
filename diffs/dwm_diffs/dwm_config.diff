@@ -1,8 +1,8 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..453d93b 100644
+index 1c0b587..87b488a 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -2,49 +2,150 @@
+@@ -2,49 +2,153 @@
  
  /* appearance */
  static const unsigned int borderpx  = 1;        /* border pixel of windows */
@@ -68,6 +68,7 @@ index 1c0b587..453d93b 100644
 +    { "TelegramDesktop",      NULL,                 NULL,                         1 << 7,        0,            0,           -1 },
 +    { "KotatogramDesktop",    NULL,                 NULL,                         1 << 7,        0,            0,           -1 },
 +    { "discord",              NULL,                 NULL,                         1 << 7,        0,            0,           -1 },
++    { "Slack",                NULL,                 NULL,                         1 << 7,        0,            0,            1 },
 +    { "Thunderbird",          NULL,                 NULL,                         1 << 6,        0,            0,           -1 },
 +    { "Hexchat",              NULL,                 NULL,                         1 << 5,        0,            0,           -1 },
 +    { "mpv",                  NULL,                 NULL,                         0,             0,            0,           -1 },
@@ -76,7 +77,7 @@ index 1c0b587..453d93b 100644
 +    { "Org.gnome.Nautilus",   NULL,                 NULL,                         1 << 2,        0,            0,           -1 },
 +    { "St",                   NULL,                 "NeoMutt",                    1 << 6,        0,            0,           -1 },
 +    { "St",                   NULL,                 "Ranger",                     0,             0,            0,           -1 },
-+    { "St",                   NULL,                 "Newsboat",                   1 << 5,        0,            0,           -1 },
++    { "St",                   NULL,                 "NewsBoat",                   1 << 4,        0,            0,           -1 },
 +    { "St",                   NULL,                 "WeeChat",                    1 << 5,        0,            0,           -1 },
 +    { "Transmission-gtk",     NULL,                 NULL,                         1 << 4,        0,            0,           -1 },
 +    { "Postbird",             NULL,                 NULL,                         0,             0,            0,           -1 },
@@ -133,6 +134,7 @@ index 1c0b587..453d93b 100644
 +    { NULL,                   NULL,                 "xzoom x2",                   0,             0,            1,           -1 },
 +    { "Crow Translate",       NULL,                 NULL,                         0,             0,            1,           -1 },
 +    { "Dragon-drag-and-drop", NULL,                 NULL,                         0,             1,            1,           -1 },
++    { "Dragon",               NULL,                 NULL,                         0,             1,            1,           -1 },
 +    { "Colorgrab",            NULL,                 NULL,                         0,             0,            1,           -1 },
 +    { "Pidgin",               NULL,                 NULL,                         0,             0,            1,           -1 },
 +    { "Pidgin",               NULL,                 "Buddy List",                 0,             0,            1,           -1 },
@@ -144,6 +146,7 @@ index 1c0b587..453d93b 100644
 +    { "Gcr-prompter",         "gcr-prompter",       NULL,                         0,             1,            1,           -1 },
 +    { "winbox64.exe",         NULL,                 NULL,                         0,             1,            1,           -1 },
 +    { "xfreerdp",             "xfreerdp",           "FreeRDP:",                   0,             1,            1,           -1 },
++    { "lxqt-openssh-askpass", NULL,                 NULL,                         0,             1,            1,           -1 },
 +    /* class                  instance              title                         tags mask      iscentered    isfloating   monitor */
 +    /* Scratchpad */
 +    { NULL,                   NULL,                 "hidden",               scratchpad_mask,     0,            1,           -1 },
@@ -176,7 +179,7 @@ index 1c0b587..453d93b 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -55,61 +156,179 @@ static const Layout layouts[] = {
+@@ -55,61 +159,179 @@ static const Layout layouts[] = {
  #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
  
  /* commands */

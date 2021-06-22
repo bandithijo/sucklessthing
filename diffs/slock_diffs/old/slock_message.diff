@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 9855e21..c2a0ab2 100644
+index 9855e21..05726bc 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -10,3 +10,12 @@ static const char *colorname[NUMCOLS] = {
@@ -14,7 +14,7 @@ index 9855e21..c2a0ab2 100644
 +static const char * text_color = "#ffffff";
 +
 +/* text size (must be a valid size) */
-+static const char * font_name = "6x10";
++static const char * font_name = "9x15";
 diff --git a/config.mk b/config.mk
 index 74429ae..c4ccf66 100644
 --- a/config.mk
