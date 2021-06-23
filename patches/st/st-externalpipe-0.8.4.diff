@@ -1,8 +1,24 @@
 diff --git a/st.c b/st.c
-index ede7ae6..f55d30f 100644
+index 76b7e0d..0e9a614 100644
 --- a/st.c
 +++ b/st.c
-@@ -1914,6 +1914,59 @@ strparse(void)
+@@ -723,8 +723,14 @@ sigchld(int a)
+ 	if ((p = waitpid(pid, &stat, WNOHANG)) < 0)
+ 		die("waiting for pid %hd failed: %s\n", pid, strerror(errno));
+ 
+-	if (pid != p)
++	if (pid != p) {
++		if (p == 0 && wait(&stat) < 0)
++			die("wait: %s\n", strerror(errno));
++
++		/* reinstall sigchld handler */
++		signal(SIGCHLD, sigchld);
+ 		return;
++	}
+ 
+ 	if (WIFEXITED(stat) && WEXITSTATUS(stat))
+ 		die("child exited with status %d\n", WEXITSTATUS(stat));
+@@ -1926,6 +1932,59 @@ strparse(void)
  	}
  }
  
@@ -63,10 +79,10 @@ index ede7ae6..f55d30f 100644
  strdump(void)
  {
 diff --git a/st.h b/st.h
-index 4da3051..cb7101f 100644
+index 3d351b6..392b64e 100644
 --- a/st.h
 +++ b/st.h
-@@ -80,6 +80,7 @@ void die(const char *, ...);
+@@ -81,6 +81,7 @@ void die(const char *, ...);
  void redraw(void);
  void draw(void);
  
