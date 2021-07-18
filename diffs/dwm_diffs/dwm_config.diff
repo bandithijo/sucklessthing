@@ -1,8 +1,8 @@
 diff --git a/config.def.h b/config.def.h
-index 1c0b587..87b488a 100644
+index 1c0b587..fc97eb1 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -2,49 +2,153 @@
+@@ -2,49 +2,150 @@
  
  /* appearance */
  static const unsigned int borderpx  = 1;        /* border pixel of windows */
@@ -27,7 +27,6 @@ index 1c0b587..87b488a 100644
 +static const int warpcursorposition = 0;        /* 0 means center, 1 means bottom right, 2 means bottom center */
 +static const char *fonts[]          = {
 +    "JetBrainsMono Nerd Font Bandit:style=Medium:size=8",
-+    "Font Awesome 5 Brands:style=Regular:size=8",
 +    "octicons:style=Medium:size=8"
 +};
 +static char normbgcolor[]           = "#1e1e1e";
@@ -63,8 +62,6 @@ index 1c0b587..87b488a 100644
 +    { "Gimp-2.10",            NULL,                 NULL,                         0,             0,            0,           -1 },
 +    { "firefox",              NULL,                 NULL,                         2,             0,            0,           -1 },
 +    { "qutebrowser",          NULL,                 NULL,                         2,             0,            0,           -1 },
-+    { "Chromium-browser",     NULL,                 NULL,                         2,             0,            0,           -1 },
-+    { "Google-chrome",        NULL,                 NULL,                         2,             0,            0,           -1 },
 +    { "TelegramDesktop",      NULL,                 NULL,                         1 << 7,        0,            0,           -1 },
 +    { "KotatogramDesktop",    NULL,                 NULL,                         1 << 7,        0,            0,           -1 },
 +    { "discord",              NULL,                 NULL,                         1 << 7,        0,            0,           -1 },
@@ -96,7 +93,7 @@ index 1c0b587..87b488a 100644
 +    { "St",                   NULL,                 "st+",                        0,             1,            1,           -1 },
 +    { "St",                   NULL,                 "st+:",                       0,             0,            1,           -1 },
 +    { "Arandr",               NULL,                 NULL,                         0,             1,            1,           -1 },
-+    { "Gcolor2",              NULL,                 NULL,                         0,             0,            1,           -1 },
++    { "Gcolor2",              NULL,                 NULL,                         0,             1,            1,           -1 },
 +    { "Gcolor3",              NULL,                 "Color Picker",               0,             0,            1,           -1 },
 +    { "Gcolor3",              NULL,                 "Color picker",               0,             0,            1,           -1 },
 +    { "Gnome-calculator",     NULL,                 "Calculator",                 0,             0,            1,           -1 },
@@ -179,7 +176,7 @@ index 1c0b587..87b488a 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -55,61 +159,179 @@ static const Layout layouts[] = {
+@@ -55,61 +156,179 @@ static const Layout layouts[] = {
  #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
  
  /* commands */

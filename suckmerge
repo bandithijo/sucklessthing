@@ -61,8 +61,7 @@ st_branches = [
   'workingdir',        # 3
   'boxdraw',           # 4*
   'scrollback',        # 5*
-  'openclipboard',     # 6*  : scrollback
-  'newterm',           # 7*  : openclipboard^1
+  'newterm',           # 7*
   'bold-is-not-bright',# 8
   'xresources',        # 9*
   'ligatures',         # 10  : boxdraw, scrollback
