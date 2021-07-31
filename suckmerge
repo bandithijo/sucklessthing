@@ -51,7 +51,9 @@ dwm_branches = [
   'ru-centeredmaster', # 31*
   'aspectresize',      # 32*
   'canfocusfloating',  # 33* : center^3, actualfullscreen^1
-  'dwmc',              # 34* : zoomswap <-
+  'dwmc',              # 34* : zoomswap
+  'dragmfact',         # 35* : moveresize
+  'dynamicswallow',    # 36* : dwmc^, movethrow^ <-
 ]
 
 # For st
