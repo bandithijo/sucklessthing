@@ -75,7 +75,8 @@ st_branches = [
   'border-resize',     # 16* : invert
   'xresources-livereload', # 17* : xresources
   'universcroll',      # 18*
-  'externalpipe',      # 19* <-
+  'externalpipe',      # 19*
+  'defaultfontsize',   # 20 <-
 ]
 
 # For slock

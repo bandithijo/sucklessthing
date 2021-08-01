@@ -1,3 +1,15 @@
+diff --git a/config.def.h b/config.def.h
+index a2ac963..1c0b587 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -35,7 +35,6 @@ static const Rule rules[] = {
+ static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
+ static const int nmaster     = 1;    /* number of clients in master area */
+ static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
+-static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
+ 
+ static const Layout layouts[] = {
+ 	/* symbol     arrange function */
 diff --git a/dwm.1 b/dwm.1
 index ddc8321..86e73f9 100644
 --- a/dwm.1
@@ -40,7 +52,7 @@ index ddc8321..86e73f9 100644
  dwm is customized by creating a custom config.h and (re)compiling the source
  code. This keeps it fast, secure and simple.
 diff --git a/dwm.c b/dwm.c
-index b0b3466..40f261a 100644
+index 5e4d494..40f261a 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -29,6 +29,7 @@
@@ -289,7 +301,7 @@ index b0b3466..40f261a 100644
  {
  	Client *c = NULL, *i;
  
--	if (!selmon->sel || selmon->sel->isfullscreen)
+-	if (!selmon->sel || (selmon->sel->isfullscreen && lockfullscreen))
 +	if (!selmon->sel)
  		return;
  	if (arg->i > 0) {
