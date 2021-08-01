@@ -1283,7 +1283,7 @@ index e6e4369..eb436bb 100644
  int xstartdraw(void);
  void xximspot(int, int);
 diff --git a/x.c b/x.c
-index 7186040..568ad70 100644
+index 248d505..568ad70 100644
 --- a/x.c
 +++ b/x.c
 @@ -17,6 +17,7 @@
@@ -1294,6 +1294,15 @@ index 7186040..568ad70 100644
  #include "st.h"
  #include "win.h"
  
+@@ -48,7 +49,7 @@ typedef struct {
+ /* X modifiers */
+ #define XK_ANY_MOD    UINT_MAX
+ #define XK_NO_MOD     0
+-#define XK_SWITCH_MOD (1<<13|1<<14)
++#define XK_SWITCH_MOD (1<<13)
+ 
+ /* function definitions used in config.h */
+ static void clipcopy(const Arg *);
 @@ -77,16 +78,6 @@ typedef XftDraw *Draw;
  typedef XftColor Color;
  typedef XftGlyphFontSpec GlyphFontSpec;

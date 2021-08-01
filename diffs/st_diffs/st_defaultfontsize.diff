@@ -1,0 +1,66 @@
+diff --git a/st.1 b/st.1
+index 39120b4..57ddfb8 100644
+--- a/st.1
++++ b/st.1
+@@ -22,6 +22,8 @@ st \- simple terminal
+ .IR line ]
+ .RB [ \-w
+ .IR windowid ]
++.RB [ \-z
++.IR fontsize ]
+ .RB [[ \-e ]
+ .IR command
+ .RI [ arguments ...]]
+@@ -44,6 +46,8 @@ st \- simple terminal
+ .IR title ]
+ .RB [ \-w
+ .IR windowid ]
++.RB [ \-z
++.IR fontsize ]
+ .RB \-l
+ .IR line
+ .RI [ stty_args ...]
+@@ -91,6 +95,10 @@ defines the window title (default 'st').
+ embeds st within the window identified by
+ .I windowid
+ .TP
++.BI \-z " fontsize"
++sets the default fontsize to
++.I fontsize
++.TP
+ .BI \-l " line"
+ use a tty
+ .I line
+diff --git a/x.c b/x.c
+index 248d505..75dd38c 100644
+--- a/x.c
++++ b/x.c
+@@ -4,6 +4,7 @@
+ #include <limits.h>
+ #include <locale.h>
+ #include <signal.h>
++#include <stdlib.h>
+ #include <sys/select.h>
+ #include <time.h>
+ #include <unistd.h>
+@@ -1116,7 +1117,7 @@ xinit(int cols, int rows)
+ 		die("could not init fontconfig.\n");
+ 
+ 	usedfont = (opt_font == NULL)? font : opt_font;
+-	xloadfonts(usedfont, 0);
++	xloadfonts(usedfont, defaultfontsize);
+ 
+ 	/* colors */
+ 	xw.cmap = XDefaultColormap(xw.dpy, xw.scr);
+@@ -2040,6 +2041,11 @@ main(int argc, char *argv[])
+ 	case 'v':
+ 		die("%s " VERSION "\n", argv0);
+ 		break;
++	case 'z':
++		defaultfontsize = strtod(EARGF(usage()), NULL);
++		if (!(defaultfontsize > 0))
++			usage();
++		break;
+ 	default:
+ 		usage();
+ 	} ARGEND;

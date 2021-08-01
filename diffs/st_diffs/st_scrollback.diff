@@ -336,3 +336,16 @@ index fa2eddf..adda2db 100644
  void printscreen(const Arg *);
  void printsel(const Arg *);
  void sendbreak(const Arg *);
+diff --git a/x.c b/x.c
+index 248d505..7186040 100644
+--- a/x.c
++++ b/x.c
+@@ -48,7 +48,7 @@ typedef struct {
+ /* X modifiers */
+ #define XK_ANY_MOD    UINT_MAX
+ #define XK_NO_MOD     0
+-#define XK_SWITCH_MOD (1<<13|1<<14)
++#define XK_SWITCH_MOD (1<<13)
+ 
+ /* function definitions used in config.h */
+ static void clipcopy(const Arg *);

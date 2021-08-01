@@ -76,7 +76,8 @@ st_branches = [
   'xresources-livereload', # 17* : xresources
   'universcroll',      # 18*
   'externalpipe',      # 19*
-  'defaultfontsize',   # 20 <-
+  'defaultfontsize',   # 20
+  'dontcutoffafterresize',# 21 : scrollback <-
 ]
 
 # For slock

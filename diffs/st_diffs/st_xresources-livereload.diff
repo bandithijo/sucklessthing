@@ -159,7 +159,7 @@ index fa2eddf..3d351b6 100644
  /* config.h globals */
  extern char *utmp;
 diff --git a/x.c b/x.c
-index 7186040..a729c04 100644
+index 248d505..a729c04 100644
 --- a/x.c
 +++ b/x.c
 @@ -14,6 +14,7 @@
@@ -170,7 +170,7 @@ index 7186040..a729c04 100644
  
  char *argv0;
  #include "arg.h"
-@@ -45,6 +46,19 @@ typedef struct {
+@@ -45,10 +46,23 @@ typedef struct {
  	signed char appcursor; /* application cursor */
  } Key;
  
@@ -190,6 +190,11 @@ index 7186040..a729c04 100644
  /* X modifiers */
  #define XK_ANY_MOD    UINT_MAX
  #define XK_NO_MOD     0
+-#define XK_SWITCH_MOD (1<<13|1<<14)
++#define XK_SWITCH_MOD (1<<13)
+ 
+ /* function definitions used in config.h */
+ static void clipcopy(const Arg *);
 @@ -156,7 +170,7 @@ static void xresize(int, int);
  static void xhints(void);
  static int xloadcolor(int, const char *, Color *);

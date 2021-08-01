@@ -1155,7 +1155,7 @@ index e6e4369..8b5b618 100644
  void xfinishdraw(void);
  void xloadcols(void);
 diff --git a/x.c b/x.c
-index 7186040..aec76ef 100644
+index 248d505..aec76ef 100644
 --- a/x.c
 +++ b/x.c
 @@ -19,6 +19,7 @@ char *argv0;
@@ -1166,6 +1166,15 @@ index 7186040..aec76ef 100644
  
  /* types used in config.h */
  typedef struct {
+@@ -48,7 +49,7 @@ typedef struct {
+ /* X modifiers */
+ #define XK_ANY_MOD    UINT_MAX
+ #define XK_NO_MOD     0
+-#define XK_SWITCH_MOD (1<<13|1<<14)
++#define XK_SWITCH_MOD (1<<13)
+ 
+ /* function definitions used in config.h */
+ static void clipcopy(const Arg *);
 @@ -156,7 +157,7 @@ static void xresize(int, int);
  static void xhints(void);
  static int xloadcolor(int, const char *, Color *);

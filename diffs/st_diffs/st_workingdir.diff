@@ -192,9 +192,18 @@ index fa2eddf..3d351b6 100644
  /* config.h globals */
  extern char *utmp;
 diff --git a/x.c b/x.c
-index 7186040..95a174a 100644
+index 248d505..2fc4b7e 100644
 --- a/x.c
 +++ b/x.c
+@@ -48,7 +48,7 @@ typedef struct {
+ /* X modifiers */
+ #define XK_ANY_MOD    UINT_MAX
+ #define XK_NO_MOD     0
+-#define XK_SWITCH_MOD (1<<13|1<<14)
++#define XK_SWITCH_MOD (1<<13)
+ 
+ /* function definitions used in config.h */
+ static void clipcopy(const Arg *);
 @@ -156,7 +156,7 @@ static void xresize(int, int);
  static void xhints(void);
  static int xloadcolor(int, const char *, Color *);
@@ -258,16 +267,16 @@ index 7186040..95a174a 100644
  	    "          [-T title] [-t title] [-w windowid] -l line"
  	    " [stty_args ...]\n", argv0, argv0);
  }
-@@ -2040,6 +2039,9 @@ main(int argc, char *argv[])
- 	case 'v':
- 		die("%s " VERSION "\n", argv0);
+@@ -2007,6 +2006,9 @@ main(int argc, char *argv[])
+ 	case 'c':
+ 		opt_class = EARGF(usage());
  		break;
 +	case 'd':
 +		opt_dir = EARGF(usage());
 +		break;
- 	default:
- 		usage();
- 	} ARGEND;
+ 	case 'e':
+ 		if (argc > 0)
+ 			--argc, ++argv;
 @@ -2059,6 +2061,7 @@ run:
  	xinit(cols, rows);
  	xsetenv();

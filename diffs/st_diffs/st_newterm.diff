@@ -341,51 +341,29 @@ index ebdf360..68e801a 100644
  	term.ocy = term.c.y;
  	xfinishdraw();
 diff --git a/st.h b/st.h
-index fa2eddf..171ca63 100644
+index fa2eddf..92abda7 100644
 --- a/st.h
 +++ b/st.h
-@@ -81,6 +81,10 @@ void die(const char *, ...);
+@@ -81,6 +81,9 @@ void die(const char *, ...);
  void redraw(void);
  void draw(void);
  
 +void kscrolldown(const Arg *);
 +void kscrollup(const Arg *);
 +void newterm(const Arg *);
-+void opencopied(const Arg *);
  void printscreen(const Arg *);
  void printsel(const Arg *);
  void sendbreak(const Arg *);
 diff --git a/x.c b/x.c
-index 7186040..2997665 100644
+index 248d505..7186040 100644
 --- a/x.c
 +++ b/x.c
-@@ -1993,6 +1993,29 @@ usage(void)
- 	    " [stty_args ...]\n", argv0, argv0);
- }
+@@ -48,7 +48,7 @@ typedef struct {
+ /* X modifiers */
+ #define XK_ANY_MOD    UINT_MAX
+ #define XK_NO_MOD     0
+-#define XK_SWITCH_MOD (1<<13|1<<14)
++#define XK_SWITCH_MOD (1<<13)
  
-+void
-+opencopied(const Arg *arg)
-+{
-+	const size_t max_cmd = 2048;
-+	const char *clip = xsel.clipboard;
-+	if(!clip) {
-+		fprintf(stderr, "Warning: nothing copied to clipboard\n");
-+		return;
-+	}
-+
-+	/* account for space/quote (3) and \0 (1) and & (1) */
-+	char cmd[max_cmd + strlen(clip) + 5];
-+	strncpy(cmd, (char *)arg->v, max_cmd);
-+	cmd[max_cmd] = '\0';
-+
-+	strcat(cmd, " \"");
-+	strcat(cmd, clip);
-+	strcat(cmd, "\"");
-+	strcat(cmd, "&");
-+
-+	system(cmd);
-+}
-+
- int
- main(int argc, char *argv[])
- {
+ /* function definitions used in config.h */
+ static void clipcopy(const Arg *);

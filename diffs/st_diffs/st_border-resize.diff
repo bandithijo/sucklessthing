@@ -159,9 +159,18 @@ index fa2eddf..3d351b6 100644
  /* config.h globals */
  extern char *utmp;
 diff --git a/x.c b/x.c
-index 7186040..3176d13 100644
+index 248d505..3176d13 100644
 --- a/x.c
 +++ b/x.c
+@@ -48,7 +48,7 @@ typedef struct {
+ /* X modifiers */
+ #define XK_ANY_MOD    UINT_MAX
+ #define XK_NO_MOD     0
+-#define XK_SWITCH_MOD (1<<13|1<<14)
++#define XK_SWITCH_MOD (1<<13)
+ 
+ /* function definitions used in config.h */
+ static void clipcopy(const Arg *);
 @@ -59,6 +59,8 @@ static void zoom(const Arg *);
  static void zoomabs(const Arg *);
  static void zoomreset(const Arg *);
