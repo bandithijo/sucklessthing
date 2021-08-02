@@ -52,8 +52,9 @@ dwm_branches = [
   'aspectresize',      # 32*
   'canfocusfloating',  # 33* : center^3, actualfullscreen^1
   'dwmc',              # 34* : zoomswap
-  'dragmfact',         # 35* : moveresize
-  'dynamicswallow',    # 36* : dwmc^, movethrow^ <-
+  'dynamicswallow',    # 35* : dwmc^1, movethrow^1
+  'dragmfact',         # 36* : dynamicswallow^4, cfacts-dragcfact^1
+  'sendmon-keepfocus', # 37 <-
 ]
 
 # For st

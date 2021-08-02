@@ -23,7 +23,7 @@ index 77bcbc0..0965d94 100644
  
  .PHONY: all options clean dist install uninstall
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..a9fbfd9 100644
+index 5e4d494..297066a 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -58,7 +58,7 @@
@@ -516,7 +516,7 @@ index 5e4d494..a9fbfd9 100644
  Client *
  nexttiled(Client *c)
  {
-@@ -1200,25 +1517,18 @@ nexttiled(Client *c)
+@@ -1200,25 +1517,20 @@ nexttiled(Client *c)
  	return c;
  }
  
@@ -543,11 +543,13 @@ index 5e4d494..a9fbfd9 100644
 +	if ((ev->window == root) && (ev->atom == XA_WM_NAME)) {
 +		if (!fake_signal())
 +			updatestatus();
++		if (!fakesignal())
++			return;
 +	} else if (ev->state == PropertyDelete)
  		return; /* ignore */
  	else if ((c = wintoclient(ev->window))) {
  		switch(ev->atom) {
-@@ -1240,6 +1550,9 @@ propertynotify(XEvent *e)
+@@ -1240,6 +1552,9 @@ propertynotify(XEvent *e)
  			updatetitle(c);
  			if (c == c->mon->sel)
  				drawbar(c->mon);
@@ -557,7 +559,7 @@ index 5e4d494..a9fbfd9 100644
  		}
  		if (ev->atom == netatom[NetWMWindowType])
  			updatewindowtype(c);
-@@ -1567,6 +1880,7 @@ setup(void)
+@@ -1567,6 +1882,7 @@ setup(void)
  	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
  	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
  	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
@@ -565,7 +567,7 @@ index 5e4d494..a9fbfd9 100644
  	/* init appearance */
  	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
  	for (i = 0; i < LENGTH(colors); i++)
-@@ -1653,6 +1967,331 @@ spawn(const Arg *arg)
+@@ -1653,6 +1969,331 @@ spawn(const Arg *arg)
  	}
  }
  
@@ -897,7 +899,7 @@ index 5e4d494..a9fbfd9 100644
  void
  tag(const Arg *arg)
  {
-@@ -1768,6 +2407,9 @@ unmanage(Client *c, int destroyed)
+@@ -1768,6 +2409,9 @@ unmanage(Client *c, int destroyed)
  	Monitor *m = c->mon;
  	XWindowChanges wc;
  
@@ -907,7 +909,7 @@ index 5e4d494..a9fbfd9 100644
  	detach(c);
  	detachstack(c);
  	if (!destroyed) {
-@@ -1792,12 +2434,24 @@ unmapnotify(XEvent *e)
+@@ -1792,12 +2436,24 @@ unmapnotify(XEvent *e)
  {
  	Client *c;
  	XUnmapEvent *ev = &e->xunmap;
@@ -937,7 +939,7 @@ index 5e4d494..a9fbfd9 100644
  	}
  }
  
-@@ -1839,15 +2493,19 @@ updatebarpos(Monitor *m)
+@@ -1839,15 +2495,19 @@ updatebarpos(Monitor *m)
  void
  updateclientlist()
  {
@@ -963,7 +965,7 @@ index 5e4d494..a9fbfd9 100644
  }
  
  int
-@@ -2060,6 +2718,43 @@ wintoclient(Window w)
+@@ -2060,6 +2720,43 @@ wintoclient(Window w)
  	return NULL;
  }
  
@@ -1007,7 +1009,7 @@ index 5e4d494..a9fbfd9 100644
  Monitor *
  wintomon(Window w)
  {
-@@ -2117,14 +2812,38 @@ void
+@@ -2117,14 +2814,38 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;
