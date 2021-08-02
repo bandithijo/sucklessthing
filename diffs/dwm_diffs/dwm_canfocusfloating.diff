@@ -11,7 +11,7 @@ index a2ac963..1c0b587 100644
  static const Layout layouts[] = {
  	/* symbol     arrange function */
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..9ca5b93 100644
+index 5e4d494..1ae26c6 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -49,7 +49,7 @@
@@ -160,7 +160,17 @@ index 5e4d494..9ca5b93 100644
  	sendevent(c, wmatom[WMTakeFocus]);
  }
  
-@@ -1717,11 +1749,91 @@ togglefloating(const Arg *arg)
+@@ -1711,17 +1743,107 @@ togglebar(const Arg *arg)
+ void
+ togglefloating(const Arg *arg)
+ {
++    Client *c;
++    int nh, nw, nx, ny;
++    c = selmon->sel;
++
+ 	if (!selmon->sel)
+ 		return;
+ 	if (selmon->sel->isfullscreen) /* no support for fullscreen windows */
  		return;
  	selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
  	if (selmon->sel->isfloating)
@@ -177,10 +187,16 @@ index 5e4d494..9ca5b93 100644
 +		selmon->sel->sfh = selmon->sel->h;
 +		selmon->sel->isalwaysontop = 0; /* disabled, turn this off too */
 +	}
-+    resetcanfocusfloating();
-+	arrange(selmon);
-+}
++    nw = c->w;
++    nh = c->h;
++    nx = selmon->wx + ((selmon->ww - c->w - c->bw*2) / 2);
++    ny = selmon->wy + ((selmon->wh - c->h - c->bw*2) / 2);
++    resize(c, nx, ny, nw, nh, True);
 +
++    resetcanfocusfloating();
+ 	arrange(selmon);
+ }
+ 
 +void
 +resetcanfocusfloating()
 +{
@@ -195,9 +211,9 @@ index 5e4d494..9ca5b93 100644
 +    if (c->isfloating)
 +      c->cantfocus = 0;
 +
- 	arrange(selmon);
- }
- 
++	arrange(selmon);
++}
++
 +void
 +togglecanfocusfloating(const Arg *arg)
 +{
@@ -254,7 +270,7 @@ index 5e4d494..9ca5b93 100644
  void
  toggletag(const Arg *arg)
  {
-@@ -1754,6 +1866,7 @@ unfocus(Client *c, int setfocus)
+@@ -1754,6 +1876,7 @@ unfocus(Client *c, int setfocus)
  {
  	if (!c)
  		return;
@@ -262,7 +278,7 @@ index 5e4d494..9ca5b93 100644
  	grabbuttons(c, 0);
  	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
  	if (setfocus) {
-@@ -2012,8 +2125,10 @@ updatewindowtype(Client *c)
+@@ -2012,8 +2135,10 @@ updatewindowtype(Client *c)
  
  	if (state == netatom[NetWMFullscreen])
  		setfullscreen(c, 1);

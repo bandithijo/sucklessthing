@@ -23,7 +23,7 @@ index 77bcbc0..0965d94 100644
  
  .PHONY: all options clean dist install uninstall
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..15b30aa 100644
+index 5e4d494..a9fbfd9 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -58,7 +58,7 @@
@@ -541,7 +541,7 @@ index 5e4d494..15b30aa 100644
 -		updatestatus();
 -	else if (ev->state == PropertyDelete)
 +	if ((ev->window == root) && (ev->atom == XA_WM_NAME)) {
-+		if (!fakesignal() || !fake_signal())
++		if (!fake_signal())
 +			updatestatus();
 +	} else if (ev->state == PropertyDelete)
  		return; /* ignore */

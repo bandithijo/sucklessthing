@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index a2ac963..0f49f96 100644
+index a2ac963..9aa634c 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -2,50 +2,157 @@
@@ -72,7 +72,7 @@ index a2ac963..0f49f96 100644
 +    { NULL,                   "libreoffice",        NULL,                         0,             0,            0,           -1 },
 +    { "Thunar",               "thunar",             NULL,                         1 << 2,        0,            0,           -1 },
 +    { "Org.gnome.Nautilus",   NULL,                 NULL,                         1 << 2,        0,            0,           -1 },
-+    { "St",                   NULL,                 NULL,                         0,             1,            0,           -1 },
++    { "St",                   NULL,                 "st",                         0,             1,            0,           -1 },
 +    { "St",                   NULL,                 "NeoMutt",                    1 << 6,        0,            0,           -1 },
 +    { "St",                   NULL,                 "Ranger",                     0,             0,            0,           -1 },
 +    { "St",                   NULL,                 "NewsBoat",                   1 << 4,        0,            0,           -1 },
