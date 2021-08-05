@@ -18,43 +18,46 @@
 
 # For dwm
 dwm_branches = [
-  'config',            # 1*  : nodmenu
-  'sticky',            # 17*
-  'wasfocus',          # 18  : sticky
-  'ru-gaps',           # 15* : cfacts, noborder
-  'cfacts',            # 13*
-  'cfacts-dragcfact',  # 14* : cfacts
-  'actualfullscreen',  # 12* : sticky
-  'xrdb',              # 3*
-  'pertag',            # 2
-  'noborder',          # 9
-  'movestack',         # 7*
-  'moveresize',        # 8*
-  'resizecorners',     # 5
-  'focusonnetactive',  # 6
-  'focusonclick',      # 19* : moveresize
-  'fixborders',        # 20
-  'scratchpad',        # 11*
-  'zoomswap',          # 4
-  'autostart',         # 21  : zoomswap
-  'savefloats',        # 23  : center
-  'center',            # 24  : savefloats, wasfocus^1
-  'ru-bottomstack',    # 16*
-  'statusallmons',     # 10
-  'ru-fibonacci',      # 22*
-  'warp',              # 26
-  'nmaster-sym',       # 25  : pertag, cfacts-dragcfact^1, warp
-  'movethrow',         # 27* : moveresize
-  'status2d',          # 28  : autostart, statusallmons, focusonclick
-  'focusmaster',       # 29*
-  'resetlayout',       # 30* : noborder
-  'ru-centeredmaster', # 31*
-  'aspectresize',      # 32*
-  'canfocusfloating',  # 33* : center^3, actualfullscreen^1
-  'dwmc',              # 34* : zoomswap
-  'dynamicswallow',    # 35* : dwmc^1, movethrow^1
-  'dragmfact',         # 36* : dynamicswallow^4, cfacts-dragcfact^1
-  'sendmon-keepfocus', # 37 <-
+  'config',                # 1*  : nodmenu
+  'sticky',                # 17*
+  'wasfocus',              # 18  : sticky
+  'ru-gaps',               # 15* : cfacts, noborder
+  'cfacts',                # 13*
+  'cfacts-dragcfact',      # 14* : cfacts
+  'actualfullscreen',      # 12* : sticky
+  'xrdb',                  # 3*
+  'pertag',                # 2
+  'noborder',              # 9
+  'movestack',             # 7*
+  'moveresize',            # 8*
+  'resizecorners',         # 5
+  'focusonnetactive',      # 6
+  'focusonclick',          # 19* : moveresize
+  'fixborders',            # 20
+  'scratchpad',            # 11*
+  'zoomswap',              # 4
+  'autostart',             # 21  : zoomswap
+  'savefloats',            # 23  : center
+  'center',                # 24  : savefloats, wasfocus^1
+  'ru-bottomstack',        # 16*
+  'statusallmons',         # 10
+  'ru-fibonacci',          # 22*
+  'warp',                  # 26
+  'nmaster-sym',           # 25  : pertag, cfacts-dragcfact^1, warp
+  'movethrow',             # 27* : moveresize
+  'status2d',              # 28  : autostart, statusallmons, focusonclick
+  'focusmaster',           # 29*
+  'resetlayout',           # 30* : noborder
+  'ru-centeredmaster',     # 31*
+  'aspectresize',          # 32*
+  'tagmonfixfs',           # 39
+  'canfocusfloating',      # 33* : center^3, actualfullscreen^1
+  'dwmc',                  # 34* : zoomswap
+  'dynamicswallow',        # 35* : dwmc^1, movethrow^1
+  'dragmfact',             # 36* : dynamicswallow^4, cfacts-dragcfact^1
+  'netclientliststacking', # 37  : dynamicswallow^4
+  'placemouse',            # 38* : dynamicswallow^4, canfocusfloating^6
+  'sendmoncenter',         # 40 <-
 ]
 
 # For st
