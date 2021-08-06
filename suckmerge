@@ -58,7 +58,8 @@ dwm_branches = [
   'netclientliststacking', # 37  : dynamicswallow^4
   'placemouse',            # 38* : dynamicswallow^4, canfocusfloating^6
   'sendmoncenter',         # 40
-  'stickyindicator',       # 41* <-
+  'stickyindicator',       # 41*
+  'togglefloatingcenter',  # 42  : center^3, canfocusfloating^6 <-
 ]
 
 # For st
