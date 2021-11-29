@@ -1,5 +1,5 @@
 diff --git a/st.c b/st.c
-index ebdf360..85b0961 100644
+index a9338e1..85b0961 100644
 --- a/st.c
 +++ b/st.c
 @@ -186,18 +186,18 @@ static void tputc(Rune);
@@ -112,7 +112,25 @@ index ebdf360..85b0961 100644
  {
  	int m, s;
  
-@@ -820,6 +845,9 @@ ttynew(const char *line, char *cmd, const char *out, char **args)
+@@ -793,15 +818,14 @@ ttynew(const char *line, char *cmd, const char *out, char **args)
+ 		break;
+ 	case 0:
+ 		close(iofd);
+-		close(m);
+ 		setsid(); /* create a new process group */
+ 		dup2(s, 0);
+ 		dup2(s, 1);
+ 		dup2(s, 2);
+ 		if (ioctl(s, TIOCSCTTY, NULL) < 0)
+ 			die("ioctl TIOCSCTTY failed: %s\n", strerror(errno));
+-		if (s > 2)
+-			close(s);
++		close(s);
++		close(m);
+ #ifdef __OpenBSD__
+ 		if (pledge("stdio getpw proc exec", NULL) == -1)
+ 			die("pledge\n");
+@@ -821,6 +845,9 @@ ttynew(const char *line, char *cmd, const char *out, char **args)
  	return cmdfd;
  }
  
@@ -122,7 +140,7 @@ index ebdf360..85b0961 100644
  size_t
  ttyread(void)
  {
-@@ -828,7 +856,7 @@ ttyread(void)
+@@ -829,7 +856,7 @@ ttyread(void)
  	int ret, written;
  
  	/* append read bytes to unprocessed bytes */
@@ -131,7 +149,7 @@ index ebdf360..85b0961 100644
  
  	switch (ret) {
  	case 0:
-@@ -836,7 +864,7 @@ ttyread(void)
+@@ -837,7 +864,7 @@ ttyread(void)
  	case -1:
  		die("couldn't read from shell: %s\n", strerror(errno));
  	default:
@@ -140,7 +158,7 @@ index ebdf360..85b0961 100644
  		written = twrite(buf, buflen, 0);
  		buflen -= written;
  		/* keep any incomplete UTF-8 byte sequence for the next call */
-@@ -996,6 +1024,7 @@ tsetdirtattr(int attr)
+@@ -997,6 +1024,7 @@ tsetdirtattr(int attr)
  void
  tfulldirt(void)
  {
@@ -148,7 +166,7 @@ index ebdf360..85b0961 100644
  	tsetdirt(0, term.row-1);
  }
  
-@@ -1188,9 +1217,9 @@ tmoveto(int x, int y)
+@@ -1189,9 +1217,9 @@ tmoveto(int x, int y)
  }
  
  void
@@ -160,7 +178,7 @@ index ebdf360..85b0961 100644
  		"↑", "↓", "→", "←", "█", "▚", "☃", /* A - G */
  		0, 0, 0, 0, 0, 0, 0, 0, /* H - O */
  		0, 0, 0, 0, 0, 0, 0, 0, /* P - W */
-@@ -1302,7 +1331,7 @@ tdeleteline(int n)
+@@ -1303,7 +1331,7 @@ tdeleteline(int n)
  }
  
  int32_t
@@ -169,7 +187,7 @@ index ebdf360..85b0961 100644
  {
  	int32_t idx = -1;
  	uint r, g, b;
-@@ -1352,7 +1381,7 @@ tdefcolor(const int *attr, int *npar, int l)
+@@ -1353,7 +1381,7 @@ tdefcolor(const int *attr, int *npar, int l)
  }
  
  void
@@ -178,7 +196,7 @@ index ebdf360..85b0961 100644
  {
  	int i;
  	int32_t idx;
-@@ -1470,9 +1499,9 @@ tsetscroll(int t, int b)
+@@ -1471,9 +1499,9 @@ tsetscroll(int t, int b)
  }
  
  void
@@ -190,7 +208,7 @@ index ebdf360..85b0961 100644
  
  	for (lim = args + narg; args < lim; ++args) {
  		if (priv) {
-@@ -1905,6 +1934,12 @@ strhandle(void)
+@@ -1906,6 +1934,12 @@ strhandle(void)
  		xsettitle(strescseq.args[0]);
  		return;
  	case 'P': /* DCS -- Device Control String */
@@ -203,7 +221,7 @@ index ebdf360..85b0961 100644
  	case '_': /* APC -- Application Program Command */
  	case '^': /* PM -- Privacy Message */
  		return;
-@@ -2022,7 +2057,7 @@ void
+@@ -2023,7 +2057,7 @@ void
  tdumpline(int n)
  {
  	char buf[UTF_SIZ];
@@ -212,7 +230,7 @@ index ebdf360..85b0961 100644
  
  	bp = &term.line[n][0];
  	end = &bp[MIN(tlinelen(n), term.col) - 1];
-@@ -2446,6 +2481,9 @@ twrite(const char *buf, int buflen, int show_ctrl)
+@@ -2447,6 +2481,9 @@ twrite(const char *buf, int buflen, int show_ctrl)
  	Rune u;
  	int n;
  
@@ -222,7 +240,7 @@ index ebdf360..85b0961 100644
  	for (n = 0; n < buflen; n += charsize) {
  		if (IS_SET(MODE_UTF8)) {
  			/* process a complete utf8 char */
-@@ -2456,6 +2494,10 @@ twrite(const char *buf, int buflen, int show_ctrl)
+@@ -2457,6 +2494,10 @@ twrite(const char *buf, int buflen, int show_ctrl)
  			u = buf[n] & 0xFF;
  			charsize = 1;
  		}
@@ -268,9 +286,18 @@ index 8201ad6..b32b446 100644
  st| simpleterm,
  	use=st-mono,
 diff --git a/x.c b/x.c
-index 7186040..11666c0 100644
+index 89786b8..11666c0 100644
 --- a/x.c
 +++ b/x.c
+@@ -48,7 +48,7 @@ typedef struct {
+ /* X modifiers */
+ #define XK_ANY_MOD    UINT_MAX
+ #define XK_NO_MOD     0
+-#define XK_SWITCH_MOD (1<<13|1<<14)
++#define XK_SWITCH_MOD (1<<13)
+ 
+ /* function definitions used in config.h */
+ static void clipcopy(const Arg *);
 @@ -156,7 +156,7 @@ static void xresize(int, int);
  static void xhints(void);
  static int xloadcolor(int, const char *, Color *);
@@ -298,7 +325,31 @@ index 7186040..11666c0 100644
  
  	if (!pattern)
  		die("can't open font %s\n", fontstr);
-@@ -1877,6 +1877,9 @@ resize(XEvent *e)
+@@ -1588,9 +1588,8 @@ xseticontitle(char *p)
+ 	XTextProperty prop;
+ 	DEFAULT(p, opt_title);
+ 
+-	if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
+-	                                &prop) != Success)
+-		return;
++	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
++			&prop);
+ 	XSetWMIconName(xw.dpy, xw.win, &prop);
+ 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmiconname);
+ 	XFree(prop.value);
+@@ -1602,9 +1601,8 @@ xsettitle(char *p)
+ 	XTextProperty prop;
+ 	DEFAULT(p, opt_title);
+ 
+-	if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
+-	                                &prop) != Success)
+-		return;
++	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
++			&prop);
+ 	XSetWMName(xw.dpy, xw.win, &prop);
+ 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmname);
+ 	XFree(prop.value);
+@@ -1879,6 +1877,9 @@ resize(XEvent *e)
  	cresize(e->xconfigure.width, e->xconfigure.height);
  }
  
@@ -308,7 +359,7 @@ index 7186040..11666c0 100644
  void
  run(void)
  {
-@@ -1911,7 +1914,7 @@ run(void)
+@@ -1913,7 +1914,7 @@ run(void)
  		FD_SET(ttyfd, &rfd);
  		FD_SET(xfd, &rfd);
  
@@ -317,7 +368,7 @@ index 7186040..11666c0 100644
  			timeout = 0;  /* existing events might not set xfd */
  
  		seltv.tv_sec = timeout / 1E3;
-@@ -1925,7 +1928,8 @@ run(void)
+@@ -1927,7 +1928,8 @@ run(void)
  		}
  		clock_gettime(CLOCK_MONOTONIC, &now);
  
@@ -327,7 +378,7 @@ index 7186040..11666c0 100644
  			ttyread();
  
  		xev = 0;
-@@ -1949,7 +1953,7 @@ run(void)
+@@ -1951,7 +1953,7 @@ run(void)
  		 * maximum latency intervals during `cat huge.txt`, and perfect
  		 * sync with periodic updates from animations/key-repeats/etc.
  		 */
@@ -336,7 +387,7 @@ index 7186040..11666c0 100644
  			if (!drawing) {
  				trigger = now;
  				drawing = 1;
-@@ -1960,6 +1964,18 @@ run(void)
+@@ -1962,6 +1964,18 @@ run(void)
  				continue;  /* we have time, try to find idle */
  		}
  

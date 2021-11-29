@@ -826,7 +826,7 @@ index 0000000..6176589
 + */
 +int hls_to_rgb(int hue, int lum, int sat);
 diff --git a/st.c b/st.c
-index ebdf360..0037c19 100644
+index a9338e1..0037c19 100644
 --- a/st.c
 +++ b/st.c
 @@ -17,6 +17,7 @@
@@ -958,7 +958,25 @@ index ebdf360..0037c19 100644
  {
  	int m, s;
  
-@@ -1017,6 +1020,7 @@ void
+@@ -793,15 +796,14 @@ ttynew(const char *line, char *cmd, const char *out, char **args)
+ 		break;
+ 	case 0:
+ 		close(iofd);
+-		close(m);
+ 		setsid(); /* create a new process group */
+ 		dup2(s, 0);
+ 		dup2(s, 1);
+ 		dup2(s, 2);
+ 		if (ioctl(s, TIOCSCTTY, NULL) < 0)
+ 			die("ioctl TIOCSCTTY failed: %s\n", strerror(errno));
+-		if (s > 2)
+-			close(s);
++		close(s);
++		close(m);
+ #ifdef __OpenBSD__
+ 		if (pledge("stdio getpw proc exec", NULL) == -1)
+ 			die("pledge\n");
+@@ -1018,6 +1020,7 @@ void
  treset(void)
  {
  	uint i;
@@ -966,7 +984,7 @@ index ebdf360..0037c19 100644
  
  	term.c = (TCursor){{
  		.mode = ATTR_NULL,
-@@ -1039,6 +1043,9 @@ treset(void)
+@@ -1040,6 +1043,9 @@ treset(void)
  		tclearregion(0, 0, term.col-1, term.row-1);
  		tswapscreen();
  	}
@@ -976,7 +994,7 @@ index ebdf360..0037c19 100644
  }
  
  void
-@@ -1053,9 +1060,12 @@ void
+@@ -1054,9 +1060,12 @@ void
  tswapscreen(void)
  {
  	Line *tmp = term.line;
@@ -989,7 +1007,7 @@ index ebdf360..0037c19 100644
  	term.mode ^= MODE_ALTSCREEN;
  	tfulldirt();
  }
-@@ -1076,6 +1086,8 @@ tscrolldown(int orig, int n)
+@@ -1077,6 +1086,8 @@ tscrolldown(int orig, int n)
  		term.line[i] = term.line[i-n];
  		term.line[i-n] = temp;
  	}
@@ -998,7 +1016,7 @@ index ebdf360..0037c19 100644
  
  	selscroll(orig, n);
  }
-@@ -1085,6 +1097,7 @@ tscrollup(int orig, int n)
+@@ -1086,6 +1097,7 @@ tscrollup(int orig, int n)
  {
  	int i;
  	Line temp;
@@ -1006,7 +1024,7 @@ index ebdf360..0037c19 100644
  
  	LIMIT(n, 0, term.bot-orig+1);
  
-@@ -1097,6 +1110,9 @@ tscrollup(int orig, int n)
+@@ -1098,6 +1110,9 @@ tscrollup(int orig, int n)
  		term.line[i+n] = temp;
  	}
  
@@ -1016,7 +1034,7 @@ index ebdf360..0037c19 100644
  	selscroll(orig, -n);
  }
  
-@@ -1188,9 +1204,9 @@ tmoveto(int x, int y)
+@@ -1189,9 +1204,9 @@ tmoveto(int x, int y)
  }
  
  void
@@ -1028,7 +1046,7 @@ index ebdf360..0037c19 100644
  		"↑", "↓", "→", "←", "█", "▚", "☃", /* A - G */
  		0, 0, 0, 0, 0, 0, 0, 0, /* H - O */
  		0, 0, 0, 0, 0, 0, 0, 0, /* P - W */
-@@ -1302,7 +1318,7 @@ tdeleteline(int n)
+@@ -1303,7 +1318,7 @@ tdeleteline(int n)
  }
  
  int32_t
@@ -1037,7 +1055,7 @@ index ebdf360..0037c19 100644
  {
  	int32_t idx = -1;
  	uint r, g, b;
-@@ -1352,7 +1368,7 @@ tdefcolor(const int *attr, int *npar, int l)
+@@ -1353,7 +1368,7 @@ tdefcolor(const int *attr, int *npar, int l)
  }
  
  void
@@ -1046,7 +1064,7 @@ index ebdf360..0037c19 100644
  {
  	int i;
  	int32_t idx;
-@@ -1470,9 +1486,9 @@ tsetscroll(int t, int b)
+@@ -1471,9 +1486,9 @@ tsetscroll(int t, int b)
  }
  
  void
@@ -1058,7 +1076,7 @@ index ebdf360..0037c19 100644
  
  	for (lim = args + narg; args < lim; ++args) {
  		if (priv) {
-@@ -1599,6 +1615,23 @@ tsetmode(int priv, int set, const int *args, int narg)
+@@ -1600,6 +1615,23 @@ tsetmode(int priv, int set, const int *args, int narg)
  	}
  }
  
@@ -1082,7 +1100,7 @@ index ebdf360..0037c19 100644
  void
  csihandle(void)
  {
-@@ -1844,8 +1877,10 @@ csireset(void)
+@@ -1845,8 +1877,10 @@ csireset(void)
  void
  strhandle(void)
  {
@@ -1093,7 +1111,7 @@ index ebdf360..0037c19 100644
  
  	term.esc &= ~(ESC_STR_END|ESC_STR);
  	strparse();
-@@ -1905,6 +1940,19 @@ strhandle(void)
+@@ -1906,6 +1940,19 @@ strhandle(void)
  		xsettitle(strescseq.args[0]);
  		return;
  	case 'P': /* DCS -- Device Control String */
@@ -1113,7 +1131,7 @@ index ebdf360..0037c19 100644
  	case '_': /* APC -- Application Program Command */
  	case '^': /* PM -- Privacy Message */
  		return;
-@@ -2022,7 +2070,7 @@ void
+@@ -2023,7 +2070,7 @@ void
  tdumpline(int n)
  {
  	char buf[UTF_SIZ];
@@ -1122,7 +1140,7 @@ index ebdf360..0037c19 100644
  
  	bp = &term.line[n][0];
  	end = &bp[MIN(tlinelen(n), term.col) - 1];
-@@ -2232,6 +2280,7 @@ eschandle(uchar ascii)
+@@ -2233,6 +2280,7 @@ eschandle(uchar ascii)
  		term.esc |= ESC_UTF8;
  		return 0;
  	case 'P': /* DCS -- Device Control String */
@@ -1130,7 +1148,7 @@ index ebdf360..0037c19 100644
  	case '_': /* APC -- Application Program Command */
  	case '^': /* PM -- Privacy Message */
  	case ']': /* OSC -- Operating System Command */
-@@ -2329,13 +2378,20 @@ tputc(Rune u)
+@@ -2330,13 +2378,20 @@ tputc(Rune u)
  	 * character.
  	 */
  	if (term.esc & ESC_STR) {
@@ -1154,7 +1172,7 @@ index ebdf360..0037c19 100644
  		if (strescseq.len+len >= strescseq.siz) {
  			/*
  			 * Here is a bug in terminals. If the user never sends
-@@ -2386,6 +2442,15 @@ check_control_code:
+@@ -2387,6 +2442,15 @@ check_control_code:
  				csihandle();
  			}
  			return;
@@ -1170,7 +1188,7 @@ index ebdf360..0037c19 100644
  		} else if (term.esc & ESC_UTF8) {
  			tdefutf8(u);
  		} else if (term.esc & ESC_ALTCHARSET) {
-@@ -2590,6 +2655,7 @@ draw(void)
+@@ -2591,6 +2655,7 @@ draw(void)
  		cx--;
  
  	drawregion(0, 0, term.col, term.row);
@@ -1283,7 +1301,7 @@ index e6e4369..eb436bb 100644
  int xstartdraw(void);
  void xximspot(int, int);
 diff --git a/x.c b/x.c
-index 7186040..568ad70 100644
+index 89786b8..568ad70 100644
 --- a/x.c
 +++ b/x.c
 @@ -17,6 +17,7 @@
@@ -1294,6 +1312,15 @@ index 7186040..568ad70 100644
  #include "st.h"
  #include "win.h"
  
+@@ -48,7 +49,7 @@ typedef struct {
+ /* X modifiers */
+ #define XK_ANY_MOD    UINT_MAX
+ #define XK_NO_MOD     0
+-#define XK_SWITCH_MOD (1<<13|1<<14)
++#define XK_SWITCH_MOD (1<<13)
+ 
+ /* function definitions used in config.h */
+ static void clipcopy(const Arg *);
 @@ -77,16 +78,6 @@ typedef XftDraw *Draw;
  typedef XftColor Color;
  typedef XftGlyphFontSpec GlyphFontSpec;
@@ -1351,7 +1378,29 @@ index 7186040..568ad70 100644
  
  	if (!pattern)
  		die("can't open font %s\n", fontstr);
-@@ -1608,6 +1605,87 @@ xsettitle(char *p)
+@@ -1588,9 +1585,8 @@ xseticontitle(char *p)
+ 	XTextProperty prop;
+ 	DEFAULT(p, opt_title);
+ 
+-	if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
+-	                                &prop) != Success)
+-		return;
++	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
++			&prop);
+ 	XSetWMIconName(xw.dpy, xw.win, &prop);
+ 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmiconname);
+ 	XFree(prop.value);
+@@ -1602,14 +1598,94 @@ xsettitle(char *p)
+ 	XTextProperty prop;
+ 	DEFAULT(p, opt_title);
+ 
+-	if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
+-	                                &prop) != Success)
+-		return;
++	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
++			&prop);
+ 	XSetWMName(xw.dpy, xw.win, &prop);
+ 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmname);
  	XFree(prop.value);
  }
  
@@ -1439,7 +1488,7 @@ index 7186040..568ad70 100644
  int
  xstartdraw(void)
  {
-@@ -1645,6 +1723,88 @@ xdrawline(Line line, int x1, int y1, int x2)
+@@ -1647,6 +1723,88 @@ xdrawline(Line line, int x1, int y1, int x2)
  		xdrawglyphfontspecs(specs, base, i, ox, y1);
  }
  

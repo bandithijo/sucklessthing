@@ -620,7 +620,7 @@ index 0000000..07888df
 +void hbunloadfonts();
 +void hbtransform(XftGlyphFontSpec *, const Glyph *, size_t, int, int);
 diff --git a/st.c b/st.c
-index ebdf360..2e94800 100644
+index a9338e1..2e94800 100644
 --- a/st.c
 +++ b/st.c
 @@ -33,8 +33,10 @@
@@ -830,7 +830,25 @@ index ebdf360..2e94800 100644
  {
  	int m, s;
  
-@@ -850,6 +858,9 @@ void
+@@ -793,15 +801,14 @@ ttynew(const char *line, char *cmd, const char *out, char **args)
+ 		break;
+ 	case 0:
+ 		close(iofd);
+-		close(m);
+ 		setsid(); /* create a new process group */
+ 		dup2(s, 0);
+ 		dup2(s, 1);
+ 		dup2(s, 2);
+ 		if (ioctl(s, TIOCSCTTY, NULL) < 0)
+ 			die("ioctl TIOCSCTTY failed: %s\n", strerror(errno));
+-		if (s > 2)
+-			close(s);
++		close(s);
++		close(m);
+ #ifdef __OpenBSD__
+ 		if (pledge("stdio getpw proc exec", NULL) == -1)
+ 			die("pledge\n");
+@@ -851,6 +858,9 @@ void
  ttywrite(const char *s, size_t n, int may_echo)
  {
  	const char *next;
@@ -840,7 +858,7 @@ index ebdf360..2e94800 100644
  
  	if (may_echo && IS_SET(MODE_ECHO))
  		twrite(s, n, 1);
-@@ -1061,13 +1072,53 @@ tswapscreen(void)
+@@ -1062,13 +1072,53 @@ tswapscreen(void)
  }
  
  void
@@ -895,7 +913,7 @@ index ebdf360..2e94800 100644
  	tsetdirt(orig, term.bot-n);
  	tclearregion(0, term.bot-n+1, term.col-1, term.bot);
  
-@@ -1077,17 +1128,28 @@ tscrolldown(int orig, int n)
+@@ -1078,17 +1128,28 @@ tscrolldown(int orig, int n)
  		term.line[i-n] = temp;
  	}
  
@@ -926,7 +944,7 @@ index ebdf360..2e94800 100644
  	tclearregion(0, orig, term.col-1, orig+n-1);
  	tsetdirt(orig+n, term.bot);
  
-@@ -1097,7 +1159,8 @@ tscrollup(int orig, int n)
+@@ -1098,7 +1159,8 @@ tscrollup(int orig, int n)
  		term.line[i+n] = temp;
  	}
  
@@ -936,7 +954,7 @@ index ebdf360..2e94800 100644
  }
  
  void
-@@ -1126,13 +1189,35 @@ tnewline(int first_col)
+@@ -1127,13 +1189,35 @@ tnewline(int first_col)
  	int y = term.c.y;
  
  	if (y == term.bot) {
@@ -973,7 +991,7 @@ index ebdf360..2e94800 100644
  void
  csiparse(void)
  {
-@@ -1155,6 +1240,7 @@ csiparse(void)
+@@ -1156,6 +1240,7 @@ csiparse(void)
  			v = -1;
  		csiescseq.arg[csiescseq.narg++] = v;
  		p = np;
@@ -981,7 +999,7 @@ index ebdf360..2e94800 100644
  		if (*p != ';' || csiescseq.narg == ESC_ARG_SIZ)
  			break;
  		p++;
-@@ -1188,9 +1274,9 @@ tmoveto(int x, int y)
+@@ -1189,9 +1274,9 @@ tmoveto(int x, int y)
  }
  
  void
@@ -993,7 +1011,7 @@ index ebdf360..2e94800 100644
  		"↑", "↓", "→", "←", "█", "▚", "☃", /* A - G */
  		0, 0, 0, 0, 0, 0, 0, 0, /* H - O */
  		0, 0, 0, 0, 0, 0, 0, 0, /* P - W */
-@@ -1221,6 +1307,9 @@ tsetchar(Rune u, const Glyph *attr, int x, int y)
+@@ -1222,6 +1307,9 @@ tsetchar(Rune u, const Glyph *attr, int x, int y)
  	term.dirty[y] = 1;
  	term.line[y][x] = *attr;
  	term.line[y][x].u = u;
@@ -1003,7 +1021,7 @@ index ebdf360..2e94800 100644
  }
  
  void
-@@ -1291,18 +1380,18 @@ void
+@@ -1292,18 +1380,18 @@ void
  tinsertblankline(int n)
  {
  	if (BETWEEN(term.c.y, term.top, term.bot))
@@ -1025,7 +1043,7 @@ index ebdf360..2e94800 100644
  {
  	int32_t idx = -1;
  	uint r, g, b;
-@@ -1352,7 +1441,7 @@ tdefcolor(const int *attr, int *npar, int l)
+@@ -1353,7 +1441,7 @@ tdefcolor(const int *attr, int *npar, int l)
  }
  
  void
@@ -1034,7 +1052,7 @@ index ebdf360..2e94800 100644
  {
  	int i;
  	int32_t idx;
-@@ -1371,6 +1460,10 @@ tsetattr(const int *attr, int l)
+@@ -1372,6 +1460,10 @@ tsetattr(const int *attr, int l)
  				ATTR_STRUCK     );
  			term.c.attr.fg = defaultfg;
  			term.c.attr.bg = defaultbg;
@@ -1045,7 +1063,7 @@ index ebdf360..2e94800 100644
  			break;
  		case 1:
  			term.c.attr.mode |= ATTR_BOLD;
-@@ -1382,7 +1475,14 @@ tsetattr(const int *attr, int l)
+@@ -1383,7 +1475,14 @@ tsetattr(const int *attr, int l)
  			term.c.attr.mode |= ATTR_ITALIC;
  			break;
  		case 4:
@@ -1061,7 +1079,7 @@ index ebdf360..2e94800 100644
  			break;
  		case 5: /* slow blink */
  			/* FALLTHROUGH */
-@@ -1433,6 +1533,18 @@ tsetattr(const int *attr, int l)
+@@ -1434,6 +1533,18 @@ tsetattr(const int *attr, int l)
  		case 49:
  			term.c.attr.bg = defaultbg;
  			break;
@@ -1080,7 +1098,7 @@ index ebdf360..2e94800 100644
  		default:
  			if (BETWEEN(attr[i], 30, 37)) {
  				term.c.attr.fg = attr[i] - 30;
-@@ -1470,9 +1582,9 @@ tsetscroll(int t, int b)
+@@ -1471,9 +1582,9 @@ tsetscroll(int t, int b)
  }
  
  void
@@ -1092,7 +1110,7 @@ index ebdf360..2e94800 100644
  
  	for (lim = args + narg; args < lim; ++args) {
  		if (priv) {
-@@ -1735,11 +1847,11 @@ csihandle(void)
+@@ -1736,11 +1847,11 @@ csihandle(void)
  		break;
  	case 'S': /* SU -- Scroll <n> line up */
  		DEFAULT(csiescseq.arg[0], 1);
@@ -1106,7 +1124,7 @@ index ebdf360..2e94800 100644
  		break;
  	case 'L': /* IL -- Insert <n> blank lines */
  		DEFAULT(csiescseq.arg[0], 1);
-@@ -2022,7 +2134,7 @@ void
+@@ -2023,7 +2134,7 @@ void
  tdumpline(int n)
  {
  	char buf[UTF_SIZ];
@@ -1115,7 +1133,7 @@ index ebdf360..2e94800 100644
  
  	bp = &term.line[n][0];
  	end = &bp[MIN(tlinelen(n), term.col) - 1];
-@@ -2251,7 +2363,7 @@ eschandle(uchar ascii)
+@@ -2252,7 +2363,7 @@ eschandle(uchar ascii)
  		return 0;
  	case 'D': /* IND -- Linefeed */
  		if (term.c.y == term.bot) {
@@ -1124,7 +1142,7 @@ index ebdf360..2e94800 100644
  		} else {
  			tmoveto(term.c.x, term.c.y+1);
  		}
-@@ -2264,7 +2376,7 @@ eschandle(uchar ascii)
+@@ -2265,7 +2376,7 @@ eschandle(uchar ascii)
  		break;
  	case 'M': /* RI -- Reverse index */
  		if (term.c.y == term.top) {
@@ -1133,7 +1151,7 @@ index ebdf360..2e94800 100644
  		} else {
  			tmoveto(term.c.x, term.c.y-1);
  		}
-@@ -2474,7 +2586,7 @@ twrite(const char *buf, int buflen, int show_ctrl)
+@@ -2475,7 +2586,7 @@ twrite(const char *buf, int buflen, int show_ctrl)
  void
  tresize(int col, int row)
  {
@@ -1142,7 +1160,7 @@ index ebdf360..2e94800 100644
  	int minrow = MIN(row, term.row);
  	int mincol = MIN(col, term.col);
  	int *bp;
-@@ -2511,6 +2623,14 @@ tresize(int col, int row)
+@@ -2512,6 +2623,14 @@ tresize(int col, int row)
  	term.dirty = xrealloc(term.dirty, row * sizeof(*term.dirty));
  	term.tabs = xrealloc(term.tabs, col * sizeof(*term.tabs));
  
@@ -1157,7 +1175,7 @@ index ebdf360..2e94800 100644
  	/* resize each row to new width, zero-pad if needed */
  	for (i = 0; i < minrow; i++) {
  		term.line[i] = xrealloc(term.line[i], col * sizeof(Glyph));
-@@ -2569,7 +2689,7 @@ drawregion(int x1, int y1, int x2, int y2)
+@@ -2570,7 +2689,7 @@ drawregion(int x1, int y1, int x2, int y2)
  			continue;
  
  		term.dirty[y] = 0;
@@ -1166,7 +1184,7 @@ index ebdf360..2e94800 100644
  	}
  }
  
-@@ -2590,8 +2710,10 @@ draw(void)
+@@ -2591,8 +2710,10 @@ draw(void)
  		cx--;
  
  	drawregion(0, 0, term.col, term.row);
@@ -1276,7 +1294,7 @@ index e6e4369..8b5b618 100644
  void xfinishdraw(void);
  void xloadcols(void);
 diff --git a/x.c b/x.c
-index 7186040..94a50b8 100644
+index 89786b8..94a50b8 100644
 --- a/x.c
 +++ b/x.c
 @@ -19,6 +19,7 @@ char *argv0;
@@ -1287,6 +1305,15 @@ index 7186040..94a50b8 100644
  
  /* types used in config.h */
  typedef struct {
+@@ -48,7 +49,7 @@ typedef struct {
+ /* X modifiers */
+ #define XK_ANY_MOD    UINT_MAX
+ #define XK_NO_MOD     0
+-#define XK_SWITCH_MOD (1<<13|1<<14)
++#define XK_SWITCH_MOD (1<<13)
+ 
+ /* function definitions used in config.h */
+ static void clipcopy(const Arg *);
 @@ -156,7 +157,7 @@ static void xresize(int, int);
  static void xhints(void);
  static int xloadcolor(int, const char *, Color *);
@@ -1514,3 +1541,27 @@ index 7186040..94a50b8 100644
  
  	if (IS_SET(MODE_REVERSE)) {
  		g.mode |= ATTR_REVERSE;
+@@ -1588,9 +1697,8 @@ xseticontitle(char *p)
+ 	XTextProperty prop;
+ 	DEFAULT(p, opt_title);
+ 
+-	if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
+-	                                &prop) != Success)
+-		return;
++	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
++			&prop);
+ 	XSetWMIconName(xw.dpy, xw.win, &prop);
+ 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmiconname);
+ 	XFree(prop.value);
+@@ -1602,9 +1710,8 @@ xsettitle(char *p)
+ 	XTextProperty prop;
+ 	DEFAULT(p, opt_title);
+ 
+-	if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
+-	                                &prop) != Success)
+-		return;
++	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
++			&prop);
+ 	XSetWMName(xw.dpy, xw.win, &prop);
+ 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmname);
+ 	XFree(prop.value);

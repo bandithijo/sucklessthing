@@ -11,7 +11,7 @@ index a2ac963..1c0b587 100644
  static const Layout layouts[] = {
  	/* symbol     arrange function */
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..1ae26c6 100644
+index 5e4d494..5e71aed 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -49,7 +49,7 @@
@@ -33,7 +33,7 @@ index 5e4d494..1ae26c6 100644
  	int bw, oldbw;
  	unsigned int tags;
 -	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
-+	int isfixed, iscentered, isfloating, isurgent, neverfocus, oldstate, isfullscreen, issticky, isalwaysontop, wasfocused, cantfocus;
++	int isfixed, iscentered, isfloating, isurgent, neverfocus, oldstate, isfullscreen, cantfocus, issticky, isalwaysontop, wasfocused;
  	Client *next;
  	Client *snext;
  	Monitor *mon;
@@ -57,9 +57,9 @@ index 5e4d494..1ae26c6 100644
  static void tile(Monitor *);
  static void togglebar(const Arg *arg);
  static void togglefloating(const Arg *arg);
++static void togglecanfocusfloating(const Arg *arg);
 +static void togglefullscr(const Arg *arg);
 +static void togglesticky(const Arg *arg);
-+static void togglecanfocusfloating(const Arg *arg);
  static void toggletag(const Arg *arg);
  static void toggleview(const Arg *arg);
  static void unfocus(Client *c, int setfocus);
@@ -110,12 +110,12 @@ index 5e4d494..1ae26c6 100644
  	} else {
  		for (i = selmon->clients; i != selmon->sel; i = i->next)
 -			if (ISVISIBLE(i))
-+            if (ISVISIBLE(i) && !i->cantfocus)
++           if (ISVISIBLE(i) && !i->cantfocus)
  				c = i;
  		if (!c)
  			for (; i; i = i->next)
 -				if (ISVISIBLE(i))
-+                if (ISVISIBLE(i) && !i->cantfocus)
++               if (ISVISIBLE(i) && !i->cantfocus)
  					c = i;
  	}
  	if (c) {
@@ -160,17 +160,7 @@ index 5e4d494..1ae26c6 100644
  	sendevent(c, wmatom[WMTakeFocus]);
  }
  
-@@ -1711,17 +1743,107 @@ togglebar(const Arg *arg)
- void
- togglefloating(const Arg *arg)
- {
-+    Client *c;
-+    int nh, nw, nx, ny;
-+    c = selmon->sel;
-+
- 	if (!selmon->sel)
- 		return;
- 	if (selmon->sel->isfullscreen) /* no support for fullscreen windows */
+@@ -1717,11 +1749,76 @@ togglefloating(const Arg *arg)
  		return;
  	selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
  	if (selmon->sel->isfloating)
@@ -187,16 +177,11 @@ index 5e4d494..1ae26c6 100644
 +		selmon->sel->sfh = selmon->sel->h;
 +		selmon->sel->isalwaysontop = 0; /* disabled, turn this off too */
 +	}
-+    nw = c->w;
-+    nh = c->h;
-+    nx = selmon->wx + ((selmon->ww - c->w - c->bw*2) / 2);
-+    ny = selmon->wy + ((selmon->wh - c->h - c->bw*2) / 2);
-+    resize(c, nx, ny, nw, nh, True);
-+
 +    resetcanfocusfloating();
- 	arrange(selmon);
- }
- 
++
++	arrange(selmon);
++}
++
 +void
 +resetcanfocusfloating()
 +{
@@ -211,6 +196,22 @@ index 5e4d494..1ae26c6 100644
 +    if (c->isfloating)
 +      c->cantfocus = 0;
 +
+ 	arrange(selmon);
+ }
+ 
++void
++togglefullscr(const Arg *arg)
++{
++  if(selmon->sel)
++    setfullscreen(selmon->sel, !selmon->sel->isfullscreen);
++}
++
++void
++togglesticky(const Arg *arg)
++{
++	if (!selmon->sel)
++		return;
++	selmon->sel->issticky = !selmon->sel->issticky;
 +	arrange(selmon);
 +}
 +
@@ -226,51 +227,19 @@ index 5e4d494..1ae26c6 100644
 +		else
 +      n++;
 +
-+    if (n && selmon->sel->isfloating) {
++  if (n && selmon->sel->isfloating) {
 +		for (c = selmon->sel; c && c->isfloating; c = c->next);
 +		if (!c)
 +			for (c = selmon->clients; c && c->isfloating; c = c->next);
 +
 +    focus(c);
-+    }
-+}
-+
-+void
-+togglefullscr(const Arg *arg)
-+{
-+  if(selmon->sel)
-+    setfullscreen(selmon->sel, !selmon->sel->isfullscreen);
-+}
-+
-+void
-+togglesticky(const Arg *arg)
-+{
-+	if (!selmon->sel)
-+		return;
-+	selmon->sel->issticky = !selmon->sel->issticky;
-+	arrange(selmon);
-+
-+	if (selmon->sel->isfullscreen)
-+		return;
-+
-+	if(selmon->sel->isalwaysontop){
-+		selmon->sel->isalwaysontop = 0;
-+	}else{
-+		/* disable others */
-+		for(Monitor *m = mons; m; m = m->next)
-+			for(Client *c = m->clients; c; c = c->next)
-+				c->isalwaysontop = 0;
-+
-+		/* turn on, make it float too */
-+		selmon->sel->isfloating = 1;
-+		selmon->sel->isalwaysontop = 1;
-+	}
++  }
 +}
 +
  void
  toggletag(const Arg *arg)
  {
-@@ -1754,6 +1876,7 @@ unfocus(Client *c, int setfocus)
+@@ -1754,6 +1851,7 @@ unfocus(Client *c, int setfocus)
  {
  	if (!c)
  		return;
@@ -278,7 +247,7 @@ index 5e4d494..1ae26c6 100644
  	grabbuttons(c, 0);
  	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
  	if (setfocus) {
-@@ -2012,8 +2135,10 @@ updatewindowtype(Client *c)
+@@ -2012,8 +2110,10 @@ updatewindowtype(Client *c)
  
  	if (state == netatom[NetWMFullscreen])
  		setfullscreen(c, 1);

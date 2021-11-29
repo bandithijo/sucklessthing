@@ -1,5 +1,5 @@
 diff --git a/config.h b/config.h
-index 8e5d90a..f9ba7f4 100644
+index 8e5d90a..c5b74b5 100644
 --- a/config.h
 +++ b/config.h
 @@ -1,19 +1,19 @@
@@ -18,7 +18,7 @@ index 8e5d90a..f9ba7f4 100644
 +static const char *asterisk = "#";
  static const char *fonts[] = {
 -	"monospace:size=10"
-+	"JetBrainsMono Nerd Font Bandit:style=Medium,Regular:size=8"
++	"JetBrainsMono Nerd Font Bandit:style=Medium,Regular:pixelsize=12"
  };
  static const char *prompt = NULL;
  static const char *colors[SchemeLast][4] = {

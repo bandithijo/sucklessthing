@@ -1,13 +1,14 @@
 diff --git a/config.def.h b/config.def.h
-index 1edb647..486645d 100644
+index 1edb647..fc072ea 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -1,20 +1,29 @@
+@@ -1,20 +1,31 @@
  /* See LICENSE file for copyright and license details. */
  /* Default settings; can be overriden by command line. */
  
 -static int topbar = 1;                      /* -b  option; if 0, dmenu appears at bottom     */
 +static int topbar      = 1;      /* -b  option; if 0, dmenu appears at bottom     */
++static int fuzzy       = 1;      /* -F  option; if 0, dmenu doesn't use fuzzy matching     */
 +static int colorprompt = 1;      /* -p  option; if 1, prompt uses SchemeSel, otherwise SchemeNorm */
 +static int centered    = 0;      /* -c option; centers dmenu on screen */
 +static int min_width   = 500;    /* minimum width when centered */
@@ -15,11 +16,12 @@ index 1edb647..486645d 100644
  static const char *fonts[] = {
 -	"monospace:size=10"
 +	"JetBrainsMono Nerd Font Bandit:style=Medium,Regular:size=8",
-+	"Font Awesome 5 Free:style=Regular:size=8",
-+	"Font Awesome 5 Brands:style=Regular:size=8",
-+	"octicons:style=Medium:size=8"
++    "JoyPixels:pixelsize=10:antialias=true:autohint=true",
++	"octicons:style=Medium:size=8",
  };
 -static const char *prompt      = NULL;      /* -p  option; prompt to the left of input field */
++	/* "Font Awesome 5 Free:style=Regular:size=8", */
++	/* "Font Awesome 5 Brands:style=Regular:size=8", */
 +static const char *prompt   = NULL;      /* -p  option; prompt to the left of input field */
 +static const char *symbol_1 = "";
 +static const char *symbol_2 = "";
@@ -55,3 +57,102 @@ index 05d5a3e..c77681a 100644
  
  # Xinerama, comment if you don't want it
  XINERAMALIBS  = -lXinerama
+diff --git a/dmenu.c b/dmenu.c
+index 98507d9..65f25ce 100644
+--- a/dmenu.c
++++ b/dmenu.c
+@@ -360,11 +360,9 @@ keypress(XKeyEvent *ev)
+ 			                  utf8, utf8, win, CurrentTime);
+ 			return;
+ 		case XK_Left:
+-		case XK_KP_Left:
+ 			movewordedge(-1);
+ 			goto draw;
+ 		case XK_Right:
+-		case XK_KP_Right:
+ 			movewordedge(+1);
+ 			goto draw;
+ 		case XK_Return:
+@@ -402,7 +400,6 @@ insert:
+ 			insert(buf, len);
+ 		break;
+ 	case XK_Delete:
+-	case XK_KP_Delete:
+ 		if (text[cursor] == '\0')
+ 			return;
+ 		cursor = nextrune(+1);
+@@ -413,7 +410,6 @@ insert:
+ 		insert(NULL, nextrune(-1) - cursor);
+ 		break;
+ 	case XK_End:
+-	case XK_KP_End:
+ 		if (text[cursor] != '\0') {
+ 			cursor = strlen(text);
+ 			break;
+@@ -433,7 +429,6 @@ insert:
+ 		cleanup();
+ 		exit(1);
+ 	case XK_Home:
+-	case XK_KP_Home:
+ 		if (sel == matches) {
+ 			cursor = 0;
+ 			break;
+@@ -442,7 +437,6 @@ insert:
+ 		calcoffsets();
+ 		break;
+ 	case XK_Left:
+-	case XK_KP_Left:
+ 		if (cursor > 0 && (!sel || !sel->left || lines > 0)) {
+ 			cursor = nextrune(-1);
+ 			break;
+@@ -451,21 +445,18 @@ insert:
+ 			return;
+ 		/* fallthrough */
+ 	case XK_Up:
+-	case XK_KP_Up:
+ 		if (sel && sel->left && (sel = sel->left)->right == curr) {
+ 			curr = prev;
+ 			calcoffsets();
+ 		}
+ 		break;
+ 	case XK_Next:
+-	case XK_KP_Next:
+ 		if (!next)
+ 			return;
+ 		sel = curr = next;
+ 		calcoffsets();
+ 		break;
+ 	case XK_Prior:
+-	case XK_KP_Prior:
+ 		if (!prev)
+ 			return;
+ 		sel = curr = prev;
+@@ -482,7 +473,6 @@ insert:
+ 			sel->out = 1;
+ 		break;
+ 	case XK_Right:
+-	case XK_KP_Right:
+ 		if (text[cursor] != '\0') {
+ 			cursor = nextrune(+1);
+ 			break;
+@@ -491,7 +481,6 @@ insert:
+ 			return;
+ 		/* fallthrough */
+ 	case XK_Down:
+-	case XK_KP_Down:
+ 		if (sel && sel->right && (sel = sel->right) == next) {
+ 			curr = next;
+ 			calcoffsets();
+diff --git a/stest.c b/stest.c
+index e27d3a5..7a7b0bc 100644
+--- a/stest.c
++++ b/stest.c
+@@ -84,7 +84,7 @@ main(int argc, char *argv[])
+ 	if (!argc) {
+ 		/* read list from stdin */
+ 		while ((n = getline(&line, &linesiz, stdin)) > 0) {
+-			if (line[n - 1] == '\n')
++			if (n && line[n - 1] == '\n')
+ 				line[n - 1] = '\0';
+ 			test(line, line);
+ 		}

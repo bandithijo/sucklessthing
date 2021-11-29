@@ -1,8 +1,26 @@
 diff --git a/st.c b/st.c
-index ebdf360..446e8c4 100644
+index a9338e1..446e8c4 100644
 --- a/st.c
 +++ b/st.c
-@@ -1049,6 +1049,11 @@ tnew(int col, int row)
+@@ -793,15 +793,14 @@ ttynew(const char *line, char *cmd, const char *out, char **args)
+ 		break;
+ 	case 0:
+ 		close(iofd);
+-		close(m);
+ 		setsid(); /* create a new process group */
+ 		dup2(s, 0);
+ 		dup2(s, 1);
+ 		dup2(s, 2);
+ 		if (ioctl(s, TIOCSCTTY, NULL) < 0)
+ 			die("ioctl TIOCSCTTY failed: %s\n", strerror(errno));
+-		if (s > 2)
+-			close(s);
++		close(s);
++		close(m);
+ #ifdef __OpenBSD__
+ 		if (pledge("stdio getpw proc exec", NULL) == -1)
+ 			die("pledge\n");
+@@ -1050,6 +1049,11 @@ tnew(int col, int row)
  	treset();
  }
  
@@ -27,7 +45,7 @@ index fa2eddf..eabe77b 100644
  void tresize(int, int);
  void tsetdirtattr(int);
 diff --git a/x.c b/x.c
-index 248d505..8bc0f08 100644
+index 89786b8..8bc0f08 100644
 --- a/x.c
 +++ b/x.c
 @@ -34,6 +34,7 @@ typedef struct {
@@ -55,3 +73,27 @@ index 248d505..8bc0f08 100644
  		    (match(ms->mod, state) ||  /* exact or forced */
  		     match(ms->mod, state & ~forcemousemod))) {
  			ms->func(&(ms->arg));
+@@ -1588,9 +1590,8 @@ xseticontitle(char *p)
+ 	XTextProperty prop;
+ 	DEFAULT(p, opt_title);
+ 
+-	if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
+-	                                &prop) != Success)
+-		return;
++	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
++			&prop);
+ 	XSetWMIconName(xw.dpy, xw.win, &prop);
+ 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmiconname);
+ 	XFree(prop.value);
+@@ -1602,9 +1603,8 @@ xsettitle(char *p)
+ 	XTextProperty prop;
+ 	DEFAULT(p, opt_title);
+ 
+-	if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
+-	                                &prop) != Success)
+-		return;
++	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
++			&prop);
+ 	XSetWMName(xw.dpy, xw.win, &prop);
+ 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmname);
+ 	XFree(prop.value);

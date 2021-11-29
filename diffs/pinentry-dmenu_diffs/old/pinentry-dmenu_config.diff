@@ -1,5 +1,5 @@
 diff --git a/config.h b/config.h
-index 8e5d90a..110368b 100644
+index 8e5d90a..f9ba7f4 100644
 --- a/config.h
 +++ b/config.h
 @@ -1,19 +1,19 @@
@@ -26,10 +26,10 @@ index 8e5d90a..110368b 100644
 -	[SchemeNormal] = { "#bbbbbb", "#222222" },
 -	[SchemeSelect] = { "#eeeeee", "#005577" },
 -	[SchemeDesc]   = { "#bbbbbb", "#222222" }
-+	[SchemePrompt] = { "#002B36", "#CB4B16" },
-+	[SchemeNormal] = { "#93A1A1", "#002B36" },
-+	[SchemeSelect] = { "#002B36", "#CB4B16" },
-+	[SchemeDesc]   = { "#002B36", "#CB4B16" }
++	[SchemePrompt] = { "#D4D4D3", "#005F87" },
++	[SchemeNormal] = { "#D4D4D3", "#1E1E1E" },
++	[SchemeSelect] = { "#D4D4D3", "#005F87" },
++	[SchemeDesc]   = { "#D4D4D3", "#005F87" }
  };
 diff --git a/config.mk b/config.mk
 index 4c71211..ae1b0ea 100644

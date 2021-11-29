@@ -1,5 +1,5 @@
 diff --git a/dmenu.c b/dmenu.c
-index 65f25ce..96b2581 100644
+index 98507d9..96b2581 100644
 --- a/dmenu.c
 +++ b/dmenu.c
 @@ -15,6 +15,7 @@
@@ -21,7 +21,89 @@ index 65f25ce..96b2581 100644
  #include "config.h"
  
  static int (*fstrncmp)(const char *, const char *, size_t) = strncmp;
-@@ -601,8 +606,13 @@ setup(void)
+@@ -360,11 +365,9 @@ keypress(XKeyEvent *ev)
+ 			                  utf8, utf8, win, CurrentTime);
+ 			return;
+ 		case XK_Left:
+-		case XK_KP_Left:
+ 			movewordedge(-1);
+ 			goto draw;
+ 		case XK_Right:
+-		case XK_KP_Right:
+ 			movewordedge(+1);
+ 			goto draw;
+ 		case XK_Return:
+@@ -402,7 +405,6 @@ insert:
+ 			insert(buf, len);
+ 		break;
+ 	case XK_Delete:
+-	case XK_KP_Delete:
+ 		if (text[cursor] == '\0')
+ 			return;
+ 		cursor = nextrune(+1);
+@@ -413,7 +415,6 @@ insert:
+ 		insert(NULL, nextrune(-1) - cursor);
+ 		break;
+ 	case XK_End:
+-	case XK_KP_End:
+ 		if (text[cursor] != '\0') {
+ 			cursor = strlen(text);
+ 			break;
+@@ -433,7 +434,6 @@ insert:
+ 		cleanup();
+ 		exit(1);
+ 	case XK_Home:
+-	case XK_KP_Home:
+ 		if (sel == matches) {
+ 			cursor = 0;
+ 			break;
+@@ -442,7 +442,6 @@ insert:
+ 		calcoffsets();
+ 		break;
+ 	case XK_Left:
+-	case XK_KP_Left:
+ 		if (cursor > 0 && (!sel || !sel->left || lines > 0)) {
+ 			cursor = nextrune(-1);
+ 			break;
+@@ -451,21 +450,18 @@ insert:
+ 			return;
+ 		/* fallthrough */
+ 	case XK_Up:
+-	case XK_KP_Up:
+ 		if (sel && sel->left && (sel = sel->left)->right == curr) {
+ 			curr = prev;
+ 			calcoffsets();
+ 		}
+ 		break;
+ 	case XK_Next:
+-	case XK_KP_Next:
+ 		if (!next)
+ 			return;
+ 		sel = curr = next;
+ 		calcoffsets();
+ 		break;
+ 	case XK_Prior:
+-	case XK_KP_Prior:
+ 		if (!prev)
+ 			return;
+ 		sel = curr = prev;
+@@ -482,7 +478,6 @@ insert:
+ 			sel->out = 1;
+ 		break;
+ 	case XK_Right:
+-	case XK_KP_Right:
+ 		if (text[cursor] != '\0') {
+ 			cursor = nextrune(+1);
+ 			break;
+@@ -491,7 +486,6 @@ insert:
+ 			return;
+ 		/* fallthrough */
+ 	case XK_Down:
+-	case XK_KP_Down:
+ 		if (sel && sel->right && (sel = sel->right) == next) {
+ 			curr = next;
+ 			calcoffsets();
+@@ -612,8 +606,13 @@ setup(void)
  	int a, di, n, area = 0;
  #endif
  	/* init appearance */
@@ -37,7 +119,7 @@ index 65f25ce..96b2581 100644
  
  	clip = XInternAtom(dpy, "CLIPBOARD",   False);
  	utf8 = XInternAtom(dpy, "UTF8_STRING", False);
-@@ -694,6 +704,41 @@ usage(void)
+@@ -705,6 +704,41 @@ usage(void)
  	exit(1);
  }
  
@@ -79,7 +161,7 @@ index 65f25ce..96b2581 100644
  int
  main(int argc, char *argv[])
  {
-@@ -722,15 +767,15 @@ main(int argc, char *argv[])
+@@ -733,15 +767,15 @@ main(int argc, char *argv[])
  		else if (!strcmp(argv[i], "-p"))   /* adds prompt to left of input field */
  			prompt = argv[++i];
  		else if (!strcmp(argv[i], "-fn"))  /* font or font set */
@@ -100,7 +182,7 @@ index 65f25ce..96b2581 100644
  		else if (!strcmp(argv[i], "-w"))   /* embedding window id */
  			embed = argv[++i];
  		else
-@@ -748,8 +793,23 @@ main(int argc, char *argv[])
+@@ -759,8 +793,23 @@ main(int argc, char *argv[])
  		die("could not get embedding window attributes: 0x%lx",
  		    parentwin);
  	drw = drw_create(dpy, screen, root, wa.width, wa.height);
@@ -125,3 +207,16 @@ index 65f25ce..96b2581 100644
  	lrpad = drw->fonts->h;
  
  #ifdef __OpenBSD__
+diff --git a/stest.c b/stest.c
+index e27d3a5..7a7b0bc 100644
+--- a/stest.c
++++ b/stest.c
+@@ -84,7 +84,7 @@ main(int argc, char *argv[])
+ 	if (!argc) {
+ 		/* read list from stdin */
+ 		while ((n = getline(&line, &linesiz, stdin)) > 0) {
+-			if (line[n - 1] == '\n')
++			if (n && line[n - 1] == '\n')
+ 				line[n - 1] = '\0';
+ 			test(line, line);
+ 		}
