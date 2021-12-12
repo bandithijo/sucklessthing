@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# Suckmerge2 was inspired by suckmerge by HexDSL. This script has functionality
+# Suckmerge was inspired by suckmerge (original) by HexDSL. This script has functionality
 # to merge selected branches, make, & make install.
 
 # Options:
@@ -8,7 +8,7 @@
 # -i for installing. Merge all selected branches, make, & make install
 
 # Usage:
-# $ suckmerge2 -[i/d]
+# $ suckmerge -[i/d]
 
 # Legend:
 # n    => branch without config
@@ -225,9 +225,9 @@ end
 
 def option_for_debugging(branches)
   puts "
-+-----------------------+
-| SUCKMERGE2: DEBUGGING |
-+-----------------------+
++----------------------+
+| SUCKMERGE: DEBUGGING |
++----------------------+
   "
   sleep 1
   clean_reset
@@ -249,9 +249,9 @@ end
 
 def option_for_installing(branches, dir_name)
   puts "
-+------------------------+
-| SUCKMERGE2: INSTALLING |
-+------------------------+
++-----------------------+
+| SUCKMERGE: INSTALLING |
++-----------------------+
   "
   sleep 1
   clean_diff_reset
@@ -267,7 +267,7 @@ Options:
   -i for installing - Merge all selected branches, make, & make install
 
 Usage:
-  $ suckmerge2 -[d/i]
+  $ suckmerge -[d/i]
   "
   puts '  Or,'
   puts
