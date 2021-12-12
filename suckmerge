@@ -59,7 +59,8 @@ dwm_branches = [
   'placemouse',            # 38* : dynamicswallow^4, canfocusfloating^6
   'sendmoncenter',         # 40
   'stickyindicator',       # 41*
-  'togglefloatingcenter',  # 42  : center^3, canfocusfloating^6 <-
+  'togglefloatingcenter',  # 42  : center^3, canfocusfloating^6
+  'barheight',             # 43* <-
 ]
 
 # For st

@@ -11,7 +11,7 @@ index a2ac963..1c0b587 100644
  static const Layout layouts[] = {
  	/* symbol     arrange function */
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..be34578 100644
+index 5e4d494..736bc2c 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -228,6 +228,7 @@ static void updatetitle(Client *c);
@@ -22,15 +22,16 @@ index 5e4d494..be34578 100644
  static Client *wintoclient(Window w);
  static Monitor *wintomon(Window w);
  static int xerror(Display *dpy, XErrorEvent *ee);
-@@ -828,6 +829,7 @@ focusmon(const Arg *arg)
+@@ -828,6 +829,8 @@ focusmon(const Arg *arg)
  	unfocus(selmon->sel, 0);
  	selmon = m;
  	focus(NULL);
-+	warp(selmon->sel);
++    if (warpenable == 1)
++        warp(selmon->sel);
  }
  
  void
-@@ -835,7 +837,7 @@ focusstack(const Arg *arg)
+@@ -835,7 +838,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
  
@@ -39,7 +40,7 @@ index 5e4d494..be34578 100644
  		return;
  	if (arg->i > 0) {
  		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -2047,6 +2049,35 @@ view(const Arg *arg)
+@@ -2047,6 +2050,35 @@ view(const Arg *arg)
  	arrange(selmon);
  }
  

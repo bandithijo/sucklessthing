@@ -11,7 +11,7 @@ index a2ac963..1c0b587 100644
  static const Layout layouts[] = {
  	/* symbol     arrange function */
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..f34c533 100644
+index 5e4d494..00a9a5f 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -87,6 +87,7 @@ typedef struct Client Client;
@@ -108,16 +108,17 @@ index 5e4d494..f34c533 100644
  	return m;
  }
  
-@@ -828,6 +859,8 @@ focusmon(const Arg *arg)
+@@ -828,6 +859,9 @@ focusmon(const Arg *arg)
  	unfocus(selmon->sel, 0);
  	selmon = m;
  	focus(NULL);
-+	warp(selmon->sel);
++    if (warpenable == 1)
++        warp(selmon->sel);
 +    arrange(selmon);
  }
  
  void
-@@ -835,7 +868,7 @@ focusstack(const Arg *arg)
+@@ -835,7 +869,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
  
@@ -126,7 +127,7 @@ index 5e4d494..f34c533 100644
  		return;
  	if (arg->i > 0) {
  		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -967,7 +1000,12 @@ grabkeys(void)
+@@ -967,7 +1001,12 @@ grabkeys(void)
  void
  incnmaster(const Arg *arg)
  {
@@ -140,7 +141,7 @@ index 5e4d494..f34c533 100644
  	arrange(selmon);
  }
  
-@@ -1030,6 +1068,7 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1030,6 +1069,7 @@ manage(Window w, XWindowAttributes *wa)
  	c->w = c->oldw = wa->width;
  	c->h = c->oldh = wa->height;
  	c->oldbw = wa->border_width;
@@ -148,7 +149,7 @@ index 5e4d494..f34c533 100644
  
  	updatetitle(c);
  	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
-@@ -1502,9 +1541,9 @@ void
+@@ -1502,9 +1542,9 @@ void
  setlayout(const Arg *arg)
  {
  	if (!arg || !arg->v || arg->v != selmon->lt[selmon->sellt])
@@ -160,7 +161,7 @@ index 5e4d494..f34c533 100644
  	strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, sizeof selmon->ltsymbol);
  	if (selmon->sel)
  		arrange(selmon);
-@@ -1512,6 +1551,23 @@ setlayout(const Arg *arg)
+@@ -1512,6 +1552,23 @@ setlayout(const Arg *arg)
  		drawbar(selmon);
  }
  
@@ -184,7 +185,7 @@ index 5e4d494..f34c533 100644
  /* arg > 1.0 will set mfact absolutely */
  void
  setmfact(const Arg *arg)
-@@ -1523,7 +1579,7 @@ setmfact(const Arg *arg)
+@@ -1523,7 +1580,7 @@ setmfact(const Arg *arg)
  	f = arg->f < 1.0 ? arg->f + selmon->mfact : arg->f - 1.0;
  	if (f < 0.05 || f > 0.95)
  		return;
@@ -193,7 +194,7 @@ index 5e4d494..f34c533 100644
  	arrange(selmon);
  }
  
-@@ -1675,9 +1731,21 @@ void
+@@ -1675,9 +1732,21 @@ void
  tile(Monitor *m)
  {
  	unsigned int i, n, h, mw, my, ty;
@@ -216,7 +217,7 @@ index 5e4d494..f34c533 100644
  	if (n == 0)
  		return;
  
-@@ -1687,22 +1755,126 @@ tile(Monitor *m)
+@@ -1687,22 +1756,126 @@ tile(Monitor *m)
  		mw = m->ww;
  	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
  		if (i < m->nmaster) {
@@ -345,7 +346,7 @@ index 5e4d494..f34c533 100644
  	updatebarpos(selmon);
  	XMoveResizeWindow(dpy, selmon->barwin, selmon->wx, selmon->by, selmon->ww, bh);
  	arrange(selmon);
-@@ -1741,9 +1913,33 @@ void
+@@ -1741,9 +1914,33 @@ void
  toggleview(const Arg *arg)
  {
  	unsigned int newtagset = selmon->tagset[selmon->seltags] ^ (arg->ui & TAGMASK);
@@ -379,7 +380,7 @@ index 5e4d494..f34c533 100644
  		focus(NULL);
  		arrange(selmon);
  	}
-@@ -2038,15 +2234,61 @@ updatewmhints(Client *c)
+@@ -2038,15 +2235,70 @@ updatewmhints(Client *c)
  void
  view(const Arg *arg)
  {
@@ -425,7 +426,16 @@ index 5e4d494..f34c533 100644
 +	int x, y;
 +
 +	if (c || !c) {
-+		XWarpPointer(dpy, None, root, 0, 0, 0, 0, selmon->wx + selmon->ww, selmon->wy + selmon->wh);
++        if (warpcursorposition == 0) {
++            /* for centering the cursor position when switch focused monitor */
++            XWarpPointer(dpy, None, root, 0, 0, 0, 0, selmon->wx + selmon->ww/2, selmon->wy + selmon->wh/2);
++        } else if (warpcursorposition == 1) {
++            /* for bottom right the cursor position when switch focused monitor */
++            XWarpPointer(dpy, None, root, 0, 0, 0, 0, selmon->wx + selmon->ww, selmon->wy + selmon->wh);
++        } else if (warpcursorposition == 2) {
++            /* for bottom center the cursor position when switch focused monitor */
++            XWarpPointer(dpy, None, root, 0, 0, 0, 0, selmon->wx + selmon->ww/2, selmon->wy + selmon->wh);
++        }
 +		return;
 +	}
 +
