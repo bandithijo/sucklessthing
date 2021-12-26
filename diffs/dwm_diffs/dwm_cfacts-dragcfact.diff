@@ -11,7 +11,7 @@ index a2ac963..1c0b587 100644
  static const Layout layouts[] = {
  	/* symbol     arrange function */
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..3ac4c16 100644
+index a96f33c..3ac4c16 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -87,6 +87,7 @@ typedef struct Client Client;
@@ -120,7 +120,17 @@ index 5e4d494..3ac4c16 100644
  void
  drawbar(Monitor *m)
  {
-@@ -835,7 +913,7 @@ focusstack(const Arg *arg)
+@@ -702,9 +780,6 @@ drawbar(Monitor *m)
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+ 
+-	if (!m->showbar)
+-		return;
+-
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -838,7 +913,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
  
@@ -129,7 +139,7 @@ index 5e4d494..3ac4c16 100644
  		return;
  	if (arg->i > 0) {
  		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -1030,6 +1108,7 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1033,6 +1108,7 @@ manage(Window w, XWindowAttributes *wa)
  	c->w = c->oldw = wa->width;
  	c->h = c->oldh = wa->height;
  	c->oldbw = wa->border_width;
@@ -137,7 +147,7 @@ index 5e4d494..3ac4c16 100644
  
  	updatetitle(c);
  	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
-@@ -1512,6 +1591,30 @@ setlayout(const Arg *arg)
+@@ -1515,6 +1591,30 @@ setlayout(const Arg *arg)
  		drawbar(selmon);
  }
  
@@ -168,7 +178,7 @@ index 5e4d494..3ac4c16 100644
  /* arg > 1.0 will set mfact absolutely */
  void
  setmfact(const Arg *arg)
-@@ -1675,9 +1778,15 @@ void
+@@ -1678,9 +1778,15 @@ void
  tile(Monitor *m)
  {
  	unsigned int i, n, h, mw, my, ty;
@@ -185,7 +195,7 @@ index 5e4d494..3ac4c16 100644
  	if (n == 0)
  		return;
  
-@@ -1687,15 +1796,17 @@ tile(Monitor *m)
+@@ -1690,15 +1796,17 @@ tile(Monitor *m)
  		mw = m->ww;
  	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
  		if (i < m->nmaster) {

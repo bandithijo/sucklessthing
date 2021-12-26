@@ -11,7 +11,7 @@ index a2ac963..1c0b587 100644
  static const Layout layouts[] = {
  	/* symbol     arrange function */
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..a28eb5a 100644
+index a96f33c..a28eb5a 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -49,7 +49,7 @@
@@ -40,7 +40,17 @@ index 5e4d494..a28eb5a 100644
  static void toggletag(const Arg *arg);
  static void toggleview(const Arg *arg);
  static void unfocus(Client *c, int setfocus);
-@@ -785,6 +786,8 @@ void
+@@ -702,9 +703,6 @@ drawbar(Monitor *m)
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+ 
+-	if (!m->showbar)
+-		return;
+-
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -788,6 +786,8 @@ void
  focus(Client *c)
  {
  	if (!c || !ISVISIBLE(c))
@@ -49,7 +59,7 @@ index 5e4d494..a28eb5a 100644
  		for (c = selmon->stack; c && !ISVISIBLE(c); c = c->snext);
  	if (selmon->sel && selmon->sel != c)
  		unfocus(selmon->sel, 0);
-@@ -835,7 +838,7 @@ focusstack(const Arg *arg)
+@@ -838,7 +838,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
  
@@ -58,7 +68,7 @@ index 5e4d494..a28eb5a 100644
  		return;
  	if (arg->i > 0) {
  		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -1357,6 +1360,17 @@ restack(Monitor *m)
+@@ -1360,6 +1360,17 @@ restack(Monitor *m)
  		return;
  	if (m->sel->isfloating || !m->lt[m->sellt]->arrange)
  		XRaiseWindow(dpy, m->sel->win);
@@ -76,7 +86,7 @@ index 5e4d494..a28eb5a 100644
  	if (m->lt[m->sellt]->arrange) {
  		wc.stack_mode = Below;
  		wc.sibling = m->barwin;
-@@ -1467,6 +1481,7 @@ setfocus(Client *c)
+@@ -1470,6 +1481,7 @@ setfocus(Client *c)
  			XA_WINDOW, 32, PropModeReplace,
  			(unsigned char *) &(c->win), 1);
  	}
@@ -84,7 +94,7 @@ index 5e4d494..a28eb5a 100644
  	sendevent(c, wmatom[WMTakeFocus]);
  }
  
-@@ -1719,7 +1734,34 @@ togglefloating(const Arg *arg)
+@@ -1722,7 +1734,34 @@ togglefloating(const Arg *arg)
  	if (selmon->sel->isfloating)
  		resize(selmon->sel, selmon->sel->x, selmon->sel->y,
  			selmon->sel->w, selmon->sel->h, 0);
@@ -119,7 +129,7 @@ index 5e4d494..a28eb5a 100644
  }
  
  void
-@@ -1754,6 +1796,7 @@ unfocus(Client *c, int setfocus)
+@@ -1757,6 +1796,7 @@ unfocus(Client *c, int setfocus)
  {
  	if (!c)
  		return;

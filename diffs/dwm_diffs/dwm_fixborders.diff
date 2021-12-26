@@ -24,10 +24,20 @@ index 4cdbcbe..cd899f8 100644
  
  /* Wrapper to create color schemes. The caller has to call free(3) on the
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..664c527 100644
+index a96f33c..664c527 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -835,7 +835,7 @@ focusstack(const Arg *arg)
+@@ -702,9 +702,6 @@ drawbar(Monitor *m)
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+ 
+-	if (!m->showbar)
+-		return;
+-
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -838,7 +835,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
  

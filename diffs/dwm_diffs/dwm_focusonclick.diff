@@ -11,7 +11,7 @@ index a2ac963..1c0b587 100644
  static const Layout layouts[] = {
  	/* symbol     arrange function */
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..73ab10b 100644
+index a96f33c..73ab10b 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -163,7 +163,6 @@ static void detachstack(Client *c);
@@ -38,7 +38,17 @@ index 5e4d494..73ab10b 100644
  	[Expose] = expose,
  	[FocusIn] = focusin,
  	[KeyPress] = keypress,
-@@ -752,25 +751,6 @@ drawbars(void)
+@@ -702,9 +701,6 @@ drawbar(Monitor *m)
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+ 
+-	if (!m->showbar)
+-		return;
+-
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -755,25 +751,6 @@ drawbars(void)
  		drawbar(m);
  }
  
@@ -64,7 +74,7 @@ index 5e4d494..73ab10b 100644
  void
  expose(XEvent *e)
  {
-@@ -835,7 +815,7 @@ focusstack(const Arg *arg)
+@@ -838,7 +815,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
  
@@ -73,7 +83,7 @@ index 5e4d494..73ab10b 100644
  		return;
  	if (arg->i > 0) {
  		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -1193,6 +1173,71 @@ movemouse(const Arg *arg)
+@@ -1196,6 +1173,71 @@ movemouse(const Arg *arg)
  	}
  }
  

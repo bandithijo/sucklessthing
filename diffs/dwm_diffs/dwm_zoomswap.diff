@@ -11,7 +11,7 @@ index a2ac963..1c0b587 100644
  static const Layout layouts[] = {
  	/* symbol     arrange function */
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..8e3ec51 100644
+index a96f33c..8e3ec51 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -165,6 +165,7 @@ static void drawbar(Monitor *m);
@@ -38,7 +38,17 @@ index 5e4d494..8e3ec51 100644
  static const char broken[] = "broken";
  static char stext[256];
  static int screen;
-@@ -781,6 +782,16 @@ expose(XEvent *e)
+@@ -702,9 +703,6 @@ drawbar(Monitor *m)
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+ 
+-	if (!m->showbar)
+-		return;
+-
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -784,6 +782,16 @@ expose(XEvent *e)
  		drawbar(m);
  }
  
@@ -55,7 +65,7 @@ index 5e4d494..8e3ec51 100644
  void
  focus(Client *c)
  {
-@@ -835,7 +846,7 @@ focusstack(const Arg *arg)
+@@ -838,7 +846,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
  
@@ -64,7 +74,7 @@ index 5e4d494..8e3ec51 100644
  		return;
  	if (arg->i > 0) {
  		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -1200,15 +1211,6 @@ nexttiled(Client *c)
+@@ -1203,15 +1211,6 @@ nexttiled(Client *c)
  	return c;
  }
  
@@ -80,7 +90,7 @@ index 5e4d494..8e3ec51 100644
  void
  propertynotify(XEvent *e)
  {
-@@ -2117,14 +2119,38 @@ void
+@@ -2120,14 +2119,38 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;

@@ -23,7 +23,7 @@ index 77bcbc0..0965d94 100644
  
  .PHONY: all options clean dist install uninstall
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..ea383b4 100644
+index a96f33c..ea383b4 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -58,14 +58,16 @@
@@ -229,7 +229,17 @@ index 5e4d494..ea383b4 100644
  }
  
  void
-@@ -729,6 +804,12 @@ drawbar(Monitor *m)
+@@ -702,9 +777,6 @@ drawbar(Monitor *m)
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+ 
+-	if (!m->showbar)
+-		return;
+-
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -732,6 +804,12 @@ drawbar(Monitor *m)
  	drw_setscheme(drw, scheme[SchemeNorm]);
  	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
  
@@ -242,7 +252,7 @@ index 5e4d494..ea383b4 100644
  	if ((w = m->ww - tw - x) > bh) {
  		if (m->sel) {
  			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
-@@ -781,6 +862,91 @@ expose(XEvent *e)
+@@ -784,6 +862,91 @@ expose(XEvent *e)
  		drawbar(m);
  }
  
@@ -334,7 +344,7 @@ index 5e4d494..ea383b4 100644
  void
  focus(Client *c)
  {
-@@ -999,6 +1165,49 @@ keypress(XEvent *e)
+@@ -1002,6 +1165,49 @@ keypress(XEvent *e)
  			keys[i].func(&(keys[i].arg));
  }
  
@@ -384,7 +394,7 @@ index 5e4d494..ea383b4 100644
  void
  killclient(const Arg *arg)
  {
-@@ -1067,6 +1276,8 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1070,6 +1276,8 @@ manage(Window w, XWindowAttributes *wa)
  	attachstack(c);
  	XChangeProperty(dpy, root, netatom[NetClientList], XA_WINDOW, 32, PropModeAppend,
  		(unsigned char *) &(c->win), 1);
@@ -393,7 +403,7 @@ index 5e4d494..ea383b4 100644
  	XMoveResizeWindow(dpy, c->win, c->x + 2 * sw, c->y, c->w, c->h); /* some windows require this */
  	setclientstate(c, NormalState);
  	if (c->mon == selmon)
-@@ -1090,15 +1301,37 @@ mappingnotify(XEvent *e)
+@@ -1093,15 +1301,37 @@ mappingnotify(XEvent *e)
  void
  maprequest(XEvent *e)
  {
@@ -433,7 +443,7 @@ index 5e4d494..ea383b4 100644
  }
  
  void
-@@ -1193,6 +1426,92 @@ movemouse(const Arg *arg)
+@@ -1196,6 +1426,92 @@ movemouse(const Arg *arg)
  	}
  }
  
@@ -526,7 +536,7 @@ index 5e4d494..ea383b4 100644
  Client *
  nexttiled(Client *c)
  {
-@@ -1200,25 +1519,20 @@ nexttiled(Client *c)
+@@ -1203,25 +1519,20 @@ nexttiled(Client *c)
  	return c;
  }
  
@@ -559,7 +569,7 @@ index 5e4d494..ea383b4 100644
  		return; /* ignore */
  	else if ((c = wintoclient(ev->window))) {
  		switch(ev->atom) {
-@@ -1240,6 +1554,9 @@ propertynotify(XEvent *e)
+@@ -1243,6 +1554,9 @@ propertynotify(XEvent *e)
  			updatetitle(c);
  			if (c == c->mon->sel)
  				drawbar(c->mon);
@@ -569,7 +579,7 @@ index 5e4d494..ea383b4 100644
  		}
  		if (ev->atom == netatom[NetWMWindowType])
  			updatewindowtype(c);
-@@ -1563,10 +1880,12 @@ setup(void)
+@@ -1566,10 +1880,12 @@ setup(void)
  	netatom[NetWMWindowType] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
  	netatom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
  	netatom[NetClientList] = XInternAtom(dpy, "_NET_CLIENT_LIST", False);
@@ -582,7 +592,7 @@ index 5e4d494..ea383b4 100644
  	/* init appearance */
  	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
  	for (i = 0; i < LENGTH(colors); i++)
-@@ -1586,6 +1905,7 @@ setup(void)
+@@ -1589,6 +1905,7 @@ setup(void)
  	XChangeProperty(dpy, root, netatom[NetSupported], XA_ATOM, 32,
  		PropModeReplace, (unsigned char *) netatom, NetLast);
  	XDeleteProperty(dpy, root, netatom[NetClientList]);
@@ -590,7 +600,7 @@ index 5e4d494..ea383b4 100644
  	/* select events */
  	wa.cursor = cursor[CurNormal]->cursor;
  	wa.event_mask = SubstructureRedirectMask|SubstructureNotifyMask
-@@ -1653,6 +1973,331 @@ spawn(const Arg *arg)
+@@ -1656,6 +1973,331 @@ spawn(const Arg *arg)
  	}
  }
  
@@ -922,7 +932,7 @@ index 5e4d494..ea383b4 100644
  void
  tag(const Arg *arg)
  {
-@@ -1768,6 +2413,9 @@ unmanage(Client *c, int destroyed)
+@@ -1771,6 +2413,9 @@ unmanage(Client *c, int destroyed)
  	Monitor *m = c->mon;
  	XWindowChanges wc;
  
@@ -932,7 +942,7 @@ index 5e4d494..ea383b4 100644
  	detach(c);
  	detachstack(c);
  	if (!destroyed) {
-@@ -1792,12 +2440,24 @@ unmapnotify(XEvent *e)
+@@ -1795,12 +2440,24 @@ unmapnotify(XEvent *e)
  {
  	Client *c;
  	XUnmapEvent *ev = &e->xunmap;
@@ -962,7 +972,7 @@ index 5e4d494..ea383b4 100644
  	}
  }
  
-@@ -1839,13 +2499,24 @@ updatebarpos(Monitor *m)
+@@ -1842,13 +2499,24 @@ updatebarpos(Monitor *m)
  void
  updateclientlist()
  {
@@ -990,7 +1000,7 @@ index 5e4d494..ea383b4 100644
  				XA_WINDOW, 32, PropModeAppend,
  				(unsigned char *) &(c->win), 1);
  }
-@@ -2060,6 +2731,43 @@ wintoclient(Window w)
+@@ -2063,6 +2731,43 @@ wintoclient(Window w)
  	return NULL;
  }
  
@@ -1034,7 +1044,7 @@ index 5e4d494..ea383b4 100644
  Monitor *
  wintomon(Window w)
  {
-@@ -2117,14 +2825,38 @@ void
+@@ -2120,14 +2825,38 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;

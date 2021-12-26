@@ -11,7 +11,7 @@ index a2ac963..1c0b587 100644
  static const Layout layouts[] = {
  	/* symbol     arrange function */
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..755fa93 100644
+index a96f33c..755fa93 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -515,6 +515,7 @@ clientmessage(XEvent *e)
@@ -38,7 +38,17 @@ index 5e4d494..755fa93 100644
  	}
  }
  
-@@ -835,7 +841,7 @@ focusstack(const Arg *arg)
+@@ -702,9 +708,6 @@ drawbar(Monitor *m)
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+ 
+-	if (!m->showbar)
+-		return;
+-
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -838,7 +841,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
  

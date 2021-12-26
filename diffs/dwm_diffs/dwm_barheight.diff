@@ -1,8 +1,18 @@
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..2fbd861 100644
+index a96f33c..2fbd861 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -1546,7 +1546,7 @@ setup(void)
+@@ -702,9 +702,6 @@ drawbar(Monitor *m)
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+ 
+-	if (!m->showbar)
+-		return;
+-
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -1549,7 +1546,7 @@ setup(void)
  	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
  		die("no fonts could be loaded.");
  	lrpad = drw->fonts->h;

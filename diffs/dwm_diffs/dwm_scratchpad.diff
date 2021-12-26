@@ -11,7 +11,7 @@ index a2ac963..1c0b587 100644
  static const Layout layouts[] = {
  	/* symbol     arrange function */
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..813acea 100644
+index a96f33c..813acea 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -195,6 +195,12 @@ static void resizemouse(const Arg *arg);
@@ -53,7 +53,17 @@ index 5e4d494..813acea 100644
  }
  
  int
-@@ -835,7 +845,7 @@ focusstack(const Arg *arg)
+@@ -702,9 +712,6 @@ drawbar(Monitor *m)
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+ 
+-	if (!m->showbar)
+-		return;
+-
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -838,7 +845,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
  
@@ -62,7 +72,7 @@ index 5e4d494..813acea 100644
  		return;
  	if (arg->i > 0) {
  		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -1408,6 +1418,97 @@ scan(void)
+@@ -1411,6 +1418,97 @@ scan(void)
  	}
  }
  

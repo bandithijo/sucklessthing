@@ -37,7 +37,7 @@ index 4bcd5ad..42b04ce 100644
  /* Cursor abstraction */
  Cur *drw_cur_create(Drw *drw, int shape);
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..5b263bc 100644
+index a96f33c..5b263bc 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -35,6 +35,7 @@
@@ -86,7 +86,17 @@ index 5e4d494..5b263bc 100644
  static void zoom(const Arg *arg);
  
  /* variables */
-@@ -835,7 +853,7 @@ focusstack(const Arg *arg)
+@@ -702,9 +720,6 @@ drawbar(Monitor *m)
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+ 
+-	if (!m->showbar)
+-		return;
+-
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -838,7 +853,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
  
@@ -95,7 +105,7 @@ index 5e4d494..5b263bc 100644
  		return;
  	if (arg->i > 0) {
  		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -1015,6 +1033,37 @@ killclient(const Arg *arg)
+@@ -1018,6 +1033,37 @@ killclient(const Arg *arg)
  	}
  }
  
@@ -133,7 +143,7 @@ index 5e4d494..5b263bc 100644
  void
  manage(Window w, XWindowAttributes *wa)
  {
-@@ -2113,6 +2162,17 @@ xerrorstart(Display *dpy, XErrorEvent *ee)
+@@ -2116,6 +2162,17 @@ xerrorstart(Display *dpy, XErrorEvent *ee)
  	return -1;
  }
  
@@ -151,7 +161,7 @@ index 5e4d494..5b263bc 100644
  void
  zoom(const Arg *arg)
  {
-@@ -2139,6 +2199,8 @@ main(int argc, char *argv[])
+@@ -2142,6 +2199,8 @@ main(int argc, char *argv[])
  	if (!(dpy = XOpenDisplay(NULL)))
  		die("dwm: cannot open display");
  	checkotherwm();

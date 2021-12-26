@@ -11,7 +11,7 @@ index a2ac963..1c0b587 100644
  static const Layout layouts[] = {
  	/* symbol     arrange function */
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..e153a8d 100644
+index a96f33c..e153a8d 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -87,6 +87,7 @@ typedef struct Client Client;
@@ -48,7 +48,17 @@ index 5e4d494..e153a8d 100644
  	m->lt[0] = &layouts[0];
  	m->lt[1] = &layouts[1 % LENGTH(layouts)];
  	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
-@@ -835,7 +840,7 @@ focusstack(const Arg *arg)
+@@ -702,9 +707,6 @@ drawbar(Monitor *m)
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+ 
+-	if (!m->showbar)
+-		return;
+-
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -838,7 +840,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
  
@@ -57,7 +67,7 @@ index 5e4d494..e153a8d 100644
  		return;
  	if (arg->i > 0) {
  		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -1030,6 +1035,7 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1033,6 +1035,7 @@ manage(Window w, XWindowAttributes *wa)
  	c->w = c->oldw = wa->width;
  	c->h = c->oldh = wa->height;
  	c->oldbw = wa->border_width;
@@ -65,7 +75,7 @@ index 5e4d494..e153a8d 100644
  
  	updatetitle(c);
  	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
-@@ -1113,7 +1119,7 @@ monocle(Monitor *m)
+@@ -1116,7 +1119,7 @@ monocle(Monitor *m)
  	if (n > 0) /* override layout symbol */
  		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
  	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
@@ -74,7 +84,7 @@ index 5e4d494..e153a8d 100644
  }
  
  void
-@@ -1283,6 +1289,16 @@ resizeclient(Client *c, int x, int y, int w, int h)
+@@ -1286,6 +1289,16 @@ resizeclient(Client *c, int x, int y, int w, int h)
  	c->oldw = c->w; c->w = wc.width = w;
  	c->oldh = c->h; c->h = wc.height = h;
  	wc.border_width = c->bw;
@@ -91,7 +101,7 @@ index 5e4d494..e153a8d 100644
  	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
  	configure(c);
  	XSync(dpy, False);
-@@ -1498,6 +1514,16 @@ setfullscreen(Client *c, int fullscreen)
+@@ -1501,6 +1514,16 @@ setfullscreen(Client *c, int fullscreen)
  	}
  }
  
@@ -108,7 +118,7 @@ index 5e4d494..e153a8d 100644
  void
  setlayout(const Arg *arg)
  {
-@@ -1512,6 +1538,23 @@ setlayout(const Arg *arg)
+@@ -1515,6 +1538,23 @@ setlayout(const Arg *arg)
  		drawbar(selmon);
  }
  
@@ -132,7 +142,7 @@ index 5e4d494..e153a8d 100644
  /* arg > 1.0 will set mfact absolutely */
  void
  setmfact(const Arg *arg)
-@@ -1674,28 +1717,45 @@ tagmon(const Arg *arg)
+@@ -1677,28 +1717,45 @@ tagmon(const Arg *arg)
  void
  tile(Monitor *m)
  {

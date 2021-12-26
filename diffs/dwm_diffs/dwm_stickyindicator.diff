@@ -42,10 +42,20 @@ index 4bcd5ad..cb1f24b 100644
  
  /* Map functions */
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..1b9220e 100644
+index a96f33c..1b9220e 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -735,6 +735,8 @@ drawbar(Monitor *m)
+@@ -702,9 +702,6 @@ drawbar(Monitor *m)
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+ 
+-	if (!m->showbar)
+-		return;
+-
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -738,6 +735,8 @@ drawbar(Monitor *m)
  			drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
  			if (m->sel->isfloating)
  				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
