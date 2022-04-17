@@ -1,38 +1,7 @@
-diff --git a/st.c b/st.c
-index a9338e1..ebdf360 100644
---- a/st.c
-+++ b/st.c
-@@ -793,15 +793,14 @@ ttynew(const char *line, char *cmd, const char *out, char **args)
- 		break;
- 	case 0:
- 		close(iofd);
--		close(m);
- 		setsid(); /* create a new process group */
- 		dup2(s, 0);
- 		dup2(s, 1);
- 		dup2(s, 2);
- 		if (ioctl(s, TIOCSCTTY, NULL) < 0)
- 			die("ioctl TIOCSCTTY failed: %s\n", strerror(errno));
--		if (s > 2)
--			close(s);
-+		close(s);
-+		close(m);
- #ifdef __OpenBSD__
- 		if (pledge("stdio getpw proc exec", NULL) == -1)
- 			die("pledge\n");
 diff --git a/x.c b/x.c
-index 89786b8..11f92f5 100644
+index 2a3bd38..11622f3 100644
 --- a/x.c
 +++ b/x.c
-@@ -48,7 +48,7 @@ typedef struct {
- /* X modifiers */
- #define XK_ANY_MOD    UINT_MAX
- #define XK_NO_MOD     0
--#define XK_SWITCH_MOD (1<<13|1<<14)
-+#define XK_SWITCH_MOD (1<<13)
- 
- /* function definitions used in config.h */
- static void clipcopy(const Arg *);
 @@ -156,6 +156,8 @@ static void xresize(int, int);
  static void xhints(void);
  static int xloadcolor(int, const char *, Color *);
@@ -50,7 +19,7 @@ index 89786b8..11f92f5 100644
  	cresize(0, 0);
  	redraw();
  	xhints();
-@@ -1021,6 +1024,101 @@ xloadfonts(const char *fontstr, double fontsize)
+@@ -1050,6 +1053,101 @@ xloadfonts(const char *fontstr, double fontsize)
  	FcPatternDestroy(pattern);
  }
  
@@ -152,7 +121,7 @@ index 89786b8..11f92f5 100644
  void
  xunloadfont(Font *f)
  {
-@@ -1118,6 +1216,9 @@ xinit(int cols, int rows)
+@@ -1147,6 +1245,9 @@ xinit(int cols, int rows)
  	usedfont = (opt_font == NULL)? font : opt_font;
  	xloadfonts(usedfont, 0);
  
@@ -162,27 +131,3 @@ index 89786b8..11f92f5 100644
  	/* colors */
  	xw.cmap = XDefaultColormap(xw.dpy, xw.scr);
  	xloadcols();
-@@ -1588,9 +1689,8 @@ xseticontitle(char *p)
- 	XTextProperty prop;
- 	DEFAULT(p, opt_title);
- 
--	if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
--	                                &prop) != Success)
--		return;
-+	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
-+			&prop);
- 	XSetWMIconName(xw.dpy, xw.win, &prop);
- 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmiconname);
- 	XFree(prop.value);
-@@ -1602,9 +1702,8 @@ xsettitle(char *p)
- 	XTextProperty prop;
- 	DEFAULT(p, opt_title);
- 
--	if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
--	                                &prop) != Success)
--		return;
-+	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
-+			&prop);
- 	XSetWMName(xw.dpy, xw.win, &prop);
- 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmname);
- 	XFree(prop.value);

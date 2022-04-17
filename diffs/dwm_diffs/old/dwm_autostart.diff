@@ -10,6 +10,17 @@ index a2ac963..1c0b587 100644
  
  static const Layout layouts[] = {
  	/* symbol     arrange function */
+diff --git a/config.mk b/config.mk
+index b6eb7e0..7084c33 100644
+--- a/config.mk
++++ b/config.mk
+@@ -1,5 +1,5 @@
+ # dwm version
+-VERSION = 6.3
++VERSION = 6.2
+ 
+ # Customize below to fit your system
+ 
 diff --git a/dwm.1 b/dwm.1
 index ddc8321..86e73f9 100644
 --- a/dwm.1
@@ -52,7 +63,7 @@ index ddc8321..86e73f9 100644
  dwm is customized by creating a custom config.h and (re)compiling the source
  code. This keeps it fast, secure and simple.
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..d42b4ad 100644
+index a96f33c..d42b4ad 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -29,6 +29,7 @@
@@ -100,7 +111,17 @@ index 5e4d494..d42b4ad 100644
  static char stext[256];
  static int screen;
  static int sw, sh;           /* X display screen geometry width, height */
-@@ -781,6 +788,16 @@ expose(XEvent *e)
+@@ -702,9 +709,6 @@ drawbar(Monitor *m)
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+ 
+-	if (!m->showbar)
+-		return;
+-
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -784,6 +788,16 @@ expose(XEvent *e)
  		drawbar(m);
  }
  
@@ -117,7 +138,7 @@ index 5e4d494..d42b4ad 100644
  void
  focus(Client *c)
  {
-@@ -835,7 +852,7 @@ focusstack(const Arg *arg)
+@@ -838,7 +852,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
  
@@ -126,7 +147,7 @@ index 5e4d494..d42b4ad 100644
  		return;
  	if (arg->i > 0) {
  		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -1200,15 +1217,6 @@ nexttiled(Client *c)
+@@ -1203,15 +1217,6 @@ nexttiled(Client *c)
  	return c;
  }
  
@@ -142,7 +163,7 @@ index 5e4d494..d42b4ad 100644
  void
  propertynotify(XEvent *e)
  {
-@@ -1381,6 +1389,83 @@ run(void)
+@@ -1384,6 +1389,83 @@ run(void)
  			handler[ev.type](&ev); /* call handler */
  }
  
@@ -226,7 +247,7 @@ index 5e4d494..d42b4ad 100644
  void
  scan(void)
  {
-@@ -2117,14 +2202,38 @@ void
+@@ -2120,14 +2202,38 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;
@@ -269,7 +290,7 @@ index 5e4d494..d42b4ad 100644
  }
  
  int
-@@ -2145,6 +2254,7 @@ main(int argc, char *argv[])
+@@ -2148,6 +2254,7 @@ main(int argc, char *argv[])
  		die("pledge");
  #endif /* __OpenBSD__ */
  	scan();

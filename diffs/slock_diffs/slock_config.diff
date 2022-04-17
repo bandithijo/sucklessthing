@@ -1,17 +1,70 @@
 diff --git a/config.def.h b/config.def.h
-index 9855e21..fd25da5 100644
+index 9855e21..c1320bb 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -1,10 +1,10 @@
+@@ -1,12 +1,33 @@
  /* user and group to drop privileges to */
  static const char *user  = "nobody";
 -static const char *group = "nogroup";
 +static const char *group = "nobody";
  
  static const char *colorname[NUMCOLS] = {
- 	[INIT] =   "black",     /* after initialization */
+-	[INIT] =   "black",     /* after initialization */
 -	[INPUT] =  "#005577",   /* during input */
-+	[INPUT] =  "#005f87",   /* during input */
- 	[FAILED] = "#CC3333",   /* wrong password */
+-	[FAILED] = "#CC3333",   /* wrong password */
++	[BACKGROUND] = "black",       /* after initialization */
++	[INIT]       = "#0A0A0A",     /* after initialization */
++	[INPUT]      = "#005F87",     /* during input */
++	[FAILED]     = "#CC3333",     /* wrong password */
++	[CAPS]       = "#CC3333",     /* CapsLock on */
  };
  
+ /* treat a cleared input like a wrong password (color) */
+ static const int failonclear = 1;
++
++/* insert grid pattern with scale 1:1, the size can be changed with logosize */
++static const int logosize = 100;
++static const int logow = 12;	/* grid width and height for right center alignment*/
++static const int logoh = 6;
++
++static XRectangle rectangles[9] = {
++	/* x	y	w	h */
++	{ 0,	3,	1,	3 },
++	{ 1,	3,	2,	1 },
++	{ 0,	5,	8,	1 },
++	{ 3,	0,	1,	5 },
++	{ 5,	3,	1,	2 },
++	{ 7,	3,	1,	2 },
++	{ 8,	3,	4,	1 },
++	{ 9,	4,	1,	2 },
++	{ 11,	4,	1,	2 },
++
++};
+diff --git a/config.mk b/config.mk
+index 74429ae..08356e8 100644
+--- a/config.mk
++++ b/config.mk
+@@ -10,12 +10,20 @@ MANPREFIX = ${PREFIX}/share/man
+ X11INC = /usr/X11R6/include
+ X11LIB = /usr/X11R6/lib
+ 
++# Xinerama, comment if you don't want it
++XINERAMALIBS  = -lXinerama
++XINERAMAFLAGS = -DXINERAMA
++
++# freetype
++FREETYPELIBS = -lXft
++FREETYPEINC = /usr/include/freetype2
++
+ # includes and libs
+-INCS = -I. -I/usr/include -I${X11INC}
+-LIBS = -L/usr/lib -lc -lcrypt -L${X11LIB} -lX11 -lXext -lXrandr
++INCS = -I. -I/usr/include -I${X11INC} -I${FREETYPEINC}
++LIBS = -L/usr/lib -lc -lcrypt -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS} -lXext -lXrandr
+ 
+ # flags
+-CPPFLAGS = -DVERSION=\"${VERSION}\" -D_DEFAULT_SOURCE -DHAVE_SHADOW_H
++CPPFLAGS = -DVERSION=\"${VERSION}\" -D_DEFAULT_SOURCE -DHAVE_SHADOW_H ${XINERAMAFLAGS}
+ CFLAGS = -std=c99 -pedantic -Wall -Os ${INCS} ${CPPFLAGS}
+ LDFLAGS = -s ${LIBS}
+ COMPATSRC = explicit_bzero.c

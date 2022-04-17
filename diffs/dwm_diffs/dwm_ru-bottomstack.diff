@@ -1,17 +1,5 @@
-diff --git a/config.def.h b/config.def.h
-index a2ac963..1c0b587 100644
---- a/config.def.h
-+++ b/config.def.h
-@@ -35,7 +35,6 @@ static const Rule rules[] = {
- static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
- static const int nmaster     = 1;    /* number of clients in master area */
- static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
--static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
- 
- static const Layout layouts[] = {
- 	/* symbol     arrange function */
 diff --git a/dwm.c b/dwm.c
-index a96f33c..fc9956a 100644
+index 5f16260..e880291 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -210,6 +210,8 @@ static void spawn(const Arg *arg);
@@ -23,26 +11,7 @@ index a96f33c..fc9956a 100644
  static void togglebar(const Arg *arg);
  static void togglefloating(const Arg *arg);
  static void toggletag(const Arg *arg);
-@@ -702,9 +704,6 @@ drawbar(Monitor *m)
- 	unsigned int i, occ = 0, urg = 0;
- 	Client *c;
- 
--	if (!m->showbar)
--		return;
--
- 	/* draw status first so it can be overdrawn by tags later */
- 	if (m == selmon) { /* status is only drawn on selected monitor */
- 		drw_setscheme(drw, scheme[SchemeNorm]);
-@@ -838,7 +837,7 @@ focusstack(const Arg *arg)
- {
- 	Client *c = NULL, *i;
- 
--	if (!selmon->sel || (selmon->sel->isfullscreen && lockfullscreen))
-+	if (!selmon->sel)
- 		return;
- 	if (arg->i > 0) {
- 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -1702,6 +1701,98 @@ tile(Monitor *m)
+@@ -1703,6 +1705,98 @@ tile(Monitor *m)
  		}
  }
  

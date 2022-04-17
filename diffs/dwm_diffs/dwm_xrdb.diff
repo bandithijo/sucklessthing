@@ -1,15 +1,3 @@
-diff --git a/config.def.h b/config.def.h
-index a2ac963..1c0b587 100644
---- a/config.def.h
-+++ b/config.def.h
-@@ -35,7 +35,6 @@ static const Rule rules[] = {
- static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
- static const int nmaster     = 1;    /* number of clients in master area */
- static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
--static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
- 
- static const Layout layouts[] = {
- 	/* symbol     arrange function */
 diff --git a/drw.c b/drw.c
 index 4cdbcbe..8f1059e 100644
 --- a/drw.c
@@ -37,7 +25,7 @@ index 4bcd5ad..42b04ce 100644
  /* Cursor abstraction */
  Cur *drw_cur_create(Drw *drw, int shape);
 diff --git a/dwm.c b/dwm.c
-index a96f33c..5b263bc 100644
+index 5f16260..8971d84 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -35,6 +35,7 @@
@@ -86,26 +74,7 @@ index a96f33c..5b263bc 100644
  static void zoom(const Arg *arg);
  
  /* variables */
-@@ -702,9 +720,6 @@ drawbar(Monitor *m)
- 	unsigned int i, occ = 0, urg = 0;
- 	Client *c;
- 
--	if (!m->showbar)
--		return;
--
- 	/* draw status first so it can be overdrawn by tags later */
- 	if (m == selmon) { /* status is only drawn on selected monitor */
- 		drw_setscheme(drw, scheme[SchemeNorm]);
-@@ -838,7 +853,7 @@ focusstack(const Arg *arg)
- {
- 	Client *c = NULL, *i;
- 
--	if (!selmon->sel || (selmon->sel->isfullscreen && lockfullscreen))
-+	if (!selmon->sel)
- 		return;
- 	if (arg->i > 0) {
- 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -1018,6 +1033,37 @@ killclient(const Arg *arg)
+@@ -1019,6 +1037,37 @@ killclient(const Arg *arg)
  	}
  }
  
@@ -143,7 +112,7 @@ index a96f33c..5b263bc 100644
  void
  manage(Window w, XWindowAttributes *wa)
  {
-@@ -2116,6 +2162,17 @@ xerrorstart(Display *dpy, XErrorEvent *ee)
+@@ -2117,6 +2166,17 @@ xerrorstart(Display *dpy, XErrorEvent *ee)
  	return -1;
  }
  
@@ -161,7 +130,7 @@ index a96f33c..5b263bc 100644
  void
  zoom(const Arg *arg)
  {
-@@ -2142,6 +2199,8 @@ main(int argc, char *argv[])
+@@ -2143,6 +2203,8 @@ main(int argc, char *argv[])
  	if (!(dpy = XOpenDisplay(NULL)))
  		die("dwm: cannot open display");
  	checkotherwm();

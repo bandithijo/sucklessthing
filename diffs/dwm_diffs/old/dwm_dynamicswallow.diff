@@ -22,8 +22,19 @@ index 77bcbc0..0965d94 100644
  		${DESTDIR}${MANPREFIX}/man1/dwm.1
  
  .PHONY: all options clean dist install uninstall
+diff --git a/config.mk b/config.mk
+index b6eb7e0..7084c33 100644
+--- a/config.mk
++++ b/config.mk
+@@ -1,5 +1,5 @@
+ # dwm version
+-VERSION = 6.3
++VERSION = 6.2
+ 
+ # Customize below to fit your system
+ 
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..297066a 100644
+index a96f33c..297066a 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -58,7 +58,7 @@
@@ -228,7 +239,17 @@ index 5e4d494..297066a 100644
  }
  
  void
-@@ -729,6 +804,12 @@ drawbar(Monitor *m)
+@@ -702,9 +777,6 @@ drawbar(Monitor *m)
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+ 
+-	if (!m->showbar)
+-		return;
+-
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -732,6 +804,12 @@ drawbar(Monitor *m)
  	drw_setscheme(drw, scheme[SchemeNorm]);
  	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
  
@@ -241,7 +262,7 @@ index 5e4d494..297066a 100644
  	if ((w = m->ww - tw - x) > bh) {
  		if (m->sel) {
  			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
-@@ -781,6 +862,91 @@ expose(XEvent *e)
+@@ -784,6 +862,91 @@ expose(XEvent *e)
  		drawbar(m);
  }
  
@@ -333,7 +354,7 @@ index 5e4d494..297066a 100644
  void
  focus(Client *c)
  {
-@@ -999,6 +1165,49 @@ keypress(XEvent *e)
+@@ -1002,6 +1165,49 @@ keypress(XEvent *e)
  			keys[i].func(&(keys[i].arg));
  }
  
@@ -383,7 +404,7 @@ index 5e4d494..297066a 100644
  void
  killclient(const Arg *arg)
  {
-@@ -1090,15 +1299,37 @@ mappingnotify(XEvent *e)
+@@ -1093,15 +1299,37 @@ mappingnotify(XEvent *e)
  void
  maprequest(XEvent *e)
  {
@@ -423,7 +444,7 @@ index 5e4d494..297066a 100644
  }
  
  void
-@@ -1193,6 +1424,92 @@ movemouse(const Arg *arg)
+@@ -1196,6 +1424,92 @@ movemouse(const Arg *arg)
  	}
  }
  
@@ -516,7 +537,7 @@ index 5e4d494..297066a 100644
  Client *
  nexttiled(Client *c)
  {
-@@ -1200,25 +1517,20 @@ nexttiled(Client *c)
+@@ -1203,25 +1517,20 @@ nexttiled(Client *c)
  	return c;
  }
  
@@ -549,7 +570,7 @@ index 5e4d494..297066a 100644
  		return; /* ignore */
  	else if ((c = wintoclient(ev->window))) {
  		switch(ev->atom) {
-@@ -1240,6 +1552,9 @@ propertynotify(XEvent *e)
+@@ -1243,6 +1552,9 @@ propertynotify(XEvent *e)
  			updatetitle(c);
  			if (c == c->mon->sel)
  				drawbar(c->mon);
@@ -559,7 +580,7 @@ index 5e4d494..297066a 100644
  		}
  		if (ev->atom == netatom[NetWMWindowType])
  			updatewindowtype(c);
-@@ -1567,6 +1882,7 @@ setup(void)
+@@ -1570,6 +1882,7 @@ setup(void)
  	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
  	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
  	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
@@ -567,7 +588,7 @@ index 5e4d494..297066a 100644
  	/* init appearance */
  	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
  	for (i = 0; i < LENGTH(colors); i++)
-@@ -1653,6 +1969,331 @@ spawn(const Arg *arg)
+@@ -1656,6 +1969,331 @@ spawn(const Arg *arg)
  	}
  }
  
@@ -899,7 +920,7 @@ index 5e4d494..297066a 100644
  void
  tag(const Arg *arg)
  {
-@@ -1768,6 +2409,9 @@ unmanage(Client *c, int destroyed)
+@@ -1771,6 +2409,9 @@ unmanage(Client *c, int destroyed)
  	Monitor *m = c->mon;
  	XWindowChanges wc;
  
@@ -909,7 +930,7 @@ index 5e4d494..297066a 100644
  	detach(c);
  	detachstack(c);
  	if (!destroyed) {
-@@ -1792,12 +2436,24 @@ unmapnotify(XEvent *e)
+@@ -1795,12 +2436,24 @@ unmapnotify(XEvent *e)
  {
  	Client *c;
  	XUnmapEvent *ev = &e->xunmap;
@@ -939,7 +960,7 @@ index 5e4d494..297066a 100644
  	}
  }
  
-@@ -1839,15 +2495,19 @@ updatebarpos(Monitor *m)
+@@ -1842,15 +2495,19 @@ updatebarpos(Monitor *m)
  void
  updateclientlist()
  {
@@ -965,7 +986,7 @@ index 5e4d494..297066a 100644
  }
  
  int
-@@ -2060,6 +2720,43 @@ wintoclient(Window w)
+@@ -2063,6 +2720,43 @@ wintoclient(Window w)
  	return NULL;
  }
  
@@ -1009,7 +1030,7 @@ index 5e4d494..297066a 100644
  Monitor *
  wintomon(Window w)
  {
-@@ -2117,14 +2814,38 @@ void
+@@ -2120,14 +2814,38 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;

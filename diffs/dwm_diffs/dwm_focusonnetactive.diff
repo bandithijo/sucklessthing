@@ -1,20 +1,8 @@
-diff --git a/config.def.h b/config.def.h
-index a2ac963..1c0b587 100644
---- a/config.def.h
-+++ b/config.def.h
-@@ -35,7 +35,6 @@ static const Rule rules[] = {
- static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
- static const int nmaster     = 1;    /* number of clients in master area */
- static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
--static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
- 
- static const Layout layouts[] = {
- 	/* symbol     arrange function */
 diff --git a/dwm.c b/dwm.c
-index a96f33c..755fa93 100644
+index 5f16260..8b19473 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -515,6 +515,7 @@ clientmessage(XEvent *e)
+@@ -516,6 +516,7 @@ clientmessage(XEvent *e)
  {
  	XClientMessageEvent *cme = &e->xclient;
  	Client *c = wintoclient(cme->window);
@@ -22,7 +10,7 @@ index a96f33c..755fa93 100644
  
  	if (!c)
  		return;
-@@ -524,8 +525,13 @@ clientmessage(XEvent *e)
+@@ -525,8 +526,13 @@ clientmessage(XEvent *e)
  			setfullscreen(c, (cme->data.l[0] == 1 /* _NET_WM_STATE_ADD    */
  				|| (cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */ && !c->isfullscreen)));
  	} else if (cme->message_type == netatom[NetActiveWindow]) {
@@ -38,22 +26,3 @@ index a96f33c..755fa93 100644
  	}
  }
  
-@@ -702,9 +708,6 @@ drawbar(Monitor *m)
- 	unsigned int i, occ = 0, urg = 0;
- 	Client *c;
- 
--	if (!m->showbar)
--		return;
--
- 	/* draw status first so it can be overdrawn by tags later */
- 	if (m == selmon) { /* status is only drawn on selected monitor */
- 		drw_setscheme(drw, scheme[SchemeNorm]);
-@@ -838,7 +841,7 @@ focusstack(const Arg *arg)
- {
- 	Client *c = NULL, *i;
- 
--	if (!selmon->sel || (selmon->sel->isfullscreen && lockfullscreen))
-+	if (!selmon->sel)
- 		return;
- 	if (arg->i > 0) {
- 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);

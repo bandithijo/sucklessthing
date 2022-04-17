@@ -10,8 +10,19 @@ index a2ac963..1c0b587 100644
  
  static const Layout layouts[] = {
  	/* symbol     arrange function */
+diff --git a/config.mk b/config.mk
+index b6eb7e0..7084c33 100644
+--- a/config.mk
++++ b/config.mk
+@@ -1,5 +1,5 @@
+ # dwm version
+-VERSION = 6.3
++VERSION = 6.2
+ 
+ # Customize below to fit your system
+ 
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..83a7f8a 100644
+index a96f33c..83a7f8a 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -149,6 +149,7 @@ static void arrangemon(Monitor *m);
@@ -46,7 +57,17 @@ index 5e4d494..83a7f8a 100644
  void
  checkotherwm(void)
  {
-@@ -835,7 +853,7 @@ focusstack(const Arg *arg)
+@@ -702,9 +720,6 @@ drawbar(Monitor *m)
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+ 
+-	if (!m->showbar)
+-		return;
+-
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -838,7 +853,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
  

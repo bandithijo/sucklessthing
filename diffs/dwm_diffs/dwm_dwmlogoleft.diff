@@ -1,0 +1,26 @@
+diff --git a/dwm.c b/dwm.c
+index 5f16260..597cf6c 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -431,7 +431,7 @@ buttonpress(XEvent *e)
+ 		focus(NULL);
+ 	}
+ 	if (ev->window == selmon->barwin) {
+-		i = x = 0;
++		i = x = -2; /* default: 0, but I need to disable clickable tags */
+ 		do
+ 			x += TEXTW(tags[i]);
+ 		while (ev->x >= x && ++i < LENGTH(tags));
+@@ -719,6 +719,12 @@ drawbar(Monitor *m)
+ 			urg |= c->tags;
+ 	}
+ 	x = 0;
++
++    /* DWM logo left before tags */
++    char *lstext = "    "; /* <- I used JetBrainsMono Nerd Font Bandit */
++	w = blw = TEXTW(lstext);
++	x = drw_text(drw, x, 0, w, bh, lrpad / 2, lstext, 0);
++
+ 	for (i = 0; i < LENGTH(tags); i++) {
+ 		w = TEXTW(tags[i]);
+ 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);

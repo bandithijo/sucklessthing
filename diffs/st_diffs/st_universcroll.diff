@@ -1,26 +1,8 @@
 diff --git a/st.c b/st.c
-index a9338e1..446e8c4 100644
+index f43cfd3..27f7611 100644
 --- a/st.c
 +++ b/st.c
-@@ -793,15 +793,14 @@ ttynew(const char *line, char *cmd, const char *out, char **args)
- 		break;
- 	case 0:
- 		close(iofd);
--		close(m);
- 		setsid(); /* create a new process group */
- 		dup2(s, 0);
- 		dup2(s, 1);
- 		dup2(s, 2);
- 		if (ioctl(s, TIOCSCTTY, NULL) < 0)
- 			die("ioctl TIOCSCTTY failed: %s\n", strerror(errno));
--		if (s > 2)
--			close(s);
-+		close(s);
-+		close(m);
- #ifdef __OpenBSD__
- 		if (pledge("stdio getpw proc exec", NULL) == -1)
- 			die("pledge\n");
-@@ -1050,6 +1049,11 @@ tnew(int col, int row)
+@@ -1042,6 +1042,11 @@ tnew(int col, int row)
  	treset();
  }
  
@@ -33,7 +15,7 @@ index a9338e1..446e8c4 100644
  tswapscreen(void)
  {
 diff --git a/st.h b/st.h
-index fa2eddf..eabe77b 100644
+index 519b9bd..e4b2e67 100644
 --- a/st.h
 +++ b/st.h
 @@ -87,6 +87,7 @@ void sendbreak(const Arg *);
@@ -45,7 +27,7 @@ index fa2eddf..eabe77b 100644
  void tresize(int, int);
  void tsetdirtattr(int);
 diff --git a/x.c b/x.c
-index 89786b8..8bc0f08 100644
+index 2a3bd38..b50f5fc 100644
 --- a/x.c
 +++ b/x.c
 @@ -34,6 +34,7 @@ typedef struct {
@@ -56,16 +38,7 @@ index 89786b8..8bc0f08 100644
  } MouseShortcut;
  
  typedef struct {
-@@ -48,7 +49,7 @@ typedef struct {
- /* X modifiers */
- #define XK_ANY_MOD    UINT_MAX
- #define XK_NO_MOD     0
--#define XK_SWITCH_MOD (1<<13|1<<14)
-+#define XK_SWITCH_MOD (1<<13)
- 
- /* function definitions used in config.h */
- static void clipcopy(const Arg *);
-@@ -448,6 +449,7 @@ mouseaction(XEvent *e, uint release)
+@@ -455,6 +456,7 @@ mouseaction(XEvent *e, uint release)
  	for (ms = mshortcuts; ms < mshortcuts + LEN(mshortcuts); ms++) {
  		if (ms->release == release &&
  		    ms->button == e->xbutton.button &&
@@ -73,27 +46,3 @@ index 89786b8..8bc0f08 100644
  		    (match(ms->mod, state) ||  /* exact or forced */
  		     match(ms->mod, state & ~forcemousemod))) {
  			ms->func(&(ms->arg));
-@@ -1588,9 +1590,8 @@ xseticontitle(char *p)
- 	XTextProperty prop;
- 	DEFAULT(p, opt_title);
- 
--	if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
--	                                &prop) != Success)
--		return;
-+	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
-+			&prop);
- 	XSetWMIconName(xw.dpy, xw.win, &prop);
- 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmiconname);
- 	XFree(prop.value);
-@@ -1602,9 +1603,8 @@ xsettitle(char *p)
- 	XTextProperty prop;
- 	DEFAULT(p, opt_title);
- 
--	if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
--	                                &prop) != Success)
--		return;
-+	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
-+			&prop);
- 	XSetWMName(xw.dpy, xw.win, &prop);
- 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmname);
- 	XFree(prop.value);

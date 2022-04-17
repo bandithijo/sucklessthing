@@ -31,17 +31,3 @@ index 4cdbcbe..d81c004 100644
  
  	font = ecalloc(1, sizeof(Fnt));
  	font->xfont = xfont;
-diff --git a/dwm.c b/dwm.c
-index a96f33c..5e4d494 100644
---- a/dwm.c
-+++ b/dwm.c
-@@ -702,9 +702,6 @@ drawbar(Monitor *m)
- 	unsigned int i, occ = 0, urg = 0;
- 	Client *c;
- 
--	if (!m->showbar)
--		return;
--
- 	/* draw status first so it can be overdrawn by tags later */
- 	if (m == selmon) { /* status is only drawn on selected monitor */
- 		drw_setscheme(drw, scheme[SchemeNorm]);

@@ -10,8 +10,19 @@ index a2ac963..1c0b587 100644
  
  static const Layout layouts[] = {
  	/* symbol     arrange function */
+diff --git a/config.mk b/config.mk
+index b6eb7e0..7084c33 100644
+--- a/config.mk
++++ b/config.mk
+@@ -1,5 +1,5 @@
+ # dwm version
+-VERSION = 6.3
++VERSION = 6.2
+ 
+ # Customize below to fit your system
+ 
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..ac8e4ec 100644
+index a96f33c..ac8e4ec 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -111,6 +111,7 @@ typedef struct {
@@ -75,7 +86,17 @@ index 5e4d494..ac8e4ec 100644
  	return m;
  }
  
-@@ -835,7 +861,7 @@ focusstack(const Arg *arg)
+@@ -702,9 +728,6 @@ drawbar(Monitor *m)
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+ 
+-	if (!m->showbar)
+-		return;
+-
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -838,7 +861,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
  
@@ -84,7 +105,7 @@ index 5e4d494..ac8e4ec 100644
  		return;
  	if (arg->i > 0) {
  		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -967,7 +993,7 @@ grabkeys(void)
+@@ -970,7 +993,7 @@ grabkeys(void)
  void
  incnmaster(const Arg *arg)
  {
@@ -93,7 +114,7 @@ index 5e4d494..ac8e4ec 100644
  	arrange(selmon);
  }
  
-@@ -1502,9 +1528,9 @@ void
+@@ -1505,9 +1528,9 @@ void
  setlayout(const Arg *arg)
  {
  	if (!arg || !arg->v || arg->v != selmon->lt[selmon->sellt])
@@ -105,7 +126,7 @@ index 5e4d494..ac8e4ec 100644
  	strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, sizeof selmon->ltsymbol);
  	if (selmon->sel)
  		arrange(selmon);
-@@ -1523,7 +1549,7 @@ setmfact(const Arg *arg)
+@@ -1526,7 +1549,7 @@ setmfact(const Arg *arg)
  	f = arg->f < 1.0 ? arg->f + selmon->mfact : arg->f - 1.0;
  	if (f < 0.05 || f > 0.95)
  		return;
@@ -114,7 +135,7 @@ index 5e4d494..ac8e4ec 100644
  	arrange(selmon);
  }
  
-@@ -1702,7 +1728,7 @@ tile(Monitor *m)
+@@ -1705,7 +1728,7 @@ tile(Monitor *m)
  void
  togglebar(const Arg *arg)
  {
@@ -123,7 +144,7 @@ index 5e4d494..ac8e4ec 100644
  	updatebarpos(selmon);
  	XMoveResizeWindow(dpy, selmon->barwin, selmon->wx, selmon->by, selmon->ww, bh);
  	arrange(selmon);
-@@ -1741,9 +1767,33 @@ void
+@@ -1744,9 +1767,33 @@ void
  toggleview(const Arg *arg)
  {
  	unsigned int newtagset = selmon->tagset[selmon->seltags] ^ (arg->ui & TAGMASK);
@@ -157,7 +178,7 @@ index 5e4d494..ac8e4ec 100644
  		focus(NULL);
  		arrange(selmon);
  	}
-@@ -2038,11 +2088,37 @@ updatewmhints(Client *c)
+@@ -2041,11 +2088,37 @@ updatewmhints(Client *c)
  void
  view(const Arg *arg)
  {

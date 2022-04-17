@@ -10,11 +10,32 @@ index a2ac963..1c0b587 100644
  
  static const Layout layouts[] = {
  	/* symbol     arrange function */
+diff --git a/config.mk b/config.mk
+index b6eb7e0..7084c33 100644
+--- a/config.mk
++++ b/config.mk
+@@ -1,5 +1,5 @@
+ # dwm version
+-VERSION = 6.3
++VERSION = 6.2
+ 
+ # Customize below to fit your system
+ 
 diff --git a/dwm.c b/dwm.c
-index 5e4d494..b2d9b66 100644
+index a96f33c..b2d9b66 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -835,7 +835,7 @@ focusstack(const Arg *arg)
+@@ -702,9 +702,6 @@ drawbar(Monitor *m)
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+ 
+-	if (!m->showbar)
+-		return;
+-
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -838,7 +835,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
  
@@ -23,7 +44,7 @@ index 5e4d494..b2d9b66 100644
  		return;
  	if (arg->i > 0) {
  		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -1292,9 +1292,14 @@ void
+@@ -1295,9 +1292,14 @@ void
  resizemouse(const Arg *arg)
  {
  	int ocx, ocy, nw, nh;
@@ -38,7 +59,7 @@ index 5e4d494..b2d9b66 100644
  	Time lasttime = 0;
  
  	if (!(c = selmon->sel))
-@@ -1304,10 +1309,19 @@ resizemouse(const Arg *arg)
+@@ -1307,10 +1309,19 @@ resizemouse(const Arg *arg)
  	restack(selmon);
  	ocx = c->x;
  	ocy = c->y;
@@ -59,7 +80,7 @@ index 5e4d494..b2d9b66 100644
  	do {
  		XMaskEvent(dpy, MOUSEMASK|ExposureMask|SubstructureRedirectMask, &ev);
  		switch(ev.type) {
-@@ -1323,6 +1337,11 @@ resizemouse(const Arg *arg)
+@@ -1326,6 +1337,11 @@ resizemouse(const Arg *arg)
  
  			nw = MAX(ev.xmotion.x - ocx - 2 * c->bw + 1, 1);
  			nh = MAX(ev.xmotion.y - ocy - 2 * c->bw + 1, 1);
@@ -71,7 +92,7 @@ index 5e4d494..b2d9b66 100644
  			if (c->mon->wx + nw >= selmon->wx && c->mon->wx + nw <= selmon->wx + selmon->ww
  			&& c->mon->wy + nh >= selmon->wy && c->mon->wy + nh <= selmon->wy + selmon->wh)
  			{
-@@ -1331,11 +1350,13 @@ resizemouse(const Arg *arg)
+@@ -1334,11 +1350,13 @@ resizemouse(const Arg *arg)
  					togglefloating(NULL);
  			}
  			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)

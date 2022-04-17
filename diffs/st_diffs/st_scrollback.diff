@@ -1,5 +1,5 @@
 diff --git a/st.c b/st.c
-index a9338e1..817cc47 100644
+index f43cfd3..ad73a51 100644
 --- a/st.c
 +++ b/st.c
 @@ -35,6 +35,7 @@
@@ -41,7 +41,7 @@ index a9338e1..817cc47 100644
  static void tsetattr(const int *, int);
  static void tsetchar(Rune, const Glyph *, int, int);
  static void tsetdirt(int, int);
-@@ -416,10 +423,10 @@ tlinelen(int y)
+@@ -408,10 +415,10 @@ tlinelen(int y)
  {
  	int i = term.col;
  
@@ -54,7 +54,7 @@ index a9338e1..817cc47 100644
  		--i;
  
  	return i;
-@@ -528,7 +535,7 @@ selsnap(int *x, int *y, int direction)
+@@ -520,7 +527,7 @@ selsnap(int *x, int *y, int direction)
  		 * Snap around if the word wraps around at the end or
  		 * beginning of a line.
  		 */
@@ -63,7 +63,7 @@ index a9338e1..817cc47 100644
  		prevdelim = ISDELIM(prevgp->u);
  		for (;;) {
  			newx = *x + direction;
-@@ -543,14 +550,14 @@ selsnap(int *x, int *y, int direction)
+@@ -535,14 +542,14 @@ selsnap(int *x, int *y, int direction)
  					yt = *y, xt = *x;
  				else
  					yt = newy, xt = newx;
@@ -80,7 +80,7 @@ index a9338e1..817cc47 100644
  			delim = ISDELIM(gp->u);
  			if (!(gp->mode & ATTR_WDUMMY) && (delim != prevdelim
  					|| (delim && gp->u != prevgp->u)))
-@@ -571,14 +578,14 @@ selsnap(int *x, int *y, int direction)
+@@ -563,14 +570,14 @@ selsnap(int *x, int *y, int direction)
  		*x = (direction < 0) ? 0 : term.col - 1;
  		if (direction < 0) {
  			for (; *y > 0; *y += direction) {
@@ -97,7 +97,7 @@ index a9338e1..817cc47 100644
  						& ATTR_WRAP)) {
  					break;
  				}
-@@ -609,13 +616,13 @@ getsel(void)
+@@ -601,13 +608,13 @@ getsel(void)
  		}
  
  		if (sel.type == SEL_RECTANGULAR) {
@@ -114,25 +114,7 @@ index a9338e1..817cc47 100644
  		while (last >= gp && last->u == ' ')
  			--last;
  
-@@ -793,15 +800,14 @@ ttynew(const char *line, char *cmd, const char *out, char **args)
- 		break;
- 	case 0:
- 		close(iofd);
--		close(m);
- 		setsid(); /* create a new process group */
- 		dup2(s, 0);
- 		dup2(s, 1);
- 		dup2(s, 2);
- 		if (ioctl(s, TIOCSCTTY, NULL) < 0)
- 			die("ioctl TIOCSCTTY failed: %s\n", strerror(errno));
--		if (s > 2)
--			close(s);
-+		close(s);
-+		close(m);
- #ifdef __OpenBSD__
- 		if (pledge("stdio getpw proc exec", NULL) == -1)
- 			die("pledge\n");
-@@ -851,6 +857,9 @@ void
+@@ -843,6 +850,9 @@ void
  ttywrite(const char *s, size_t n, int may_echo)
  {
  	const char *next;
@@ -142,7 +124,7 @@ index a9338e1..817cc47 100644
  
  	if (may_echo && IS_SET(MODE_ECHO))
  		twrite(s, n, 1);
-@@ -1062,13 +1071,53 @@ tswapscreen(void)
+@@ -1054,13 +1064,53 @@ tswapscreen(void)
  }
  
  void
@@ -197,7 +179,7 @@ index a9338e1..817cc47 100644
  	tsetdirt(orig, term.bot-n);
  	tclearregion(0, term.bot-n+1, term.col-1, term.bot);
  
-@@ -1078,17 +1127,28 @@ tscrolldown(int orig, int n)
+@@ -1070,17 +1120,28 @@ tscrolldown(int orig, int n)
  		term.line[i-n] = temp;
  	}
  
@@ -228,7 +210,7 @@ index a9338e1..817cc47 100644
  	tclearregion(0, orig, term.col-1, orig+n-1);
  	tsetdirt(orig+n, term.bot);
  
-@@ -1098,7 +1158,8 @@ tscrollup(int orig, int n)
+@@ -1090,7 +1151,8 @@ tscrollup(int orig, int n)
  		term.line[i+n] = temp;
  	}
  
@@ -238,7 +220,7 @@ index a9338e1..817cc47 100644
  }
  
  void
-@@ -1127,7 +1188,7 @@ tnewline(int first_col)
+@@ -1119,7 +1181,7 @@ tnewline(int first_col)
  	int y = term.c.y;
  
  	if (y == term.bot) {
@@ -247,7 +229,7 @@ index a9338e1..817cc47 100644
  	} else {
  		y++;
  	}
-@@ -1292,14 +1353,14 @@ void
+@@ -1284,14 +1346,14 @@ void
  tinsertblankline(int n)
  {
  	if (BETWEEN(term.c.y, term.top, term.bot))
@@ -264,7 +246,7 @@ index a9338e1..817cc47 100644
  }
  
  int32_t
-@@ -1736,11 +1797,11 @@ csihandle(void)
+@@ -1728,11 +1790,11 @@ csihandle(void)
  		break;
  	case 'S': /* SU -- Scroll <n> line up */
  		DEFAULT(csiescseq.arg[0], 1);
@@ -278,7 +260,7 @@ index a9338e1..817cc47 100644
  		break;
  	case 'L': /* IL -- Insert <n> blank lines */
  		DEFAULT(csiescseq.arg[0], 1);
-@@ -2252,7 +2313,7 @@ eschandle(uchar ascii)
+@@ -2322,7 +2384,7 @@ eschandle(uchar ascii)
  		return 0;
  	case 'D': /* IND -- Linefeed */
  		if (term.c.y == term.bot) {
@@ -287,7 +269,7 @@ index a9338e1..817cc47 100644
  		} else {
  			tmoveto(term.c.x, term.c.y+1);
  		}
-@@ -2265,7 +2326,7 @@ eschandle(uchar ascii)
+@@ -2335,7 +2397,7 @@ eschandle(uchar ascii)
  		break;
  	case 'M': /* RI -- Reverse index */
  		if (term.c.y == term.top) {
@@ -296,7 +278,7 @@ index a9338e1..817cc47 100644
  		} else {
  			tmoveto(term.c.x, term.c.y-1);
  		}
-@@ -2475,7 +2536,7 @@ twrite(const char *buf, int buflen, int show_ctrl)
+@@ -2549,7 +2611,7 @@ twrite(const char *buf, int buflen, int show_ctrl)
  void
  tresize(int col, int row)
  {
@@ -305,7 +287,7 @@ index a9338e1..817cc47 100644
  	int minrow = MIN(row, term.row);
  	int mincol = MIN(col, term.col);
  	int *bp;
-@@ -2512,6 +2573,14 @@ tresize(int col, int row)
+@@ -2586,6 +2648,14 @@ tresize(int col, int row)
  	term.dirty = xrealloc(term.dirty, row * sizeof(*term.dirty));
  	term.tabs = xrealloc(term.tabs, col * sizeof(*term.tabs));
  
@@ -320,7 +302,7 @@ index a9338e1..817cc47 100644
  	/* resize each row to new width, zero-pad if needed */
  	for (i = 0; i < minrow; i++) {
  		term.line[i] = xrealloc(term.line[i], col * sizeof(Glyph));
-@@ -2570,7 +2639,7 @@ drawregion(int x1, int y1, int x2, int y2)
+@@ -2644,7 +2714,7 @@ drawregion(int x1, int y1, int x2, int y2)
  			continue;
  
  		term.dirty[y] = 0;
@@ -329,7 +311,7 @@ index a9338e1..817cc47 100644
  	}
  }
  
-@@ -2591,8 +2660,9 @@ draw(void)
+@@ -2665,8 +2735,9 @@ draw(void)
  		cx--;
  
  	drawregion(0, 0, term.col, term.row);
@@ -342,7 +324,7 @@ index a9338e1..817cc47 100644
  	term.ocy = term.c.y;
  	xfinishdraw();
 diff --git a/st.h b/st.h
-index fa2eddf..adda2db 100644
+index 519b9bd..da36b34 100644
 --- a/st.h
 +++ b/st.h
 @@ -81,6 +81,8 @@ void die(const char *, ...);
@@ -354,40 +336,3 @@ index fa2eddf..adda2db 100644
  void printscreen(const Arg *);
  void printsel(const Arg *);
  void sendbreak(const Arg *);
-diff --git a/x.c b/x.c
-index 89786b8..7186040 100644
---- a/x.c
-+++ b/x.c
-@@ -48,7 +48,7 @@ typedef struct {
- /* X modifiers */
- #define XK_ANY_MOD    UINT_MAX
- #define XK_NO_MOD     0
--#define XK_SWITCH_MOD (1<<13|1<<14)
-+#define XK_SWITCH_MOD (1<<13)
- 
- /* function definitions used in config.h */
- static void clipcopy(const Arg *);
-@@ -1588,9 +1588,8 @@ xseticontitle(char *p)
- 	XTextProperty prop;
- 	DEFAULT(p, opt_title);
- 
--	if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
--	                                &prop) != Success)
--		return;
-+	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
-+			&prop);
- 	XSetWMIconName(xw.dpy, xw.win, &prop);
- 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmiconname);
- 	XFree(prop.value);
-@@ -1602,9 +1601,8 @@ xsettitle(char *p)
- 	XTextProperty prop;
- 	DEFAULT(p, opt_title);
- 
--	if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
--	                                &prop) != Success)
--		return;
-+	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
-+			&prop);
- 	XSetWMName(xw.dpy, xw.win, &prop);
- 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmname);
- 	XFree(prop.value);

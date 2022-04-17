@@ -443,7 +443,7 @@ index 0000000..7890500
 +	/* U+2571 - U+2573: unsupported (diagonals) */
 +};
 diff --git a/config.mk b/config.mk
-index c070a4a..3d236f0 100644
+index 4c4c5d5..82b5510 100644
 --- a/config.mk
 +++ b/config.mk
 @@ -15,10 +15,12 @@ PKG_CONFIG = pkg-config
@@ -620,7 +620,7 @@ index 0000000..07888df
 +void hbunloadfonts();
 +void hbtransform(XftGlyphFontSpec *, const Glyph *, size_t, int, int);
 diff --git a/st.c b/st.c
-index a9338e1..2e94800 100644
+index f43cfd3..6d7b3d9 100644
 --- a/st.c
 +++ b/st.c
 @@ -33,8 +33,10 @@
@@ -670,67 +670,59 @@ index a9338e1..2e94800 100644
  static void csiparse(void);
  static void csireset(void);
  static int eschandle(uchar);
-@@ -184,20 +194,20 @@ static void tnewline(int);
+@@ -184,8 +194,8 @@ static void tnewline(int);
  static void tputtab(int);
  static void tputc(Rune);
  static void treset(void);
 -static void tscrollup(int, int);
 -static void tscrolldown(int, int);
--static void tsetattr(const int *, int);
--static void tsetchar(Rune, const Glyph *, int, int);
 +static void tscrollup(int, int, int);
 +static void tscrolldown(int, int, int);
-+static void tsetattr(int *, int);
-+static void tsetchar(Rune, Glyph *, int, int);
+ static void tsetattr(const int *, int);
+ static void tsetchar(Rune, const Glyph *, int, int);
  static void tsetdirt(int, int);
- static void tsetscroll(int, int);
- static void tswapscreen(void);
--static void tsetmode(int, int, const int *, int);
-+static void tsetmode(int, int, int *, int);
- static int twrite(const char *, int, int);
- static void tfulldirt(void);
- static void tcontrolcode(uchar );
- static void tdectest(char );
- static void tdefutf8(char);
--static int32_t tdefcolor(const int *, int *, int);
-+static int32_t tdefcolor(int *, int *, int);
- static void tdeftran(char);
- static void tstrsequence(uchar);
- 
-@@ -226,10 +236,10 @@ static int iofd = 1;
- static int cmdfd;
- static pid_t pid;
- 
--static const uchar utfbyte[UTF_SIZ + 1] = {0x80,    0, 0xC0, 0xE0, 0xF0};
--static const uchar utfmask[UTF_SIZ + 1] = {0xC0, 0x80, 0xE0, 0xF0, 0xF8};
--static const Rune utfmin[UTF_SIZ + 1] = {       0,    0,  0x80,  0x800,  0x10000};
--static const Rune utfmax[UTF_SIZ + 1] = {0x10FFFF, 0x7F, 0x7FF, 0xFFFF, 0x10FFFF};
-+static uchar utfbyte[UTF_SIZ + 1] = {0x80,    0, 0xC0, 0xE0, 0xF0};
-+static uchar utfmask[UTF_SIZ + 1] = {0xC0, 0x80, 0xE0, 0xF0, 0xF8};
-+static Rune utfmin[UTF_SIZ + 1] = {       0,    0,  0x80,  0x800,  0x10000};
-+static Rune utfmax[UTF_SIZ + 1] = {0x10FFFF, 0x7F, 0x7FF, 0xFFFF, 0x10FFFF};
- 
- ssize_t
- xwrite(int fd, const char *s, size_t len)
-@@ -269,14 +279,12 @@ xrealloc(void *p, size_t len)
+@@ -349,10 +359,25 @@ utf8validate(Rune *u, size_t i)
+ 	return i;
  }
  
- char *
--xstrdup(const char *s)
-+xstrdup(char *s)
++static const char base64_digits[] = {
++	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 62, 0, 0, 0,
++	63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 0, 0, 0, -1, 0, 0, 0, 0, 1,
++	2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
++	22, 23, 24, 25, 0, 0, 0, 0, 0, 0, 26, 27, 28, 29, 30, 31, 32, 33, 34,
++	35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 0,
++	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
++};
++
+ char
+ base64dec_getc(const char **src)
  {
--	char *p;
--
--	if ((p = strdup(s)) == NULL)
-+	if ((s = strdup(s)) == NULL)
- 		die("strdup: %s\n", strerror(errno));
- 
--	return p;
-+	return s;
+-	while (**src && !isprint((unsigned char)**src))
++	while (**src && !isprint(**src))
+ 		(*src)++;
+ 	return **src ? *((*src)++) : '=';  /* emulate padding if string ends */
  }
+@@ -362,13 +387,6 @@ base64dec(const char *src)
+ {
+ 	size_t in_len = strlen(src);
+ 	char *result, *dst;
+-	static const char base64_digits[256] = {
+-		[43] = 62, 0, 0, 0, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,
+-		0, 0, 0, -1, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+-		13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 0, 0, 0, 0,
+-		0, 0, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+-		40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51
+-	};
  
- size_t
-@@ -416,10 +424,10 @@ tlinelen(int y)
+ 	if (in_len % 4)
+ 		in_len += 4 - (in_len % 4);
+@@ -408,10 +426,10 @@ tlinelen(int y)
  {
  	int i = term.col;
  
@@ -743,16 +735,7 @@ index a9338e1..2e94800 100644
  		--i;
  
  	return i;
-@@ -520,7 +528,7 @@ selsnap(int *x, int *y, int direction)
- {
- 	int newx, newy, xt, yt;
- 	int delim, prevdelim;
--	const Glyph *gp, *prevgp;
-+	Glyph *gp, *prevgp;
- 
- 	switch (sel.snap) {
- 	case SNAP_WORD:
-@@ -528,7 +536,7 @@ selsnap(int *x, int *y, int direction)
+@@ -520,7 +538,7 @@ selsnap(int *x, int *y, int direction)
  		 * Snap around if the word wraps around at the end or
  		 * beginning of a line.
  		 */
@@ -761,7 +744,7 @@ index a9338e1..2e94800 100644
  		prevdelim = ISDELIM(prevgp->u);
  		for (;;) {
  			newx = *x + direction;
-@@ -543,14 +551,14 @@ selsnap(int *x, int *y, int direction)
+@@ -535,14 +553,14 @@ selsnap(int *x, int *y, int direction)
  					yt = *y, xt = *x;
  				else
  					yt = newy, xt = newx;
@@ -778,7 +761,7 @@ index a9338e1..2e94800 100644
  			delim = ISDELIM(gp->u);
  			if (!(gp->mode & ATTR_WDUMMY) && (delim != prevdelim
  					|| (delim && gp->u != prevgp->u)))
-@@ -571,14 +579,14 @@ selsnap(int *x, int *y, int direction)
+@@ -563,14 +581,14 @@ selsnap(int *x, int *y, int direction)
  		*x = (direction < 0) ? 0 : term.col - 1;
  		if (direction < 0) {
  			for (; *y > 0; *y += direction) {
@@ -795,16 +778,7 @@ index a9338e1..2e94800 100644
  						& ATTR_WRAP)) {
  					break;
  				}
-@@ -593,7 +601,7 @@ getsel(void)
- {
- 	char *str, *ptr;
- 	int y, bufsize, lastx, linelen;
--	const Glyph *gp, *last;
-+	Glyph *gp, *last;
- 
- 	if (sel.ob.x == -1)
- 		return NULL;
-@@ -609,13 +617,13 @@ getsel(void)
+@@ -601,13 +619,13 @@ getsel(void)
  		}
  
  		if (sel.type == SEL_RECTANGULAR) {
@@ -821,34 +795,7 @@ index a9338e1..2e94800 100644
  		while (last >= gp && last->u == ' ')
  			--last;
  
-@@ -760,7 +768,7 @@ stty(char **args)
- }
- 
- int
--ttynew(const char *line, char *cmd, const char *out, char **args)
-+ttynew(char *line, char *cmd, char *out, char **args)
- {
- 	int m, s;
- 
-@@ -793,15 +801,14 @@ ttynew(const char *line, char *cmd, const char *out, char **args)
- 		break;
- 	case 0:
- 		close(iofd);
--		close(m);
- 		setsid(); /* create a new process group */
- 		dup2(s, 0);
- 		dup2(s, 1);
- 		dup2(s, 2);
- 		if (ioctl(s, TIOCSCTTY, NULL) < 0)
- 			die("ioctl TIOCSCTTY failed: %s\n", strerror(errno));
--		if (s > 2)
--			close(s);
-+		close(s);
-+		close(m);
- #ifdef __OpenBSD__
- 		if (pledge("stdio getpw proc exec", NULL) == -1)
- 			die("pledge\n");
-@@ -851,6 +858,9 @@ void
+@@ -843,6 +861,9 @@ void
  ttywrite(const char *s, size_t n, int may_echo)
  {
  	const char *next;
@@ -858,7 +805,7 @@ index a9338e1..2e94800 100644
  
  	if (may_echo && IS_SET(MODE_ECHO))
  		twrite(s, n, 1);
-@@ -1062,13 +1072,53 @@ tswapscreen(void)
+@@ -1054,13 +1075,53 @@ tswapscreen(void)
  }
  
  void
@@ -913,7 +860,7 @@ index a9338e1..2e94800 100644
  	tsetdirt(orig, term.bot-n);
  	tclearregion(0, term.bot-n+1, term.col-1, term.bot);
  
-@@ -1078,17 +1128,28 @@ tscrolldown(int orig, int n)
+@@ -1070,17 +1131,28 @@ tscrolldown(int orig, int n)
  		term.line[i-n] = temp;
  	}
  
@@ -944,7 +891,7 @@ index a9338e1..2e94800 100644
  	tclearregion(0, orig, term.col-1, orig+n-1);
  	tsetdirt(orig+n, term.bot);
  
-@@ -1098,7 +1159,8 @@ tscrollup(int orig, int n)
+@@ -1090,7 +1162,8 @@ tscrollup(int orig, int n)
  		term.line[i+n] = temp;
  	}
  
@@ -954,7 +901,7 @@ index a9338e1..2e94800 100644
  }
  
  void
-@@ -1127,13 +1189,35 @@ tnewline(int first_col)
+@@ -1119,13 +1192,35 @@ tnewline(int first_col)
  	int y = term.c.y;
  
  	if (y == term.bot) {
@@ -991,7 +938,7 @@ index a9338e1..2e94800 100644
  void
  csiparse(void)
  {
-@@ -1156,6 +1240,7 @@ csiparse(void)
+@@ -1148,6 +1243,7 @@ csiparse(void)
  			v = -1;
  		csiescseq.arg[csiescseq.narg++] = v;
  		p = np;
@@ -999,19 +946,7 @@ index a9338e1..2e94800 100644
  		if (*p != ';' || csiescseq.narg == ESC_ARG_SIZ)
  			break;
  		p++;
-@@ -1189,9 +1274,9 @@ tmoveto(int x, int y)
- }
- 
- void
--tsetchar(Rune u, const Glyph *attr, int x, int y)
-+tsetchar(Rune u, Glyph *attr, int x, int y)
- {
--	static const char *vt100_0[62] = { /* 0x41 - 0x7e */
-+	static char *vt100_0[62] = { /* 0x41 - 0x7e */
- 		"↑", "↓", "→", "←", "█", "▚", "☃", /* A - G */
- 		0, 0, 0, 0, 0, 0, 0, 0, /* H - O */
- 		0, 0, 0, 0, 0, 0, 0, 0, /* P - W */
-@@ -1222,6 +1307,9 @@ tsetchar(Rune u, const Glyph *attr, int x, int y)
+@@ -1214,6 +1310,9 @@ tsetchar(Rune u, const Glyph *attr, int x, int y)
  	term.dirty[y] = 1;
  	term.line[y][x] = *attr;
  	term.line[y][x].u = u;
@@ -1021,7 +956,7 @@ index a9338e1..2e94800 100644
  }
  
  void
-@@ -1292,18 +1380,18 @@ void
+@@ -1284,14 +1383,14 @@ void
  tinsertblankline(int n)
  {
  	if (BETWEEN(term.c.y, term.top, term.bot))
@@ -1038,21 +973,7 @@ index a9338e1..2e94800 100644
  }
  
  int32_t
--tdefcolor(const int *attr, int *npar, int l)
-+tdefcolor(int *attr, int *npar, int l)
- {
- 	int32_t idx = -1;
- 	uint r, g, b;
-@@ -1353,7 +1441,7 @@ tdefcolor(const int *attr, int *npar, int l)
- }
- 
- void
--tsetattr(const int *attr, int l)
-+tsetattr(int *attr, int l)
- {
- 	int i;
- 	int32_t idx;
-@@ -1372,6 +1460,10 @@ tsetattr(const int *attr, int l)
+@@ -1364,6 +1463,10 @@ tsetattr(const int *attr, int l)
  				ATTR_STRUCK     );
  			term.c.attr.fg = defaultfg;
  			term.c.attr.bg = defaultbg;
@@ -1063,7 +984,7 @@ index a9338e1..2e94800 100644
  			break;
  		case 1:
  			term.c.attr.mode |= ATTR_BOLD;
-@@ -1383,7 +1475,14 @@ tsetattr(const int *attr, int l)
+@@ -1375,7 +1478,14 @@ tsetattr(const int *attr, int l)
  			term.c.attr.mode |= ATTR_ITALIC;
  			break;
  		case 4:
@@ -1079,7 +1000,7 @@ index a9338e1..2e94800 100644
  			break;
  		case 5: /* slow blink */
  			/* FALLTHROUGH */
-@@ -1434,6 +1533,18 @@ tsetattr(const int *attr, int l)
+@@ -1426,6 +1536,18 @@ tsetattr(const int *attr, int l)
  		case 49:
  			term.c.attr.bg = defaultbg;
  			break;
@@ -1098,19 +1019,7 @@ index a9338e1..2e94800 100644
  		default:
  			if (BETWEEN(attr[i], 30, 37)) {
  				term.c.attr.fg = attr[i] - 30;
-@@ -1471,9 +1582,9 @@ tsetscroll(int t, int b)
- }
- 
- void
--tsetmode(int priv, int set, const int *args, int narg)
-+tsetmode(int priv, int set, int *args, int narg)
- {
--	int alt; const int *lim;
-+	int alt, *lim;
- 
- 	for (lim = args + narg; args < lim; ++args) {
- 		if (priv) {
-@@ -1736,11 +1847,11 @@ csihandle(void)
+@@ -1728,11 +1850,11 @@ csihandle(void)
  		break;
  	case 'S': /* SU -- Scroll <n> line up */
  		DEFAULT(csiescseq.arg[0], 1);
@@ -1124,16 +1033,7 @@ index a9338e1..2e94800 100644
  		break;
  	case 'L': /* IL -- Insert <n> blank lines */
  		DEFAULT(csiescseq.arg[0], 1);
-@@ -2023,7 +2134,7 @@ void
- tdumpline(int n)
- {
- 	char buf[UTF_SIZ];
--	const Glyph *bp, *end;
-+	Glyph *bp, *end;
- 
- 	bp = &term.line[n][0];
- 	end = &bp[MIN(tlinelen(n), term.col) - 1];
-@@ -2252,7 +2363,7 @@ eschandle(uchar ascii)
+@@ -2322,7 +2444,7 @@ eschandle(uchar ascii)
  		return 0;
  	case 'D': /* IND -- Linefeed */
  		if (term.c.y == term.bot) {
@@ -1142,7 +1042,7 @@ index a9338e1..2e94800 100644
  		} else {
  			tmoveto(term.c.x, term.c.y+1);
  		}
-@@ -2265,7 +2376,7 @@ eschandle(uchar ascii)
+@@ -2335,7 +2457,7 @@ eschandle(uchar ascii)
  		break;
  	case 'M': /* RI -- Reverse index */
  		if (term.c.y == term.top) {
@@ -1151,7 +1051,7 @@ index a9338e1..2e94800 100644
  		} else {
  			tmoveto(term.c.x, term.c.y-1);
  		}
-@@ -2475,7 +2586,7 @@ twrite(const char *buf, int buflen, int show_ctrl)
+@@ -2549,7 +2671,7 @@ twrite(const char *buf, int buflen, int show_ctrl)
  void
  tresize(int col, int row)
  {
@@ -1160,7 +1060,7 @@ index a9338e1..2e94800 100644
  	int minrow = MIN(row, term.row);
  	int mincol = MIN(col, term.col);
  	int *bp;
-@@ -2512,6 +2623,14 @@ tresize(int col, int row)
+@@ -2586,6 +2708,14 @@ tresize(int col, int row)
  	term.dirty = xrealloc(term.dirty, row * sizeof(*term.dirty));
  	term.tabs = xrealloc(term.tabs, col * sizeof(*term.tabs));
  
@@ -1175,7 +1075,7 @@ index a9338e1..2e94800 100644
  	/* resize each row to new width, zero-pad if needed */
  	for (i = 0; i < minrow; i++) {
  		term.line[i] = xrealloc(term.line[i], col * sizeof(Glyph));
-@@ -2570,7 +2689,7 @@ drawregion(int x1, int y1, int x2, int y2)
+@@ -2644,7 +2774,7 @@ drawregion(int x1, int y1, int x2, int y2)
  			continue;
  
  		term.dirty[y] = 0;
@@ -1184,7 +1084,7 @@ index a9338e1..2e94800 100644
  	}
  }
  
-@@ -2591,8 +2710,10 @@ draw(void)
+@@ -2665,8 +2795,10 @@ draw(void)
  		cx--;
  
  	drawregion(0, 0, term.col, term.row);
@@ -1198,7 +1098,7 @@ index a9338e1..2e94800 100644
  	term.ocy = term.c.y;
  	xfinishdraw();
 diff --git a/st.h b/st.h
-index fa2eddf..b58f4b5 100644
+index 519b9bd..b8724f5 100644
 --- a/st.h
 +++ b/st.h
 @@ -11,7 +11,8 @@
@@ -1239,22 +1139,10 @@ index fa2eddf..b58f4b5 100644
  void printscreen(const Arg *);
  void printsel(const Arg *);
  void sendbreak(const Arg *);
-@@ -91,7 +99,7 @@ void tnew(int, int);
- void tresize(int, int);
- void tsetdirtattr(int);
- void ttyhangup(void);
--int ttynew(const char *, char *, const char *, char **);
-+int ttynew(char *, char *, char *, char **);
- size_t ttyread(void);
- void ttyresize(int, int);
- void ttywrite(const char *, size_t, int);
-@@ -109,7 +117,15 @@ size_t utf8encode(Rune, char *);
+@@ -113,6 +121,14 @@ char *xstrdup(const char *);
  
- void *xmalloc(size_t);
- void *xrealloc(void *, size_t);
--char *xstrdup(const char *);
-+char *xstrdup(char *);
-+
+ int xgetcolor(int x, unsigned char *r, unsigned char *g, unsigned char *b);
+ 
 +int isboxdraw(Rune);
 +ushort boxdrawindex(const Glyph *);
 +#ifdef XFT_VERSION
@@ -1262,13 +1150,14 @@ index fa2eddf..b58f4b5 100644
 +void boxdraw_xinit(Display *, Colormap, XftDraw *, Visual *);
 +void drawboxes(int, int, int, int, XftColor *, XftColor *, const XftGlyphFontSpec *, int);
 +#endif
- 
++
  /* config.h globals */
  extern char *utmp;
-@@ -123,3 +139,4 @@ extern char *termname;
- extern unsigned int tabspaces;
+ extern char *scroll;
+@@ -126,3 +142,4 @@ extern unsigned int tabspaces;
  extern unsigned int defaultfg;
  extern unsigned int defaultbg;
+ extern unsigned int defaultcs;
 +extern const int boxdraw, boxdraw_bold, boxdraw_braille;
 diff --git a/st.info b/st.info
 index 8201ad6..659878c 100644
@@ -1294,7 +1183,7 @@ index e6e4369..8b5b618 100644
  void xfinishdraw(void);
  void xloadcols(void);
 diff --git a/x.c b/x.c
-index 89786b8..94a50b8 100644
+index 2a3bd38..34c96d2 100644
 --- a/x.c
 +++ b/x.c
 @@ -19,6 +19,7 @@ char *argv0;
@@ -1305,25 +1194,7 @@ index 89786b8..94a50b8 100644
  
  /* types used in config.h */
  typedef struct {
-@@ -48,7 +49,7 @@ typedef struct {
- /* X modifiers */
- #define XK_ANY_MOD    UINT_MAX
- #define XK_NO_MOD     0
--#define XK_SWITCH_MOD (1<<13|1<<14)
-+#define XK_SWITCH_MOD (1<<13)
- 
- /* function definitions used in config.h */
- static void clipcopy(const Arg *);
-@@ -156,7 +157,7 @@ static void xresize(int, int);
- static void xhints(void);
- static int xloadcolor(int, const char *, Color *);
- static int xloadfont(Font *, FcPattern *);
--static void xloadfonts(const char *, double);
-+static void xloadfonts(char *, double);
- static void xunloadfont(Font *);
- static void xunloadfonts(void);
- static void xsetenv(void);
-@@ -796,6 +797,7 @@ xloadcols(void)
+@@ -812,6 +813,7 @@ xloadcols(void)
  			else
  				die("could not allocate color %d\n", i);
  		}
@@ -1331,25 +1202,7 @@ index 89786b8..94a50b8 100644
  	loaded = 1;
  }
  
-@@ -952,7 +954,7 @@ xloadfont(Font *f, FcPattern *pattern)
- }
- 
- void
--xloadfonts(const char *fontstr, double fontsize)
-+xloadfonts(char *fontstr, double fontsize)
- {
- 	FcPattern *pattern;
- 	double fontval;
-@@ -960,7 +962,7 @@ xloadfonts(const char *fontstr, double fontsize)
- 	if (fontstr[0] == '-')
- 		pattern = XftXlfdParse(fontstr, False, False);
- 	else
--		pattern = FcNameParse((const FcChar8 *)fontstr);
-+		pattern = FcNameParse((FcChar8 *)fontstr);
- 
- 	if (!pattern)
- 		die("can't open font %s\n", fontstr);
-@@ -1033,6 +1035,9 @@ xunloadfont(Font *f)
+@@ -1062,6 +1064,9 @@ xunloadfont(Font *f)
  void
  xunloadfonts(void)
  {
@@ -1359,7 +1212,7 @@ index 89786b8..94a50b8 100644
  	/* Free the loaded fonts in the font cache.  */
  	while (frclen > 0)
  		XftFontClose(xw.dpy, frc[--frclen].font);
-@@ -1208,6 +1213,8 @@ xinit(int cols, int rows)
+@@ -1237,6 +1242,8 @@ xinit(int cols, int rows)
  	xsel.xtarget = XInternAtom(xw.dpy, "UTF8_STRING", 0);
  	if (xsel.xtarget == None)
  		xsel.xtarget = XA_STRING;
@@ -1368,7 +1221,7 @@ index 89786b8..94a50b8 100644
  }
  
  int
-@@ -1232,7 +1239,7 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
+@@ -1261,7 +1268,7 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
  		mode = glyphs[i].mode;
  
  		/* Skip dummy wide-character spacing. */
@@ -1377,7 +1230,7 @@ index 89786b8..94a50b8 100644
  			continue;
  
  		/* Determine font for glyph if different from previous glyph. */
-@@ -1254,8 +1261,13 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
+@@ -1283,8 +1290,13 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
  			yp = winy + font->ascent;
  		}
  
@@ -1393,7 +1246,7 @@ index 89786b8..94a50b8 100644
  		if (glyphidx) {
  			specs[numspecs].font = font->match;
  			specs[numspecs].glyph = glyphidx;
-@@ -1339,6 +1351,9 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
+@@ -1368,6 +1380,9 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
  		numspecs++;
  	}
  
@@ -1403,7 +1256,7 @@ index 89786b8..94a50b8 100644
  	return numspecs;
  }
  
-@@ -1459,13 +1474,104 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
+@@ -1488,13 +1503,104 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
  	r.width = width;
  	XftDrawSetClipRectangles(xw.draw, winx, winy, &r, 1);
  
@@ -1418,7 +1271,7 @@ index 89786b8..94a50b8 100644
  
  	/* Render underline and strikethrough. */
  	if (base.mode & ATTR_UNDERLINE) {
--		XftDrawRect(xw.draw, fg, winx, winy + dc.font.ascent + 1,
+-		XftDrawRect(xw.draw, fg, winx, winy + dc.font.ascent * chscale + 1,
 -				width, 1);
 +		// Underline Color
 +		int wlw = 1; // Wave Line Width
@@ -1512,7 +1365,7 @@ index 89786b8..94a50b8 100644
  	}
  
  	if (base.mode & ATTR_STRUCK) {
-@@ -1488,14 +1594,17 @@ xdrawglyph(Glyph g, int x, int y)
+@@ -1517,14 +1623,17 @@ xdrawglyph(Glyph g, int x, int y)
  }
  
  void
@@ -1532,7 +1385,7 @@ index 89786b8..94a50b8 100644
  
  	if (IS_SET(MODE_HIDE))
  		return;
-@@ -1503,7 +1612,7 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
+@@ -1532,7 +1641,7 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
  	/*
  	 * Select the right color for the right mode.
  	 */
@@ -1541,27 +1394,3 @@ index 89786b8..94a50b8 100644
  
  	if (IS_SET(MODE_REVERSE)) {
  		g.mode |= ATTR_REVERSE;
-@@ -1588,9 +1697,8 @@ xseticontitle(char *p)
- 	XTextProperty prop;
- 	DEFAULT(p, opt_title);
- 
--	if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
--	                                &prop) != Success)
--		return;
-+	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
-+			&prop);
- 	XSetWMIconName(xw.dpy, xw.win, &prop);
- 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmiconname);
- 	XFree(prop.value);
-@@ -1602,9 +1710,8 @@ xsettitle(char *p)
- 	XTextProperty prop;
- 	DEFAULT(p, opt_title);
- 
--	if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
--	                                &prop) != Success)
--		return;
-+	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
-+			&prop);
- 	XSetWMName(xw.dpy, xw.win, &prop);
- 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmname);
- 	XFree(prop.value);

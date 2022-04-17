@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index a96f33c..09f35d4 100644
+index 5f16260..b67c12f 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -49,7 +49,7 @@
@@ -67,17 +67,7 @@ index a96f33c..09f35d4 100644
  			c->isfloating = r->isfloating;
  			c->tags |= r->tags;
  			for (m = mons; m && m->num != r->monitor; m = m->next);
-@@ -702,9 +710,6 @@ drawbar(Monitor *m)
- 	unsigned int i, occ = 0, urg = 0;
- 	Client *c;
- 
--	if (!m->showbar)
--		return;
--
- 	/* draw status first so it can be overdrawn by tags later */
- 	if (m == selmon) { /* status is only drawn on selected monitor */
- 		drw_setscheme(drw, scheme[SchemeNorm]);
-@@ -788,10 +793,14 @@ void
+@@ -789,10 +797,14 @@ void
  focus(Client *c)
  {
  	if (!c || !ISVISIBLE(c))
@@ -92,7 +82,7 @@ index a96f33c..09f35d4 100644
  		if (c->mon != selmon)
  			selmon = c->mon;
  		if (c->isurgent)
-@@ -841,16 +850,16 @@ focusstack(const Arg *arg)
+@@ -842,16 +854,16 @@ focusstack(const Arg *arg)
  	if (!selmon->sel || (selmon->sel->isfullscreen && lockfullscreen))
  		return;
  	if (arg->i > 0) {
@@ -113,7 +103,7 @@ index a96f33c..09f35d4 100644
  					c = i;
  	}
  	if (c) {
-@@ -1060,6 +1069,14 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1061,6 +1073,14 @@ manage(Window w, XWindowAttributes *wa)
  	updatewindowtype(c);
  	updatesizehints(c);
  	updatewmhints(c);
@@ -128,7 +118,7 @@ index a96f33c..09f35d4 100644
  	XSelectInput(dpy, w, EnterWindowMask|FocusChangeMask|PropertyChangeMask|StructureNotifyMask);
  	grabbuttons(c, 0);
  	if (!c->isfloating)
-@@ -1360,6 +1377,17 @@ restack(Monitor *m)
+@@ -1361,6 +1381,17 @@ restack(Monitor *m)
  		return;
  	if (m->sel->isfloating || !m->lt[m->sellt]->arrange)
  		XRaiseWindow(dpy, m->sel->win);
@@ -146,7 +136,7 @@ index a96f33c..09f35d4 100644
  	if (m->lt[m->sellt]->arrange) {
  		wc.stack_mode = Below;
  		wc.sibling = m->barwin;
-@@ -1470,6 +1498,7 @@ setfocus(Client *c)
+@@ -1471,6 +1502,7 @@ setfocus(Client *c)
  			XA_WINDOW, 32, PropModeReplace,
  			(unsigned char *) &(c->win), 1);
  	}
@@ -154,7 +144,7 @@ index a96f33c..09f35d4 100644
  	sendevent(c, wmatom[WMTakeFocus]);
  }
  
-@@ -1720,11 +1749,80 @@ togglefloating(const Arg *arg)
+@@ -1721,11 +1753,80 @@ togglefloating(const Arg *arg)
  		return;
  	selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
  	if (selmon->sel->isfloating)
@@ -177,9 +167,9 @@ index a96f33c..09f35d4 100644
 +
 +    resetcanfocusfloating();
 +
- 	arrange(selmon);
- }
- 
++	arrange(selmon);
++}
++
 +void
 +resetcanfocusfloating()
 +{
@@ -194,9 +184,9 @@ index a96f33c..09f35d4 100644
 +    if (c->isfloating)
 +      c->cantfocus = 0;
 +
-+	arrange(selmon);
-+}
-+
+ 	arrange(selmon);
+ }
+ 
 +void
 +togglefullscr(const Arg *arg)
 +{
@@ -237,7 +227,7 @@ index a96f33c..09f35d4 100644
  void
  toggletag(const Arg *arg)
  {
-@@ -1757,6 +1855,7 @@ unfocus(Client *c, int setfocus)
+@@ -1758,6 +1859,7 @@ unfocus(Client *c, int setfocus)
  {
  	if (!c)
  		return;
@@ -245,7 +235,7 @@ index a96f33c..09f35d4 100644
  	grabbuttons(c, 0);
  	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
  	if (setfocus) {
-@@ -2015,8 +2114,10 @@ updatewindowtype(Client *c)
+@@ -2016,8 +2118,10 @@ updatewindowtype(Client *c)
  
  	if (state == netatom[NetWMFullscreen])
  		setfullscreen(c, 1);

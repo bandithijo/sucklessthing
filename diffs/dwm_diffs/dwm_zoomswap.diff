@@ -1,17 +1,5 @@
-diff --git a/config.def.h b/config.def.h
-index a2ac963..1c0b587 100644
---- a/config.def.h
-+++ b/config.def.h
-@@ -35,7 +35,6 @@ static const Rule rules[] = {
- static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
- static const int nmaster     = 1;    /* number of clients in master area */
- static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
--static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
- 
- static const Layout layouts[] = {
- 	/* symbol     arrange function */
 diff --git a/dwm.c b/dwm.c
-index a96f33c..8e3ec51 100644
+index 5f16260..8d7f66f 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -165,6 +165,7 @@ static void drawbar(Monitor *m);
@@ -38,17 +26,7 @@ index a96f33c..8e3ec51 100644
  static const char broken[] = "broken";
  static char stext[256];
  static int screen;
-@@ -702,9 +703,6 @@ drawbar(Monitor *m)
- 	unsigned int i, occ = 0, urg = 0;
- 	Client *c;
- 
--	if (!m->showbar)
--		return;
--
- 	/* draw status first so it can be overdrawn by tags later */
- 	if (m == selmon) { /* status is only drawn on selected monitor */
- 		drw_setscheme(drw, scheme[SchemeNorm]);
-@@ -784,6 +782,16 @@ expose(XEvent *e)
+@@ -785,6 +786,16 @@ expose(XEvent *e)
  		drawbar(m);
  }
  
@@ -65,16 +43,7 @@ index a96f33c..8e3ec51 100644
  void
  focus(Client *c)
  {
-@@ -838,7 +846,7 @@ focusstack(const Arg *arg)
- {
- 	Client *c = NULL, *i;
- 
--	if (!selmon->sel || (selmon->sel->isfullscreen && lockfullscreen))
-+	if (!selmon->sel)
- 		return;
- 	if (arg->i > 0) {
- 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -1203,15 +1211,6 @@ nexttiled(Client *c)
+@@ -1204,15 +1215,6 @@ nexttiled(Client *c)
  	return c;
  }
  
@@ -90,7 +59,7 @@ index a96f33c..8e3ec51 100644
  void
  propertynotify(XEvent *e)
  {
-@@ -2120,14 +2119,38 @@ void
+@@ -2121,14 +2123,38 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;

@@ -61,7 +61,8 @@ dwm_branches = [
   'stickyindicator',       # 41*
   'togglefloatingcenter',  # 42  : center^3, canfocusfloating^6
   'barheight',             # 43*
-  'coloremoji',            # 44 <-
+  'coloremoji',            # 44
+  'dwmlogoleft',           # 45 <-
 ]
 
 # For st
@@ -92,7 +93,7 @@ st_branches = [
 slock_branches = [
   'config',
   'capscolor',
-  'message'
+  'dwmlogo'
 ]
 
 # For dmenu
@@ -102,7 +103,7 @@ dmenu_branches = [
   'xresources',        # 3
   'numbers',           # 4
   'grid',              # 5*
-  'symbols',           # 6*
+  'symbols',           # 6* : numbers
   'center',            # 7*
   'fuzzymatch',        # 8* : center
   'barheight',         # 9* <-

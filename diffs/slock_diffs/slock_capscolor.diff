@@ -1,15 +1,3 @@
-diff --git a/config.def.h b/config.def.h
-index 9855e21..d733f7a 100644
---- a/config.def.h
-+++ b/config.def.h
-@@ -6,6 +6,7 @@ static const char *colorname[NUMCOLS] = {
- 	[INIT] =   "black",     /* after initialization */
- 	[INPUT] =  "#005577",   /* during input */
- 	[FAILED] = "#CC3333",   /* wrong password */
-+	[CAPS] = "#CC3333",     /* CapsLock on */
- };
- 
- /* treat a cleared input like a wrong password (color) */
 diff --git a/slock.c b/slock.c
 index 5ae738c..5f4fb7a 100644
 --- a/slock.c
