@@ -21,13 +21,13 @@ dwm_branches = [
   'config',                # 1*  : nodmenu
   'sticky',                # 17*
   'wasfocus',              # 18  : sticky
-  'ru-gaps',               # 15* : cfacts, noborder
+  'noborder',              # 9
   'cfacts',                # 13*
+  'ru-gaps',               # 15* : cfacts, noborder
   'cfacts-dragcfact',      # 14* : cfacts
   'actualfullscreen',      # 12* : sticky
   'xrdb',                  # 3*
   'pertag',                # 2
-  'noborder',              # 9
   'movestack',             # 7*
   'moveresize',            # 8*
   'resizecorners',         # 5
