@@ -40,7 +40,7 @@ index ddc8321..86e73f9 100644
  dwm is customized by creating a custom config.h and (re)compiling the source
  code. This keeps it fast, secure and simple.
 diff --git a/dwm.c b/dwm.c
-index 5f16260..ec24996 100644
+index 5646a5c..a3c636b 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -29,6 +29,7 @@
@@ -104,7 +104,7 @@ index 5f16260..ec24996 100644
  	[Expose] = expose,
  	[FocusIn] = focusin,
  	[KeyPress] = keypress,
-@@ -485,7 +492,7 @@ cleanup(void)
+@@ -487,7 +494,7 @@ cleanup(void)
  		cleanupmon(mons);
  	for (i = 0; i < CurLast; i++)
  		drw_cur_free(drw, cursor[i]);
@@ -113,7 +113,7 @@ index 5f16260..ec24996 100644
  		free(scheme[i]);
  	free(scheme);
  	XDestroyWindow(dpy, wmcheckwin);
-@@ -694,6 +701,115 @@ dirtomon(int dir)
+@@ -696,6 +703,115 @@ dirtomon(int dir)
  	return m;
  }
  
@@ -229,7 +229,7 @@ index 5f16260..ec24996 100644
  void
  drawbar(Monitor *m)
  {
-@@ -707,10 +823,8 @@ drawbar(Monitor *m)
+@@ -709,10 +825,8 @@ drawbar(Monitor *m)
  		return;
  
  	/* draw status first so it can be overdrawn by tags later */
@@ -242,7 +242,7 @@ index 5f16260..ec24996 100644
  	}
  
  	for (c = m->clients; c; c = c->next) {
-@@ -756,25 +870,6 @@ drawbars(void)
+@@ -758,25 +872,6 @@ drawbars(void)
  		drawbar(m);
  }
  
@@ -268,7 +268,7 @@ index 5f16260..ec24996 100644
  void
  expose(XEvent *e)
  {
-@@ -785,6 +880,16 @@ expose(XEvent *e)
+@@ -787,6 +882,16 @@ expose(XEvent *e)
  		drawbar(m);
  }
  
@@ -285,7 +285,7 @@ index 5f16260..ec24996 100644
  void
  focus(Client *c)
  {
-@@ -1197,6 +1302,55 @@ movemouse(const Arg *arg)
+@@ -1199,6 +1304,55 @@ movemouse(const Arg *arg)
  	}
  }
  
@@ -341,7 +341,7 @@ index 5f16260..ec24996 100644
  Client *
  nexttiled(Client *c)
  {
-@@ -1204,15 +1358,6 @@ nexttiled(Client *c)
+@@ -1206,15 +1360,6 @@ nexttiled(Client *c)
  	return c;
  }
  
@@ -357,7 +357,7 @@ index 5f16260..ec24996 100644
  void
  propertynotify(XEvent *e)
  {
-@@ -1385,6 +1530,83 @@ run(void)
+@@ -1387,6 +1532,83 @@ run(void)
  			handler[ev.type](&ev); /* call handler */
  }
  
@@ -441,7 +441,7 @@ index 5f16260..ec24996 100644
  void
  scan(void)
  {
-@@ -1572,7 +1794,8 @@ setup(void)
+@@ -1574,7 +1796,8 @@ setup(void)
  	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
  	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
  	/* init appearance */
@@ -451,7 +451,7 @@ index 5f16260..ec24996 100644
  	for (i = 0; i < LENGTH(colors); i++)
  		scheme[i] = drw_scm_create(drw, colors[i], 3);
  	/* init bars */
-@@ -1994,9 +2217,11 @@ updatesizehints(Client *c)
+@@ -1997,9 +2220,11 @@ updatesizehints(Client *c)
  void
  updatestatus(void)
  {
@@ -464,7 +464,7 @@ index 5f16260..ec24996 100644
  }
  
  void
-@@ -2121,14 +2346,38 @@ void
+@@ -2124,14 +2349,38 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;
@@ -507,7 +507,7 @@ index 5f16260..ec24996 100644
  }
  
  int
-@@ -2149,6 +2398,7 @@ main(int argc, char *argv[])
+@@ -2152,6 +2401,7 @@ main(int argc, char *argv[])
  		die("pledge");
  #endif /* __OpenBSD__ */
  	scan();

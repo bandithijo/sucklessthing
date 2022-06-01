@@ -1,8 +1,8 @@
 diff --git a/config.def.h b/config.def.h
-index a2ac963..ef51cdc 100644
+index a2ac963..9d8dda3 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -2,50 +2,173 @@
+@@ -2,50 +2,174 @@
  
  /* appearance */
  static const unsigned int borderpx  = 1;        /* border pixel of windows */
@@ -110,6 +110,7 @@ index a2ac963..ef51cdc 100644
 +    { "Gcolor3",              NULL,                 "Color Picker",               0,             0,            1,           -1 },
 +    { "Gcolor3",              NULL,                 "Color picker",               0,             0,            1,           -1 },
 +    { "Gnome-calculator",     NULL,                 "Calculator",                 0,             0,            1,           -1 },
++    { "gnome-calculator",     NULL,                 "Calculator",                 0,             0,            1,           -1 },
 +    { "Hexchat",              NULL,                 "Network List - HexChat",     1 << 5,        1,            1,           -1 },
 +    { "SimpleScreenRecorder", NULL,                 NULL,                         0,             1,            1,           -1 },
 +    { "Soffice",              NULL,                 "Print",                      0,             1,            1,           -1 },
@@ -201,7 +202,7 @@ index a2ac963..ef51cdc 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -56,61 +179,195 @@ static const Layout layouts[] = {
+@@ -56,61 +180,195 @@ static const Layout layouts[] = {
  #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
  
  /* commands */
@@ -444,32 +445,11 @@ index a2ac963..ef51cdc 100644
 +	{ "setlayoutex",    setlayoutex },
 +	{ "movethrow",      movethrow },
 +};
-diff --git a/config.mk b/config.mk
-index b6eb7e0..7084c33 100644
---- a/config.mk
-+++ b/config.mk
-@@ -1,5 +1,5 @@
- # dwm version
--VERSION = 6.3
-+VERSION = 6.2
- 
- # Customize below to fit your system
- 
 diff --git a/dwm.c b/dwm.c
-index a96f33c..76740b1 100644
+index 5f16260..108cdf6 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -702,9 +702,6 @@ drawbar(Monitor *m)
- 	unsigned int i, occ = 0, urg = 0;
- 	Client *c;
- 
--	if (!m->showbar)
--		return;
--
- 	/* draw status first so it can be overdrawn by tags later */
- 	if (m == selmon) { /* status is only drawn on selected monitor */
- 		drw_setscheme(drw, scheme[SchemeNorm]);
-@@ -1643,8 +1640,6 @@ sigchld(int unused)
+@@ -1644,8 +1644,6 @@ sigchld(int unused)
  void
  spawn(const Arg *arg)
  {

@@ -1,14 +1,3 @@
-diff --git a/config.mk b/config.mk
-index b6eb7e0..7084c33 100644
---- a/config.mk
-+++ b/config.mk
-@@ -1,5 +1,5 @@
- # dwm version
--VERSION = 6.3
-+VERSION = 6.2
- 
- # Customize below to fit your system
- 
 diff --git a/drw.c b/drw.c
 index 4cdbcbe..9ded131 100644
 --- a/drw.c
@@ -53,20 +42,10 @@ index 4bcd5ad..cb1f24b 100644
  
  /* Map functions */
 diff --git a/dwm.c b/dwm.c
-index a96f33c..1b9220e 100644
+index 5f16260..e3930a8 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -702,9 +702,6 @@ drawbar(Monitor *m)
- 	unsigned int i, occ = 0, urg = 0;
- 	Client *c;
- 
--	if (!m->showbar)
--		return;
--
- 	/* draw status first so it can be overdrawn by tags later */
- 	if (m == selmon) { /* status is only drawn on selected monitor */
- 		drw_setscheme(drw, scheme[SchemeNorm]);
-@@ -738,6 +735,8 @@ drawbar(Monitor *m)
+@@ -739,6 +739,8 @@ drawbar(Monitor *m)
  			drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
  			if (m->sel->isfloating)
  				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);

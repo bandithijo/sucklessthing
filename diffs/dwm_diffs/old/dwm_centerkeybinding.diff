@@ -22,7 +22,7 @@ index b6eb7e0..7084c33 100644
  # Customize below to fit your system
  
 diff --git a/dwm.c b/dwm.c
-index a96f33c..83a7f8a 100644
+index 5f16260..83a7f8a 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -149,6 +149,7 @@ static void arrangemon(Monitor *m);
@@ -57,7 +57,15 @@ index a96f33c..83a7f8a 100644
  void
  checkotherwm(void)
  {
-@@ -702,9 +720,6 @@ drawbar(Monitor *m)
+@@ -487,7 +505,6 @@ cleanup(void)
+ 		drw_cur_free(drw, cursor[i]);
+ 	for (i = 0; i < LENGTH(colors); i++)
+ 		free(scheme[i]);
+-	free(scheme);
+ 	XDestroyWindow(dpy, wmcheckwin);
+ 	drw_free(drw);
+ 	XSync(dpy, False);
+@@ -703,9 +720,6 @@ drawbar(Monitor *m)
  	unsigned int i, occ = 0, urg = 0;
  	Client *c;
  
@@ -67,7 +75,7 @@ index a96f33c..83a7f8a 100644
  	/* draw status first so it can be overdrawn by tags later */
  	if (m == selmon) { /* status is only drawn on selected monitor */
  		drw_setscheme(drw, scheme[SchemeNorm]);
-@@ -838,7 +853,7 @@ focusstack(const Arg *arg)
+@@ -839,7 +853,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
  
@@ -76,3 +84,12 @@ index a96f33c..83a7f8a 100644
  		return;
  	if (arg->i > 0) {
  		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
+@@ -1064,7 +1078,7 @@ manage(Window w, XWindowAttributes *wa)
+ 	XSelectInput(dpy, w, EnterWindowMask|FocusChangeMask|PropertyChangeMask|StructureNotifyMask);
+ 	grabbuttons(c, 0);
+ 	if (!c->isfloating)
+-		c->isfloating = c->oldstate = t || c->isfixed;
++		c->isfloating = c->oldstate = trans != None || c->isfixed;
+ 	if (c->isfloating)
+ 		XRaiseWindow(dpy, c->win);
+ 	attach(c);

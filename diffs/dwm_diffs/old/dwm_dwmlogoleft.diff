@@ -1,16 +1,5 @@
-diff --git a/config.mk b/config.mk
-index b6eb7e0..7084c33 100644
---- a/config.mk
-+++ b/config.mk
-@@ -1,5 +1,5 @@
- # dwm version
--VERSION = 6.3
-+VERSION = 6.2
- 
- # Customize below to fit your system
- 
 diff --git a/dwm.c b/dwm.c
-index a96f33c..6120d10 100644
+index 5f16260..597cf6c 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -431,7 +431,7 @@ buttonpress(XEvent *e)
@@ -22,7 +11,7 @@ index a96f33c..6120d10 100644
  		do
  			x += TEXTW(tags[i]);
  		while (ev->x >= x && ++i < LENGTH(tags));
-@@ -718,6 +718,12 @@ drawbar(Monitor *m)
+@@ -719,6 +719,12 @@ drawbar(Monitor *m)
  			urg |= c->tags;
  	}
  	x = 0;

@@ -1,28 +1,5 @@
-diff --git a/config.def.h b/config.def.h
-index a2ac963..1c0b587 100644
---- a/config.def.h
-+++ b/config.def.h
-@@ -35,7 +35,6 @@ static const Rule rules[] = {
- static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
- static const int nmaster     = 1;    /* number of clients in master area */
- static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
--static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
- 
- static const Layout layouts[] = {
- 	/* symbol     arrange function */
-diff --git a/config.mk b/config.mk
-index b6eb7e0..7084c33 100644
---- a/config.mk
-+++ b/config.mk
-@@ -1,5 +1,5 @@
- # dwm version
--VERSION = 6.3
-+VERSION = 6.2
- 
- # Customize below to fit your system
- 
 diff --git a/dwm.c b/dwm.c
-index a96f33c..3bf87a1 100644
+index 5f16260..95b557d 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -49,7 +49,7 @@
@@ -51,26 +28,7 @@ index a96f33c..3bf87a1 100644
  static void toggletag(const Arg *arg);
  static void toggleview(const Arg *arg);
  static void unfocus(Client *c, int setfocus);
-@@ -702,9 +703,6 @@ drawbar(Monitor *m)
- 	unsigned int i, occ = 0, urg = 0;
- 	Client *c;
- 
--	if (!m->showbar)
--		return;
--
- 	/* draw status first so it can be overdrawn by tags later */
- 	if (m == selmon) { /* status is only drawn on selected monitor */
- 		drw_setscheme(drw, scheme[SchemeNorm]);
-@@ -838,7 +836,7 @@ focusstack(const Arg *arg)
- {
- 	Client *c = NULL, *i;
- 
--	if (!selmon->sel || (selmon->sel->isfullscreen && lockfullscreen))
-+	if (!selmon->sel)
- 		return;
- 	if (arg->i > 0) {
- 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -1360,6 +1358,17 @@ restack(Monitor *m)
+@@ -1361,6 +1362,17 @@ restack(Monitor *m)
  		return;
  	if (m->sel->isfloating || !m->lt[m->sellt]->arrange)
  		XRaiseWindow(dpy, m->sel->win);
@@ -88,22 +46,22 @@ index a96f33c..3bf87a1 100644
  	if (m->lt[m->sellt]->arrange) {
  		wc.stack_mode = Below;
  		wc.sibling = m->barwin;
-@@ -1722,7 +1731,34 @@ togglefloating(const Arg *arg)
+@@ -1723,9 +1735,36 @@ togglefloating(const Arg *arg)
  	if (selmon->sel->isfloating)
  		resize(selmon->sel, selmon->sel->x, selmon->sel->y,
  			selmon->sel->w, selmon->sel->h, 0);
 +	else
 +		selmon->sel->isalwaysontop = 0; /* disabled, turn this off too */
-+	arrange(selmon);
-+}
-+
+ 	arrange(selmon);
+ }
+ 
 +void
 +togglesticky(const Arg *arg)
 +{
 +	if (!selmon->sel)
 +		return;
 +	selmon->sel->issticky = !selmon->sel->issticky;
- 	arrange(selmon);
++	arrange(selmon);
 +
 +	if (selmon->sel->isfullscreen)
 +		return;
@@ -120,6 +78,8 @@ index a96f33c..3bf87a1 100644
 +		selmon->sel->isfloating = 1;
 +		selmon->sel->isalwaysontop = 1;
 +	}
- }
- 
++}
++
  void
+ toggletag(const Arg *arg)
+ {

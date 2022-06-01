@@ -86,7 +86,8 @@ st_branches = [
   'universcroll',      # 18*
   'externalpipe',      # 19*
   'defaultfontsize',   # 20
-  'dontcutoffafterresize',# 21 : scrollback <-
+  'dontcutoffafterresize',# 21 : scrollback
+  'swapmouse',         # 22 <-
 ]
 
 # For slock

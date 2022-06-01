@@ -52,7 +52,7 @@ index 91ab8ca..6f05dce 100644
  
  /*
 diff --git a/config.mk b/config.mk
-index 4c4c5d5..c070a4a 100644
+index ddf278a..c070a4a 100644
 --- a/config.mk
 +++ b/config.mk
 @@ -1,5 +1,5 @@
@@ -62,11 +62,27 @@ index 4c4c5d5..c070a4a 100644
  
  # Customize below to fit your system
  
+@@ -30,7 +30,6 @@ STLDFLAGS = $(LIBS) $(LDFLAGS)
+ #LIBS = -L$(X11LIB) -lm -lX11 -lutil -lXft \
+ #       `$(PKG_CONFIG) --libs fontconfig` \
+ #       `$(PKG_CONFIG) --libs freetype2`
+-#MANPREFIX = ${PREFIX}/man
+ 
+ # compiler and linker
+ # CC = c99
 diff --git a/st.c b/st.c
-index f43cfd3..abbbe4b 100644
+index 6ba467d..abbbe4b 100644
 --- a/st.c
 +++ b/st.c
-@@ -186,18 +186,18 @@ static void tputc(Rune);
+@@ -161,7 +161,6 @@ static void csidump(void);
+ static void csihandle(void);
+ static void csiparse(void);
+ static void csireset(void);
+-static void osc_color_response(int, int, int);
+ static int eschandle(uchar);
+ static void strdump(void);
+ static void strhandle(void);
+@@ -187,18 +186,18 @@ static void tputc(Rune);
  static void treset(void);
  static void tscrollup(int, int);
  static void tscrolldown(int, int);
@@ -89,7 +105,7 @@ index f43cfd3..abbbe4b 100644
  static void tdeftran(char);
  static void tstrsequence(uchar);
  
-@@ -226,10 +226,10 @@ static int iofd = 1;
+@@ -227,10 +226,10 @@ static int iofd = 1;
  static int cmdfd;
  static pid_t pid;
  
@@ -104,7 +120,7 @@ index f43cfd3..abbbe4b 100644
  
  ssize_t
  xwrite(int fd, const char *s, size_t len)
-@@ -269,14 +269,12 @@ xrealloc(void *p, size_t len)
+@@ -270,14 +269,12 @@ xrealloc(void *p, size_t len)
  }
  
  char *
@@ -122,7 +138,7 @@ index f43cfd3..abbbe4b 100644
  }
  
  size_t
-@@ -349,10 +347,25 @@ utf8validate(Rune *u, size_t i)
+@@ -350,10 +347,25 @@ utf8validate(Rune *u, size_t i)
  	return i;
  }
  
@@ -149,7 +165,7 @@ index f43cfd3..abbbe4b 100644
  		(*src)++;
  	return **src ? *((*src)++) : '=';  /* emulate padding if string ends */
  }
-@@ -362,13 +375,6 @@ base64dec(const char *src)
+@@ -363,13 +375,6 @@ base64dec(const char *src)
  {
  	size_t in_len = strlen(src);
  	char *result, *dst;
@@ -163,7 +179,7 @@ index f43cfd3..abbbe4b 100644
  
  	if (in_len % 4)
  		in_len += 4 - (in_len % 4);
-@@ -512,7 +518,7 @@ selsnap(int *x, int *y, int direction)
+@@ -513,7 +518,7 @@ selsnap(int *x, int *y, int direction)
  {
  	int newx, newy, xt, yt;
  	int delim, prevdelim;
@@ -172,7 +188,7 @@ index f43cfd3..abbbe4b 100644
  
  	switch (sel.snap) {
  	case SNAP_WORD:
-@@ -585,7 +591,7 @@ getsel(void)
+@@ -586,7 +591,7 @@ getsel(void)
  {
  	char *str, *ptr;
  	int y, bufsize, lastx, linelen;
@@ -181,7 +197,7 @@ index f43cfd3..abbbe4b 100644
  
  	if (sel.ob.x == -1)
  		return NULL;
-@@ -752,7 +758,7 @@ stty(char **args)
+@@ -753,7 +758,7 @@ stty(char **args)
  }
  
  int
@@ -190,7 +206,7 @@ index f43cfd3..abbbe4b 100644
  {
  	int m, s;
  
-@@ -785,15 +791,14 @@ ttynew(const char *line, char *cmd, const char *out, char **args)
+@@ -786,15 +791,14 @@ ttynew(const char *line, char *cmd, const char *out, char **args)
  		break;
  	case 0:
  		close(iofd);
@@ -208,7 +224,7 @@ index f43cfd3..abbbe4b 100644
  #ifdef __OpenBSD__
  		if (pledge("stdio getpw proc exec", NULL) == -1)
  			die("pledge\n");
-@@ -1181,9 +1186,9 @@ tmoveto(int x, int y)
+@@ -1182,9 +1186,9 @@ tmoveto(int x, int y)
  }
  
  void
@@ -220,7 +236,7 @@ index f43cfd3..abbbe4b 100644
  		"↑", "↓", "→", "←", "█", "▚", "☃", /* A - G */
  		0, 0, 0, 0, 0, 0, 0, 0, /* H - O */
  		0, 0, 0, 0, 0, 0, 0, 0, /* P - W */
-@@ -1295,7 +1300,7 @@ tdeleteline(int n)
+@@ -1296,7 +1300,7 @@ tdeleteline(int n)
  }
  
  int32_t
@@ -229,7 +245,7 @@ index f43cfd3..abbbe4b 100644
  {
  	int32_t idx = -1;
  	uint r, g, b;
-@@ -1345,7 +1350,7 @@ tdefcolor(const int *attr, int *npar, int l)
+@@ -1346,7 +1350,7 @@ tdefcolor(const int *attr, int *npar, int l)
  }
  
  void
@@ -238,7 +254,7 @@ index f43cfd3..abbbe4b 100644
  {
  	int i;
  	int32_t idx;
-@@ -1463,9 +1468,9 @@ tsetscroll(int t, int b)
+@@ -1464,9 +1468,9 @@ tsetscroll(int t, int b)
  }
  
  void
@@ -250,91 +266,69 @@ index f43cfd3..abbbe4b 100644
  
  	for (lim = args + narg; args < lim; ++args) {
  		if (priv) {
-@@ -1834,42 +1839,6 @@ csireset(void)
+@@ -1835,41 +1839,11 @@ csireset(void)
  	memset(&csiescseq, 0, sizeof(csiescseq));
  }
  
 -void
--osc4_color_response(int num)
+-osc_color_response(int num, int index, int is_osc4)
 -{
 -	int n;
 -	char buf[32];
 -	unsigned char r, g, b;
 -
--	if (xgetcolor(num, &r, &g, &b)) {
--		fprintf(stderr, "erresc: failed to fetch osc4 color %d\n", num);
+-	if (xgetcolor(is_osc4 ? num : index, &r, &g, &b)) {
+-		fprintf(stderr, "erresc: failed to fetch %s color %d\n",
+-		        is_osc4 ? "osc4" : "osc",
+-		        is_osc4 ? num : index);
 -		return;
 -	}
 -
--	n = snprintf(buf, sizeof buf, "\033]4;%d;rgb:%02x%02x/%02x%02x/%02x%02x\007",
--		     num, r, r, g, g, b, b);
--
--	ttywrite(buf, n, 1);
--}
--
--void
--osc_color_response(int index, int num)
--{
--	int n;
--	char buf[32];
--	unsigned char r, g, b;
--
--	if (xgetcolor(index, &r, &g, &b)) {
--		fprintf(stderr, "erresc: failed to fetch osc color %d\n", index);
--		return;
+-	n = snprintf(buf, sizeof buf, "\033]%s%d;rgb:%02x%02x/%02x%02x/%02x%02x\007",
+-	             is_osc4 ? "4;" : "", num, r, r, g, g, b, b);
+-	if (n < 0 || n >= sizeof(buf)) {
+-		fprintf(stderr, "error: %s while printing %s response\n",
+-		        n < 0 ? "snprintf failed" : "truncation occurred",
+-		        is_osc4 ? "osc4" : "osc");
+-	} else {
+-		ttywrite(buf, n, 1);
 -	}
--
--	n = snprintf(buf, sizeof buf, "\033]%d;rgb:%02x%02x/%02x%02x/%02x%02x\007",
--		     num, r, r, g, g, b, b);
--
--	ttywrite(buf, n, 1);
 -}
 -
  void
  strhandle(void)
  {
-@@ -1908,56 +1877,14 @@ strhandle(void)
+ 	char *p = NULL, *dec;
+ 	int j, narg, par;
+-	const struct { int idx; char *str; } osc_table[] = {
+-		{ defaultfg, "foreground" },
+-		{ defaultbg, "background" },
+-		{ defaultcs, "cursor" }
+-	};
+ 
+ 	term.esc &= ~(ESC_STR_END|ESC_STR);
+ 	strparse();
+@@ -1903,35 +1877,14 @@ strhandle(void)
  				}
  			}
  			return;
 -		case 10:
--			if (narg < 2)
--				break;
--
--			p = strescseq.args[1];
--
--			if (!strcmp(p, "?"))
--				osc_color_response(defaultfg, 10);
--			else if (xsetcolorname(defaultfg, p))
--				fprintf(stderr, "erresc: invalid foreground color: %s\n", p);
--			else
--				tfulldirt();
--			return;
 -		case 11:
--			if (narg < 2)
--				break;
--
--			p = strescseq.args[1];
--
--			if (!strcmp(p, "?"))
--				osc_color_response(defaultbg, 11);
--			else if (xsetcolorname(defaultbg, p))
--				fprintf(stderr, "erresc: invalid background color: %s\n", p);
--			else
--				tfulldirt();
--			return;
 -		case 12:
 -			if (narg < 2)
 -				break;
--
 -			p = strescseq.args[1];
+-			if ((j = par - 10) < 0 || j >= LEN(osc_table))
+-				break; /* shouldn't be possible */
 -
--			if (!strcmp(p, "?"))
--				osc_color_response(defaultcs, 12);
--			else if (xsetcolorname(defaultcs, p))
--				fprintf(stderr, "erresc: invalid cursor color: %s\n", p);
--			else
+-			if (!strcmp(p, "?")) {
+-				osc_color_response(par, osc_table[j].idx, 0);
+-			} else if (xsetcolorname(osc_table[j].idx, p)) {
+-				fprintf(stderr, "erresc: invalid %s color: %s\n",
+-				        osc_table[j].str, p);
+-			} else {
 -				tfulldirt();
+-			}
 -			return;
  		case 4: /* color set */
  			if (narg < 3)
@@ -345,14 +339,14 @@ index f43cfd3..abbbe4b 100644
 +		case 104: /* color reset, here p = NULL */
  			j = (narg > 1) ? atoi(strescseq.args[1]) : -1;
 -
--			if (p && !strcmp(p, "?"))
--				osc4_color_response(j);
--			else if (xsetcolorname(j, p)) {
+-			if (p && !strcmp(p, "?")) {
+-				osc_color_response(j, 0, 1);
+-			} else if (xsetcolorname(j, p)) {
 +			if (xsetcolorname(j, p)) {
  				if (par == 104 && narg <= 1)
  					return; /* color reset without parameter */
  				fprintf(stderr, "erresc: invalid color j=%d, p=%s\n",
-@@ -1967,7 +1894,7 @@ strhandle(void)
+@@ -1941,7 +1894,7 @@ strhandle(void)
  				 * TODO if defaultbg color is changed, borders
  				 * are dirty
  				 */
@@ -361,7 +355,7 @@ index f43cfd3..abbbe4b 100644
  			}
  			return;
  		}
-@@ -2093,7 +2020,7 @@ void
+@@ -2067,7 +2020,7 @@ void
  tdumpline(int n)
  {
  	char buf[UTF_SIZ];
@@ -370,7 +364,7 @@ index f43cfd3..abbbe4b 100644
  
  	bp = &term.line[n][0];
  	end = &bp[MIN(tlinelen(n), term.col) - 1];
-@@ -2499,10 +2426,6 @@ check_control_code:
+@@ -2473,10 +2426,6 @@ check_control_code:
  	if (width == 2) {
  		gp->mode |= ATTR_WIDE;
  		if (term.c.x+1 < term.col) {
@@ -382,7 +376,7 @@ index f43cfd3..abbbe4b 100644
  			gp[1].mode = ATTR_WDUMMY;
  		}
 diff --git a/st.h b/st.h
-index 519b9bd..3d351b6 100644
+index fd3b0d8..3d351b6 100644
 --- a/st.h
 +++ b/st.h
 @@ -91,7 +91,7 @@ void tnew(int, int);
@@ -394,22 +388,32 @@ index 519b9bd..3d351b6 100644
  size_t ttyread(void);
  void ttyresize(int, int);
  void ttywrite(const char *, size_t, int);
-@@ -109,9 +109,7 @@ size_t utf8encode(Rune, char *);
+@@ -109,7 +109,7 @@ size_t utf8encode(Rune, char *);
  
  void *xmalloc(size_t);
  void *xrealloc(void *, size_t);
 -char *xstrdup(const char *);
--
--int xgetcolor(int x, unsigned char *r, unsigned char *g, unsigned char *b);
 +char *xstrdup(char *);
  
  /* config.h globals */
  extern char *utmp;
-@@ -125,4 +123,3 @@ extern char *termname;
+@@ -123,4 +123,3 @@ extern char *termname;
  extern unsigned int tabspaces;
  extern unsigned int defaultfg;
  extern unsigned int defaultbg;
 -extern unsigned int defaultcs;
+diff --git a/win.h b/win.h
+index 6de960d..e6e4369 100644
+--- a/win.h
++++ b/win.h
+@@ -30,7 +30,6 @@ void xdrawline(Line, int, int, int);
+ void xfinishdraw(void);
+ void xloadcols(void);
+ int xsetcolorname(int, const char *);
+-int xgetcolor(int, unsigned char *, unsigned char *, unsigned char *);
+ void xseticontitle(char *);
+ void xsettitle(char *);
+ int xsetcursor(int);
 diff --git a/x.c b/x.c
 index 2a3bd38..ab66364 100644
 --- a/x.c

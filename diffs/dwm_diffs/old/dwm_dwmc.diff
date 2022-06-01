@@ -13,31 +13,8 @@ index 77bcbc0..66cf909 100644
  	mkdir -p ${DESTDIR}${MANPREFIX}/man1
  	sed "s/VERSION/${VERSION}/g" < dwm.1 > ${DESTDIR}${MANPREFIX}/man1/dwm.1
  	chmod 644 ${DESTDIR}${MANPREFIX}/man1/dwm.1
-diff --git a/config.def.h b/config.def.h
-index a2ac963..1c0b587 100644
---- a/config.def.h
-+++ b/config.def.h
-@@ -35,7 +35,6 @@ static const Rule rules[] = {
- static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
- static const int nmaster     = 1;    /* number of clients in master area */
- static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
--static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
- 
- static const Layout layouts[] = {
- 	/* symbol     arrange function */
-diff --git a/config.mk b/config.mk
-index b6eb7e0..7084c33 100644
---- a/config.mk
-+++ b/config.mk
-@@ -1,5 +1,5 @@
- # dwm version
--VERSION = 6.3
-+VERSION = 6.2
- 
- # Customize below to fit your system
- 
 diff --git a/dwm.c b/dwm.c
-index a96f33c..1cefde3 100644
+index 5f16260..846d592 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -106,6 +106,11 @@ typedef struct {
@@ -77,17 +54,7 @@ index a96f33c..1cefde3 100644
  static const char broken[] = "broken";
  static char stext[256];
  static int screen;
-@@ -702,9 +709,6 @@ drawbar(Monitor *m)
- 	unsigned int i, occ = 0, urg = 0;
- 	Client *c;
- 
--	if (!m->showbar)
--		return;
--
- 	/* draw status first so it can be overdrawn by tags later */
- 	if (m == selmon) { /* status is only drawn on selected monitor */
- 		drw_setscheme(drw, scheme[SchemeNorm]);
-@@ -784,6 +788,16 @@ expose(XEvent *e)
+@@ -785,6 +792,16 @@ expose(XEvent *e)
  		drawbar(m);
  }
  
@@ -104,16 +71,7 @@ index a96f33c..1cefde3 100644
  void
  focus(Client *c)
  {
-@@ -838,7 +852,7 @@ focusstack(const Arg *arg)
- {
- 	Client *c = NULL, *i;
- 
--	if (!selmon->sel || (selmon->sel->isfullscreen && lockfullscreen))
-+	if (!selmon->sel || selmon->sel->isfullscreen)
- 		return;
- 	if (arg->i > 0) {
- 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -1002,6 +1016,49 @@ keypress(XEvent *e)
+@@ -1003,6 +1020,49 @@ keypress(XEvent *e)
  			keys[i].func(&(keys[i].arg));
  }
  
@@ -163,7 +121,7 @@ index a96f33c..1cefde3 100644
  void
  killclient(const Arg *arg)
  {
-@@ -1203,15 +1260,6 @@ nexttiled(Client *c)
+@@ -1204,15 +1264,6 @@ nexttiled(Client *c)
  	return c;
  }
  
@@ -179,7 +137,7 @@ index a96f33c..1cefde3 100644
  void
  propertynotify(XEvent *e)
  {
-@@ -1219,8 +1267,10 @@ propertynotify(XEvent *e)
+@@ -1220,8 +1271,10 @@ propertynotify(XEvent *e)
  	Window trans;
  	XPropertyEvent *ev = &e->xproperty;
  
@@ -192,7 +150,7 @@ index a96f33c..1cefde3 100644
  	else if (ev->state == PropertyDelete)
  		return; /* ignore */
  	else if ((c = wintoclient(ev->window))) {
-@@ -2120,14 +2170,38 @@ void
+@@ -2121,14 +2174,38 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;

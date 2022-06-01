@@ -13,10 +13,10 @@ index 323f93c..c036baa 100644
  dmenu grabs the keyboard before reading stdin if not reading from a tty. This
  is faster, but will lock up X until stdin reaches end\-of\-file.
 diff --git a/dmenu.c b/dmenu.c
-index 98507d9..041c7f8 100644
+index 839f6cc..3fcc8d8 100644
 --- a/dmenu.c
 +++ b/dmenu.c
-@@ -89,6 +89,15 @@ calcoffsets(void)
+@@ -96,6 +96,15 @@ calcoffsets(void)
  			break;
  }
  
@@ -32,89 +32,7 @@ index 98507d9..041c7f8 100644
  static void
  cleanup(void)
  {
-@@ -360,11 +369,9 @@ keypress(XKeyEvent *ev)
- 			                  utf8, utf8, win, CurrentTime);
- 			return;
- 		case XK_Left:
--		case XK_KP_Left:
- 			movewordedge(-1);
- 			goto draw;
- 		case XK_Right:
--		case XK_KP_Right:
- 			movewordedge(+1);
- 			goto draw;
- 		case XK_Return:
-@@ -402,7 +409,6 @@ insert:
- 			insert(buf, len);
- 		break;
- 	case XK_Delete:
--	case XK_KP_Delete:
- 		if (text[cursor] == '\0')
- 			return;
- 		cursor = nextrune(+1);
-@@ -413,7 +419,6 @@ insert:
- 		insert(NULL, nextrune(-1) - cursor);
- 		break;
- 	case XK_End:
--	case XK_KP_End:
- 		if (text[cursor] != '\0') {
- 			cursor = strlen(text);
- 			break;
-@@ -433,7 +438,6 @@ insert:
- 		cleanup();
- 		exit(1);
- 	case XK_Home:
--	case XK_KP_Home:
- 		if (sel == matches) {
- 			cursor = 0;
- 			break;
-@@ -442,7 +446,6 @@ insert:
- 		calcoffsets();
- 		break;
- 	case XK_Left:
--	case XK_KP_Left:
- 		if (cursor > 0 && (!sel || !sel->left || lines > 0)) {
- 			cursor = nextrune(-1);
- 			break;
-@@ -451,21 +454,18 @@ insert:
- 			return;
- 		/* fallthrough */
- 	case XK_Up:
--	case XK_KP_Up:
- 		if (sel && sel->left && (sel = sel->left)->right == curr) {
- 			curr = prev;
- 			calcoffsets();
- 		}
- 		break;
- 	case XK_Next:
--	case XK_KP_Next:
- 		if (!next)
- 			return;
- 		sel = curr = next;
- 		calcoffsets();
- 		break;
- 	case XK_Prior:
--	case XK_KP_Prior:
- 		if (!prev)
- 			return;
- 		sel = curr = prev;
-@@ -482,7 +482,6 @@ insert:
- 			sel->out = 1;
- 		break;
- 	case XK_Right:
--	case XK_KP_Right:
- 		if (text[cursor] != '\0') {
- 			cursor = nextrune(+1);
- 			break;
-@@ -491,7 +490,6 @@ insert:
- 			return;
- 		/* fallthrough */
- 	case XK_Down:
--	case XK_KP_Down:
- 		if (sel && sel->right && (sel = sel->right) == next) {
- 			curr = next;
- 			calcoffsets();
-@@ -622,6 +620,7 @@ setup(void)
+@@ -633,6 +642,7 @@ setup(void)
  	bh = drw->fonts->h + 2;
  	lines = MAX(lines, 0);
  	mh = (lines + 1) * bh;
@@ -122,8 +40,8 @@ index 98507d9..041c7f8 100644
  #ifdef XINERAMA
  	i = 0;
  	if (parentwin == root && (info = XineramaQueryScreens(dpy, &n))) {
-@@ -648,9 +647,16 @@ setup(void)
- 				if (INTERSECT(x, y, 1, 1, info[i]))
+@@ -659,9 +669,16 @@ setup(void)
+ 				if (INTERSECT(x, y, 1, 1, info[i]) != 0)
  					break;
  
 -		x = info[i].x_org;
@@ -142,7 +60,7 @@ index 98507d9..041c7f8 100644
  		XFree(info);
  	} else
  #endif
-@@ -658,11 +664,17 @@ setup(void)
+@@ -669,11 +686,18 @@ setup(void)
  		if (!XGetWindowAttributes(dpy, parentwin, &wa))
  			die("could not get embedding window attributes: 0x%lx",
  			    parentwin);
@@ -161,10 +79,11 @@ index 98507d9..041c7f8 100644
 +		}
  	}
 -	promptw = (prompt && *prompt) ? TEXTW(prompt) - lrpad / 4 : 0;
- 	inputw = MIN(inputw, mw/3);
- 	match();
- 
-@@ -720,6 +732,8 @@ main(int argc, char *argv[])
++	inputw = MIN(inputw, mw/3);
+ 	for (item = items; item && item->text; ++item) {
+ 		if ((tmp = textw_clamp(item->text, mw/3)) > inputw) {
+ 			if ((inputw = tmp) == mw/3)
+@@ -736,6 +760,8 @@ main(int argc, char *argv[])
  			topbar = 0;
  		else if (!strcmp(argv[i], "-f"))   /* grabs keyboard before reading stdin */
  			fast = 1;
@@ -173,16 +92,3 @@ index 98507d9..041c7f8 100644
  		else if (!strcmp(argv[i], "-i")) { /* case-insensitive item matching */
  			fstrncmp = strncasecmp;
  			fstrstr = cistrstr;
-diff --git a/stest.c b/stest.c
-index e27d3a5..7a7b0bc 100644
---- a/stest.c
-+++ b/stest.c
-@@ -84,7 +84,7 @@ main(int argc, char *argv[])
- 	if (!argc) {
- 		/* read list from stdin */
- 		while ((n = getline(&line, &linesiz, stdin)) > 0) {
--			if (line[n - 1] == '\n')
-+			if (n && line[n - 1] == '\n')
- 				line[n - 1] = '\0';
- 			test(line, line);
- 		}

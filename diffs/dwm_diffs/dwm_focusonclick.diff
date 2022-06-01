@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 5f16260..d2b9eee 100644
+index 5646a5c..0a46e0c 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -163,7 +163,6 @@ static void detachstack(Client *c);
@@ -26,7 +26,7 @@ index 5f16260..d2b9eee 100644
  	[Expose] = expose,
  	[FocusIn] = focusin,
  	[KeyPress] = keypress,
-@@ -756,25 +755,6 @@ drawbars(void)
+@@ -758,25 +757,6 @@ drawbars(void)
  		drawbar(m);
  }
  
@@ -52,7 +52,7 @@ index 5f16260..d2b9eee 100644
  void
  expose(XEvent *e)
  {
-@@ -1197,6 +1177,55 @@ movemouse(const Arg *arg)
+@@ -1199,6 +1179,55 @@ movemouse(const Arg *arg)
  	}
  }
  

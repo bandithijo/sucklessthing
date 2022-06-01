@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 91ab8ca..81dc0cc 100644
+index 91ab8ca..caf1364 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -5,8 +5,18 @@
@@ -8,14 +8,14 @@ index 91ab8ca..81dc0cc 100644
   */
 -static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
 -static int borderpx = 2;
-+static char *font = "JetBrainsMono Nerd Font Bandit:style=Medium:pixelsize=12:antialias=true:autohint=true";
++static char *font = "JetBrainsMono Nerd Font Bandit:style=Medium:pixelsize=15:antialias=true:autohint=true";
 +/* Spare fonts */
 +static char *font2[] = {
-+    "Twitter Color Emoji:pixelsize=12:antialias=true:autohint=true",
++    "Twitter Color Emoji:pixelsize=15:antialias=true:autohint=true",
 +};
-+    /* "JoyPixels:pixelsize=12:antialias=true:autohint=true", */
-+    /* "Noto Color Emoji:style=Regular:pixelsize=12:antialias=true:autohint=true", */
-+    /* "octicons:style=Medium:pixelsize=12:antialias=true:autohint=true", */
++    /* "JoyPixels:pixelsize=15:antialias=true:autohint=true", */
++    /* "Noto Color Emoji:style=Regular:pixelsize=15:antialias=true:autohint=true", */
++    /* "octicons:style=Medium:pixelsize=15:antialias=true:autohint=true", */
 +    /* "Font Awesome 5 Brands:style=Regular:pixelsize=10:antialias=true:autohint=true", */
 +    /* "Noto Color Emoji:pixelsize=10:antialias=true:autohint=true", */
 +
@@ -96,8 +96,8 @@ index 91ab8ca..81dc0cc 100644
  
 -static unsigned int cols = 80;
 -static unsigned int rows = 24;
-+static unsigned int cols = 84;
-+static unsigned int rows = 26;
++static unsigned int cols = 100;
++static unsigned int rows = 30;
  
  /*
   * Default colour and shape of the mouse cursor
@@ -178,3 +178,15 @@ index 91ab8ca..81dc0cc 100644
  };
  
  /*
+diff --git a/config.mk b/config.mk
+index ddf278a..4c4c5d5 100644
+--- a/config.mk
++++ b/config.mk
+@@ -30,7 +30,6 @@ STLDFLAGS = $(LIBS) $(LDFLAGS)
+ #LIBS = -L$(X11LIB) -lm -lX11 -lutil -lXft \
+ #       `$(PKG_CONFIG) --libs fontconfig` \
+ #       `$(PKG_CONFIG) --libs freetype2`
+-#MANPREFIX = ${PREFIX}/man
+ 
+ # compiler and linker
+ # CC = c99

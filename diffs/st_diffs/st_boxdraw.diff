@@ -439,11 +439,23 @@ index 0000000..7890500
 +	/* U+2504 - U+250B, U+254C - U+254F: unsupported (dashes) */
 +	/* U+2571 - U+2573: unsupported (diagonals) */
 +};
+diff --git a/config.mk b/config.mk
+index ddf278a..4c4c5d5 100644
+--- a/config.mk
++++ b/config.mk
+@@ -30,7 +30,6 @@ STLDFLAGS = $(LIBS) $(LDFLAGS)
+ #LIBS = -L$(X11LIB) -lm -lX11 -lutil -lXft \
+ #       `$(PKG_CONFIG) --libs fontconfig` \
+ #       `$(PKG_CONFIG) --libs freetype2`
+-#MANPREFIX = ${PREFIX}/man
+ 
+ # compiler and linker
+ # CC = c99
 diff --git a/st.c b/st.c
-index f43cfd3..baa2bed 100644
+index 6ba467d..670599d 100644
 --- a/st.c
 +++ b/st.c
-@@ -1214,6 +1214,9 @@ tsetchar(Rune u, const Glyph *attr, int x, int y)
+@@ -1215,6 +1215,9 @@ tsetchar(Rune u, const Glyph *attr, int x, int y)
  	term.dirty[y] = 1;
  	term.line[y][x] = *attr;
  	term.line[y][x].u = u;
@@ -454,7 +466,7 @@ index f43cfd3..baa2bed 100644
  
  void
 diff --git a/st.h b/st.h
-index 519b9bd..07a7c66 100644
+index fd3b0d8..07a7c66 100644
 --- a/st.h
 +++ b/st.h
 @@ -33,6 +33,7 @@ enum glyph_attribute {
@@ -465,10 +477,12 @@ index 519b9bd..07a7c66 100644
  	ATTR_BOLD_FAINT = ATTR_BOLD | ATTR_FAINT,
  };
  
-@@ -113,6 +114,14 @@ char *xstrdup(const char *);
+@@ -111,6 +112,16 @@ void *xmalloc(size_t);
+ void *xrealloc(void *, size_t);
+ char *xstrdup(const char *);
  
- int xgetcolor(int x, unsigned char *r, unsigned char *g, unsigned char *b);
- 
++int xgetcolor(int x, unsigned char *r, unsigned char *g, unsigned char *b);
++
 +int isboxdraw(Rune);
 +ushort boxdrawindex(const Glyph *);
 +#ifdef XFT_VERSION
@@ -480,7 +494,7 @@ index 519b9bd..07a7c66 100644
  /* config.h globals */
  extern char *utmp;
  extern char *scroll;
-@@ -126,3 +135,4 @@ extern unsigned int tabspaces;
+@@ -124,3 +135,4 @@ extern unsigned int tabspaces;
  extern unsigned int defaultfg;
  extern unsigned int defaultbg;
  extern unsigned int defaultcs;

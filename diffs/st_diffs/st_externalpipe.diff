@@ -1,8 +1,20 @@
+diff --git a/config.mk b/config.mk
+index ddf278a..4c4c5d5 100644
+--- a/config.mk
++++ b/config.mk
+@@ -30,7 +30,6 @@ STLDFLAGS = $(LIBS) $(LDFLAGS)
+ #LIBS = -L$(X11LIB) -lm -lX11 -lutil -lXft \
+ #       `$(PKG_CONFIG) --libs fontconfig` \
+ #       `$(PKG_CONFIG) --libs freetype2`
+-#MANPREFIX = ${PREFIX}/man
+ 
+ # compiler and linker
+ # CC = c99
 diff --git a/st.c b/st.c
-index f43cfd3..da7825f 100644
+index 6ba467d..421f8ac 100644
 --- a/st.c
 +++ b/st.c
-@@ -717,8 +717,14 @@ sigchld(int a)
+@@ -718,8 +718,14 @@ sigchld(int a)
  	if ((p = waitpid(pid, &stat, WNOHANG)) < 0)
  		die("waiting for pid %hd failed: %s\n", pid, strerror(errno));
  
@@ -18,7 +30,7 @@ index f43cfd3..da7825f 100644
  
  	if (WIFEXITED(stat) && WEXITSTATUS(stat))
  		die("child exited with status %d\n", WEXITSTATUS(stat));
-@@ -2007,6 +2013,59 @@ strparse(void)
+@@ -1981,6 +1987,59 @@ strparse(void)
  	}
  }
  
@@ -79,7 +91,7 @@ index f43cfd3..da7825f 100644
  strdump(void)
  {
 diff --git a/st.h b/st.h
-index 519b9bd..a43f419 100644
+index fd3b0d8..d8a241b 100644
 --- a/st.h
 +++ b/st.h
 @@ -80,6 +80,7 @@ typedef union {

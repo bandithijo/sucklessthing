@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 5f16260..90ea99e 100644
+index 5646a5c..a92195c 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -195,6 +195,12 @@ static void resizemouse(const Arg *arg);
@@ -41,7 +41,7 @@ index 5f16260..90ea99e 100644
  }
  
  int
-@@ -1412,6 +1422,97 @@ scan(void)
+@@ -1414,6 +1424,97 @@ scan(void)
  	}
  }
  

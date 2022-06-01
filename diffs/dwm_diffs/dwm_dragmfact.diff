@@ -64,7 +64,7 @@ index ddc8321..86e73f9 100644
  dwm is customized by creating a custom config.h and (re)compiling the source
  code. This keeps it fast, secure and simple.
 diff --git a/dwm.c b/dwm.c
-index 5f16260..2bced9f 100644
+index 5646a5c..c3f0676 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -29,6 +29,7 @@
@@ -100,7 +100,7 @@ index 5f16260..2bced9f 100644
 +	float cfact;
  	int x, y, w, h;
  	int oldx, oldy, oldw, oldh;
- 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
+ 	int basew, baseh, incw, inch, maxw, maxh, minw, minh, hintsvalid;
 @@ -95,6 +99,7 @@ struct Client {
  	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
  	Client *next;
@@ -244,7 +244,7 @@ index 5f16260..2bced9f 100644
  static Window root, wmcheckwin;
  
  /* configuration, allows nested code to access above variables */
-@@ -585,10 +640,12 @@ configurerequest(XEvent *e)
+@@ -587,10 +642,12 @@ configurerequest(XEvent *e)
  	XConfigureRequestEvent *ev = &e->xconfigurerequest;
  	XWindowChanges wc;
  
@@ -260,7 +260,7 @@ index 5f16260..2bced9f 100644
  			m = c->mon;
  			if (ev->value_mask & CWX) {
  				c->oldx = c->x;
-@@ -616,7 +673,13 @@ configurerequest(XEvent *e)
+@@ -618,7 +675,13 @@ configurerequest(XEvent *e)
  				XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h);
  		} else
  			configure(c);
@@ -275,7 +275,7 @@ index 5f16260..2bced9f 100644
  		wc.x = ev->x;
  		wc.y = ev->y;
  		wc.width = ev->width;
-@@ -625,6 +688,7 @@ configurerequest(XEvent *e)
+@@ -627,6 +690,7 @@ configurerequest(XEvent *e)
  		wc.sibling = ev->above;
  		wc.stack_mode = ev->detail;
  		XConfigureWindow(dpy, ev->window, ev->value_mask, &wc);
@@ -283,7 +283,7 @@ index 5f16260..2bced9f 100644
  	}
  	XSync(dpy, False);
  }
-@@ -649,11 +713,30 @@ createmon(void)
+@@ -651,11 +715,30 @@ createmon(void)
  void
  destroynotify(XEvent *e)
  {
@@ -316,7 +316,7 @@ index 5f16260..2bced9f 100644
  }
  
  void
-@@ -694,6 +777,304 @@ dirtomon(int dir)
+@@ -696,6 +779,304 @@ dirtomon(int dir)
  	return m;
  }
  
@@ -621,7 +621,7 @@ index 5f16260..2bced9f 100644
  void
  drawbar(Monitor *m)
  {
-@@ -707,7 +1088,7 @@ drawbar(Monitor *m)
+@@ -709,7 +1090,7 @@ drawbar(Monitor *m)
  		return;
  
  	/* draw status first so it can be overdrawn by tags later */
@@ -630,7 +630,7 @@ index 5f16260..2bced9f 100644
  		drw_setscheme(drw, scheme[SchemeNorm]);
  		tw = TEXTW(stext) - lrpad + 2; /* 2px right padding */
  		drw_text(drw, m->ww - tw, 0, tw, bh, 0, stext, 0);
-@@ -733,6 +1114,12 @@ drawbar(Monitor *m)
+@@ -735,6 +1116,12 @@ drawbar(Monitor *m)
  	drw_setscheme(drw, scheme[SchemeNorm]);
  	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
  
@@ -643,7 +643,7 @@ index 5f16260..2bced9f 100644
  	if ((w = m->ww - tw - x) > bh) {
  		if (m->sel) {
  			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
-@@ -756,25 +1143,6 @@ drawbars(void)
+@@ -758,25 +1145,6 @@ drawbars(void)
  		drawbar(m);
  }
  
@@ -669,7 +669,7 @@ index 5f16260..2bced9f 100644
  void
  expose(XEvent *e)
  {
-@@ -785,6 +1153,91 @@ expose(XEvent *e)
+@@ -787,6 +1155,91 @@ expose(XEvent *e)
  		drawbar(m);
  }
  
@@ -761,7 +761,7 @@ index 5f16260..2bced9f 100644
  void
  focus(Client *c)
  {
-@@ -1003,6 +1456,49 @@ keypress(XEvent *e)
+@@ -1005,6 +1458,49 @@ keypress(XEvent *e)
  			keys[i].func(&(keys[i].arg));
  }
  
@@ -811,7 +811,7 @@ index 5f16260..2bced9f 100644
  void
  killclient(const Arg *arg)
  {
-@@ -1034,6 +1530,7 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1036,6 +1532,7 @@ manage(Window w, XWindowAttributes *wa)
  	c->w = c->oldw = wa->width;
  	c->h = c->oldh = wa->height;
  	c->oldbw = wa->border_width;
@@ -819,7 +819,7 @@ index 5f16260..2bced9f 100644
  
  	updatetitle(c);
  	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
-@@ -1094,15 +1591,37 @@ mappingnotify(XEvent *e)
+@@ -1096,15 +1593,37 @@ mappingnotify(XEvent *e)
  void
  maprequest(XEvent *e)
  {
@@ -859,7 +859,7 @@ index 5f16260..2bced9f 100644
  }
  
  void
-@@ -1197,6 +1716,92 @@ movemouse(const Arg *arg)
+@@ -1199,6 +1718,92 @@ movemouse(const Arg *arg)
  	}
  }
  
@@ -952,7 +952,7 @@ index 5f16260..2bced9f 100644
  Client *
  nexttiled(Client *c)
  {
-@@ -1204,25 +1809,20 @@ nexttiled(Client *c)
+@@ -1206,25 +1811,20 @@ nexttiled(Client *c)
  	return c;
  }
  
@@ -985,7 +985,7 @@ index 5f16260..2bced9f 100644
  		return; /* ignore */
  	else if ((c = wintoclient(ev->window))) {
  		switch(ev->atom) {
-@@ -1244,6 +1844,9 @@ propertynotify(XEvent *e)
+@@ -1246,6 +1846,9 @@ propertynotify(XEvent *e)
  			updatetitle(c);
  			if (c == c->mon->sel)
  				drawbar(c->mon);
@@ -995,7 +995,7 @@ index 5f16260..2bced9f 100644
  		}
  		if (ev->atom == netatom[NetWMWindowType])
  			updatewindowtype(c);
-@@ -1385,6 +1988,83 @@ run(void)
+@@ -1387,6 +1990,83 @@ run(void)
  			handler[ev.type](&ev); /* call handler */
  }
  
@@ -1079,7 +1079,7 @@ index 5f16260..2bced9f 100644
  void
  scan(void)
  {
-@@ -1516,6 +2196,30 @@ setlayout(const Arg *arg)
+@@ -1518,6 +2198,30 @@ setlayout(const Arg *arg)
  		drawbar(selmon);
  }
  
@@ -1110,7 +1110,7 @@ index 5f16260..2bced9f 100644
  /* arg > 1.0 will set mfact absolutely */
  void
  setmfact(const Arg *arg)
-@@ -1571,6 +2275,9 @@ setup(void)
+@@ -1573,6 +2277,9 @@ setup(void)
  	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
  	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
  	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
@@ -1120,7 +1120,7 @@ index 5f16260..2bced9f 100644
  	/* init appearance */
  	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
  	for (i = 0; i < LENGTH(colors); i++)
-@@ -1657,6 +2364,331 @@ spawn(const Arg *arg)
+@@ -1659,6 +2366,331 @@ spawn(const Arg *arg)
  	}
  }
  
@@ -1452,7 +1452,7 @@ index 5f16260..2bced9f 100644
  void
  tag(const Arg *arg)
  {
-@@ -1679,9 +2711,15 @@ void
+@@ -1681,9 +2713,15 @@ void
  tile(Monitor *m)
  {
  	unsigned int i, n, h, mw, my, ty;
@@ -1469,7 +1469,7 @@ index 5f16260..2bced9f 100644
  	if (n == 0)
  		return;
  
-@@ -1691,15 +2729,17 @@ tile(Monitor *m)
+@@ -1693,15 +2731,17 @@ tile(Monitor *m)
  		mw = m->ww;
  	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
  		if (i < m->nmaster) {
@@ -1488,7 +1488,7 @@ index 5f16260..2bced9f 100644
  		}
  }
  
-@@ -1772,6 +2812,9 @@ unmanage(Client *c, int destroyed)
+@@ -1774,6 +2814,9 @@ unmanage(Client *c, int destroyed)
  	Monitor *m = c->mon;
  	XWindowChanges wc;
  
@@ -1498,7 +1498,7 @@ index 5f16260..2bced9f 100644
  	detach(c);
  	detachstack(c);
  	if (!destroyed) {
-@@ -1796,12 +2839,24 @@ unmapnotify(XEvent *e)
+@@ -1798,12 +2841,24 @@ unmapnotify(XEvent *e)
  {
  	Client *c;
  	XUnmapEvent *ev = &e->xunmap;
@@ -1528,7 +1528,7 @@ index 5f16260..2bced9f 100644
  	}
  }
  
-@@ -1843,15 +2898,19 @@ updatebarpos(Monitor *m)
+@@ -1845,15 +2900,19 @@ updatebarpos(Monitor *m)
  void
  updateclientlist()
  {
@@ -1554,7 +1554,7 @@ index 5f16260..2bced9f 100644
  }
  
  int
-@@ -1994,9 +3053,11 @@ updatesizehints(Client *c)
+@@ -1997,9 +3056,11 @@ updatesizehints(Client *c)
  void
  updatestatus(void)
  {
@@ -1567,7 +1567,7 @@ index 5f16260..2bced9f 100644
  }
  
  void
-@@ -2064,6 +3125,43 @@ wintoclient(Window w)
+@@ -2067,6 +3128,43 @@ wintoclient(Window w)
  	return NULL;
  }
  
@@ -1611,7 +1611,7 @@ index 5f16260..2bced9f 100644
  Monitor *
  wintomon(Window w)
  {
-@@ -2121,14 +3219,38 @@ void
+@@ -2124,14 +3222,38 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;
@@ -1654,7 +1654,7 @@ index 5f16260..2bced9f 100644
  }
  
  int
-@@ -2149,6 +3271,7 @@ main(int argc, char *argv[])
+@@ -2152,6 +3274,7 @@ main(int argc, char *argv[])
  		die("pledge");
  #endif /* __OpenBSD__ */
  	scan();

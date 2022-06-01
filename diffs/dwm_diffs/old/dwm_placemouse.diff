@@ -22,22 +22,60 @@ index 77bcbc0..0965d94 100644
  		${DESTDIR}${MANPREFIX}/man1/dwm.1
  
  .PHONY: all options clean dist install uninstall
-diff --git a/config.mk b/config.mk
-index b6eb7e0..7084c33 100644
---- a/config.mk
-+++ b/config.mk
-@@ -1,5 +1,5 @@
- # dwm version
--VERSION = 6.3
-+VERSION = 6.2
- 
- # Customize below to fit your system
- 
+diff --git a/dwm.1 b/dwm.1
+index ddc8321..86e73f9 100644
+--- a/dwm.1
++++ b/dwm.1
+@@ -30,6 +30,14 @@ top left corner.  The tags which are applied to one or more windows are
+ indicated with an empty square in the top left corner.
+ .P
+ dwm draws a small border around windows to indicate the focus state.
++.P
++On start, dwm can start additional programs that may be specified in two special
++shell scripts (see the FILES section below), autostart_blocking.sh and
++autostart.sh.  The former is executed first and dwm will wait for its
++termination before starting.  The latter is executed in the background before
++dwm enters its handler loop.
++.P
++Either of these files may be omitted.
+ .SH OPTIONS
+ .TP
+ .B \-v
+@@ -152,6 +160,21 @@ Toggles focused window between floating and tiled state.
+ .TP
+ .B Mod1\-Button3
+ Resize focused window while dragging. Tiled windows will be toggled to the floating state.
++.SH FILES
++The files containing programs to be started along with dwm are searched for in
++the following directories:
++.IP "1. $XDG_DATA_HOME/dwm"
++.IP "2. $HOME/.local/share/dwm"
++.IP "3. $HOME/.dwm"
++.P
++The first existing directory is scanned for any of the autostart files below.
++.TP 15
++autostart.sh
++This file is started as a shell background process before dwm enters its handler
++loop.
++.TP 15
++autostart_blocking.sh
++This file is started before any autostart.sh; dwm waits for its termination.
+ .SH CUSTOMIZATION
+ dwm is customized by creating a custom config.h and (re)compiling the source
+ code. This keeps it fast, secure and simple.
 diff --git a/dwm.c b/dwm.c
-index a96f33c..e6ae0f3 100644
+index 5f16260..0d73a61 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -49,7 +49,9 @@
+@@ -29,6 +29,7 @@
+ #include <string.h>
+ #include <unistd.h>
+ #include <sys/types.h>
++#include <sys/stat.h>
+ #include <sys/wait.h>
+ #include <X11/cursorfont.h>
+ #include <X11/keysym.h>
+@@ -49,7 +50,9 @@
  #define CLEANMASK(mask)         (mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))
  #define INTERSECT(x,y,w,h,m)    (MAX(0, MIN((x)+(w),(m)->wx+(m)->ww) - MAX((x),(m)->wx)) \
                                 * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
@@ -48,7 +86,7 @@ index a96f33c..e6ae0f3 100644
  #define LENGTH(X)               (sizeof X / sizeof X[0])
  #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
  #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
-@@ -58,7 +60,7 @@
+@@ -58,7 +61,7 @@
  #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
  
  /* enums */
@@ -57,7 +95,7 @@ index a96f33c..e6ae0f3 100644
  enum { SchemeNorm, SchemeSel }; /* color schemes */
  enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
         NetWMFullscreen, NetActiveWindow, NetWMWindowType,
-@@ -66,6 +68,8 @@ enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
+@@ -66,6 +69,8 @@ enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
  enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
  enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
         ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
@@ -66,7 +104,7 @@ index a96f33c..e6ae0f3 100644
  
  typedef union {
  	int i;
-@@ -88,13 +92,16 @@ struct Client {
+@@ -88,13 +93,16 @@ struct Client {
  	char name[256];
  	float mina, maxa;
  	int x, y, w, h;
@@ -84,7 +122,7 @@ index a96f33c..e6ae0f3 100644
  	Monitor *mon;
  	Window win;
  };
-@@ -106,6 +113,11 @@ typedef struct {
+@@ -106,6 +114,11 @@ typedef struct {
  	const Arg arg;
  } Key;
  
@@ -96,7 +134,7 @@ index a96f33c..e6ae0f3 100644
  typedef struct {
  	const char *symbol;
  	void (*arrange)(Monitor *);
-@@ -137,10 +149,33 @@ typedef struct {
+@@ -137,10 +150,33 @@ typedef struct {
  	const char *instance;
  	const char *title;
  	unsigned int tags;
@@ -130,9 +168,11 @@ index a96f33c..e6ae0f3 100644
  /* function declarations */
  static void applyrules(Client *c);
  static int applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact);
-@@ -165,6 +200,9 @@ static void drawbar(Monitor *m);
+@@ -163,8 +199,10 @@ static void detachstack(Client *c);
+ static Monitor *dirtomon(int dir);
+ static void drawbar(Monitor *m);
  static void drawbars(void);
- static void enternotify(XEvent *e);
+-static void enternotify(XEvent *e);
  static void expose(XEvent *e);
 +static int fakesignal(void);
 +static int fake_signal(void);
@@ -140,7 +180,7 @@ index a96f33c..e6ae0f3 100644
  static void focus(Client *c);
  static void focusin(XEvent *e);
  static void focusmon(const Arg *arg);
-@@ -183,15 +221,20 @@ static void mappingnotify(XEvent *e);
+@@ -183,20 +221,26 @@ static void mappingnotify(XEvent *e);
  static void maprequest(XEvent *e);
  static void monocle(Monitor *m);
  static void motionnotify(XEvent *e);
@@ -162,7 +202,13 @@ index a96f33c..e6ae0f3 100644
  static void restack(Monitor *m);
  static void run(void);
  static void scan(void);
-@@ -207,11 +250,24 @@ static void seturgent(Client *c, int urg);
+ static int sendevent(Client *c, Atom proto);
+ static void sendmon(Client *c, Monitor *m);
++static void runautostart(void);
+ static void setclientstate(Client *c, long state);
+ static void setfocus(Client *c);
+ static void setfullscreen(Client *c, int fullscreen);
+@@ -207,11 +251,24 @@ static void seturgent(Client *c, int urg);
  static void showhide(Client *c);
  static void sigchld(int unused);
  static void spawn(const Arg *arg);
@@ -187,7 +233,7 @@ index a96f33c..e6ae0f3 100644
  static void toggletag(const Arg *arg);
  static void toggleview(const Arg *arg);
  static void unfocus(Client *c, int setfocus);
-@@ -229,6 +285,7 @@ static void updatewindowtype(Client *c);
+@@ -229,6 +286,7 @@ static void updatewindowtype(Client *c);
  static void updatewmhints(Client *c);
  static void view(const Arg *arg);
  static Client *wintoclient(Window w);
@@ -195,15 +241,28 @@ index a96f33c..e6ae0f3 100644
  static Monitor *wintomon(Window w);
  static int xerror(Display *dpy, XErrorEvent *ee);
  static int xerrordummy(Display *dpy, XErrorEvent *ee);
-@@ -236,6 +293,7 @@ static int xerrorstart(Display *dpy, XErrorEvent *ee);
+@@ -236,7 +294,12 @@ static int xerrorstart(Display *dpy, XErrorEvent *ee);
  static void zoom(const Arg *arg);
  
  /* variables */
 +static Client *prevzoom = NULL;
++static const char autostartblocksh[] = "autostart_blocking.sh";
++static const char autostartsh[] = "autostart.sh";
  static const char broken[] = "broken";
++static const char dwmdir[] = "dwm";
++static const char localshare[] = ".local/share";
  static char stext[256];
  static int screen;
-@@ -267,6 +325,7 @@ static Clr **scheme;
+ static int sw, sh;           /* X display screen geometry width, height */
+@@ -250,7 +313,6 @@ static void (*handler[LASTEvent]) (XEvent *) = {
+ 	[ConfigureRequest] = configurerequest,
+ 	[ConfigureNotify] = configurenotify,
+ 	[DestroyNotify] = destroynotify,
+-	[EnterNotify] = enternotify,
+ 	[Expose] = expose,
+ 	[FocusIn] = focusin,
+ 	[KeyPress] = keypress,
+@@ -267,6 +329,7 @@ static Clr **scheme;
  static Display *dpy;
  static Drw *drw;
  static Monitor *mons, *selmon;
@@ -211,7 +270,7 @@ index a96f33c..e6ae0f3 100644
  static Window root, wmcheckwin;
  
  /* configuration, allows nested code to access above variables */
-@@ -286,6 +345,7 @@ applyrules(Client *c)
+@@ -286,6 +349,7 @@ applyrules(Client *c)
  	XClassHint ch = { NULL, NULL };
  
  	/* rule matching */
@@ -219,7 +278,7 @@ index a96f33c..e6ae0f3 100644
  	c->isfloating = 0;
  	c->tags = 0;
  	XGetClassHint(dpy, c->win, &ch);
-@@ -298,6 +358,7 @@ applyrules(Client *c)
+@@ -298,6 +362,7 @@ applyrules(Client *c)
  		&& (!r->class || strstr(class, r->class))
  		&& (!r->instance || strstr(instance, r->instance)))
  		{
@@ -227,7 +286,7 @@ index a96f33c..e6ae0f3 100644
  			c->isfloating = r->isfloating;
  			c->tags |= r->tags;
  			for (m = mons; m && m->num != r->monitor; m = m->next);
-@@ -584,10 +645,12 @@ configurerequest(XEvent *e)
+@@ -585,10 +650,12 @@ configurerequest(XEvent *e)
  	XConfigureRequestEvent *ev = &e->xconfigurerequest;
  	XWindowChanges wc;
  
@@ -243,7 +302,7 @@ index a96f33c..e6ae0f3 100644
  			m = c->mon;
  			if (ev->value_mask & CWX) {
  				c->oldx = c->x;
-@@ -615,7 +678,13 @@ configurerequest(XEvent *e)
+@@ -616,7 +683,13 @@ configurerequest(XEvent *e)
  				XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h);
  		} else
  			configure(c);
@@ -258,7 +317,7 @@ index a96f33c..e6ae0f3 100644
  		wc.x = ev->x;
  		wc.y = ev->y;
  		wc.width = ev->width;
-@@ -624,6 +693,7 @@ configurerequest(XEvent *e)
+@@ -625,6 +698,7 @@ configurerequest(XEvent *e)
  		wc.sibling = ev->above;
  		wc.stack_mode = ev->detail;
  		XConfigureWindow(dpy, ev->window, ev->value_mask, &wc);
@@ -266,7 +325,7 @@ index a96f33c..e6ae0f3 100644
  	}
  	XSync(dpy, False);
  }
-@@ -648,11 +718,30 @@ createmon(void)
+@@ -649,11 +723,30 @@ createmon(void)
  void
  destroynotify(XEvent *e)
  {
@@ -299,17 +358,16 @@ index a96f33c..e6ae0f3 100644
  }
  
  void
-@@ -702,9 +791,6 @@ drawbar(Monitor *m)
- 	unsigned int i, occ = 0, urg = 0;
- 	Client *c;
+@@ -707,7 +800,7 @@ drawbar(Monitor *m)
+ 		return;
  
--	if (!m->showbar)
--		return;
--
  	/* draw status first so it can be overdrawn by tags later */
- 	if (m == selmon) { /* status is only drawn on selected monitor */
+-	if (m == selmon) { /* status is only drawn on selected monitor */
++	if (m == selmon || 1) { /* status is only drawn on selected monitor */
  		drw_setscheme(drw, scheme[SchemeNorm]);
-@@ -732,6 +818,12 @@ drawbar(Monitor *m)
+ 		tw = TEXTW(stext) - lrpad + 2; /* 2px right padding */
+ 		drw_text(drw, m->ww - tw, 0, tw, bh, 0, stext, 0);
+@@ -733,6 +826,12 @@ drawbar(Monitor *m)
  	drw_setscheme(drw, scheme[SchemeNorm]);
  	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
  
@@ -322,7 +380,33 @@ index a96f33c..e6ae0f3 100644
  	if ((w = m->ww - tw - x) > bh) {
  		if (m->sel) {
  			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
-@@ -784,14 +876,103 @@ expose(XEvent *e)
+@@ -756,25 +855,6 @@ drawbars(void)
+ 		drawbar(m);
+ }
+ 
+-void
+-enternotify(XEvent *e)
+-{
+-	Client *c;
+-	Monitor *m;
+-	XCrossingEvent *ev = &e->xcrossing;
+-
+-	if ((ev->mode != NotifyNormal || ev->detail == NotifyInferior) && ev->window != root)
+-		return;
+-	c = wintoclient(ev->window);
+-	m = c ? c->mon : wintomon(ev->window);
+-	if (m != selmon) {
+-		unfocus(selmon->sel, 1);
+-		selmon = m;
+-	} else if (!c || c == selmon->sel)
+-		return;
+-	focus(c);
+-}
+-
+ void
+ expose(XEvent *e)
+ {
+@@ -785,14 +865,103 @@ expose(XEvent *e)
  		drawbar(m);
  }
  
@@ -426,7 +510,7 @@ index a96f33c..e6ae0f3 100644
  		if (c->mon != selmon)
  			selmon = c->mon;
  		if (c->isurgent)
-@@ -841,16 +1022,16 @@ focusstack(const Arg *arg)
+@@ -842,16 +1011,16 @@ focusstack(const Arg *arg)
  	if (!selmon->sel || (selmon->sel->isfullscreen && lockfullscreen))
  		return;
  	if (arg->i > 0) {
@@ -447,7 +531,7 @@ index a96f33c..e6ae0f3 100644
  					c = i;
  	}
  	if (c) {
-@@ -1002,6 +1183,49 @@ keypress(XEvent *e)
+@@ -1003,6 +1172,49 @@ keypress(XEvent *e)
  			keys[i].func(&(keys[i].arg));
  }
  
@@ -497,7 +581,7 @@ index a96f33c..e6ae0f3 100644
  void
  killclient(const Arg *arg)
  {
-@@ -1060,6 +1284,14 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1061,6 +1273,14 @@ manage(Window w, XWindowAttributes *wa)
  	updatewindowtype(c);
  	updatesizehints(c);
  	updatewmhints(c);
@@ -512,7 +596,7 @@ index a96f33c..e6ae0f3 100644
  	XSelectInput(dpy, w, EnterWindowMask|FocusChangeMask|PropertyChangeMask|StructureNotifyMask);
  	grabbuttons(c, 0);
  	if (!c->isfloating)
-@@ -1093,15 +1325,37 @@ mappingnotify(XEvent *e)
+@@ -1094,15 +1314,37 @@ mappingnotify(XEvent *e)
  void
  maprequest(XEvent *e)
  {
@@ -552,7 +636,7 @@ index a96f33c..e6ae0f3 100644
  }
  
  void
-@@ -1136,6 +1390,14 @@ motionnotify(XEvent *e)
+@@ -1137,6 +1379,14 @@ motionnotify(XEvent *e)
  	mon = m;
  }
  
@@ -567,7 +651,7 @@ index a96f33c..e6ae0f3 100644
  void
  movemouse(const Arg *arg)
  {
-@@ -1196,20 +1458,230 @@ movemouse(const Arg *arg)
+@@ -1197,20 +1447,230 @@ movemouse(const Arg *arg)
  	}
  }
  
@@ -807,7 +891,7 @@ index a96f33c..e6ae0f3 100644
  }
  
  void
-@@ -1217,11 +1689,15 @@ propertynotify(XEvent *e)
+@@ -1218,11 +1678,15 @@ propertynotify(XEvent *e)
  {
  	Client *c;
  	Window trans;
@@ -826,7 +910,7 @@ index a96f33c..e6ae0f3 100644
  		return; /* ignore */
  	else if ((c = wintoclient(ev->window))) {
  		switch(ev->atom) {
-@@ -1243,6 +1719,9 @@ propertynotify(XEvent *e)
+@@ -1244,6 +1708,9 @@ propertynotify(XEvent *e)
  			updatetitle(c);
  			if (c == c->mon->sel)
  				drawbar(c->mon);
@@ -836,7 +920,7 @@ index a96f33c..e6ae0f3 100644
  		}
  		if (ev->atom == netatom[NetWMWindowType])
  			updatewindowtype(c);
-@@ -1255,6 +1734,21 @@ quit(const Arg *arg)
+@@ -1256,6 +1723,21 @@ quit(const Arg *arg)
  	running = 0;
  }
  
@@ -858,7 +942,7 @@ index a96f33c..e6ae0f3 100644
  Monitor *
  recttomon(int x, int y, int w, int h)
  {
-@@ -1285,6 +1779,10 @@ resizeclient(Client *c, int x, int y, int w, int h)
+@@ -1286,6 +1768,10 @@ resizeclient(Client *c, int x, int y, int w, int h)
  	c->oldy = c->y; c->y = wc.y = y;
  	c->oldw = c->w; c->w = wc.width = w;
  	c->oldh = c->h; c->h = wc.height = h;
@@ -869,7 +953,7 @@ index a96f33c..e6ae0f3 100644
  	wc.border_width = c->bw;
  	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
  	configure(c);
-@@ -1360,6 +1858,17 @@ restack(Monitor *m)
+@@ -1361,6 +1847,17 @@ restack(Monitor *m)
  		return;
  	if (m->sel->isfloating || !m->lt[m->sellt]->arrange)
  		XRaiseWindow(dpy, m->sel->win);
@@ -887,7 +971,91 @@ index a96f33c..e6ae0f3 100644
  	if (m->lt[m->sellt]->arrange) {
  		wc.stack_mode = Below;
  		wc.sibling = m->barwin;
-@@ -1470,6 +1979,7 @@ setfocus(Client *c)
+@@ -1385,6 +1882,83 @@ run(void)
+ 			handler[ev.type](&ev); /* call handler */
+ }
+ 
++void
++runautostart(void)
++{
++	char *pathpfx;
++	char *path;
++	char *xdgdatahome;
++	char *home;
++	struct stat sb;
++
++	if ((home = getenv("HOME")) == NULL)
++		/* this is almost impossible */
++		return;
++
++	/* if $XDG_DATA_HOME is set and not empty, use $XDG_DATA_HOME/dwm,
++	 * otherwise use ~/.local/share/dwm as autostart script directory
++	 */
++	xdgdatahome = getenv("XDG_DATA_HOME");
++	if (xdgdatahome != NULL && *xdgdatahome != '\0') {
++		/* space for path segments, separators and nul */
++		pathpfx = ecalloc(1, strlen(xdgdatahome) + strlen(dwmdir) + 2);
++
++		if (sprintf(pathpfx, "%s/%s", xdgdatahome, dwmdir) <= 0) {
++			free(pathpfx);
++			return;
++		}
++	} else {
++		/* space for path segments, separators and nul */
++		pathpfx = ecalloc(1, strlen(home) + strlen(localshare)
++		                     + strlen(dwmdir) + 3);
++
++		if (sprintf(pathpfx, "%s/%s/%s", home, localshare, dwmdir) < 0) {
++			free(pathpfx);
++			return;
++		}
++	}
++
++	/* check if the autostart script directory exists */
++	if (! (stat(pathpfx, &sb) == 0 && S_ISDIR(sb.st_mode))) {
++		/* the XDG conformant path does not exist or is no directory
++		 * so we try ~/.dwm instead
++		 */
++		char *pathpfx_new = realloc(pathpfx, strlen(home) + strlen(dwmdir) + 3);
++		if(pathpfx_new == NULL) {
++			free(pathpfx);
++			return;
++		}
++   pathpfx = pathpfx_new;
++
++		if (sprintf(pathpfx, "%s/.%s", home, dwmdir) <= 0) {
++			free(pathpfx);
++			return;
++		}
++	}
++
++	/* try the blocking script first */
++	path = ecalloc(1, strlen(pathpfx) + strlen(autostartblocksh) + 2);
++	if (sprintf(path, "%s/%s", pathpfx, autostartblocksh) <= 0) {
++		free(path);
++		free(pathpfx);
++	}
++
++	if (access(path, X_OK) == 0)
++		system(path);
++
++	/* now the non-blocking script */
++	if (sprintf(path, "%s/%s", pathpfx, autostartsh) <= 0) {
++		free(path);
++		free(pathpfx);
++	}
++
++	if (access(path, X_OK) == 0)
++		system(strcat(path, " &"));
++
++	free(pathpfx);
++	free(path);
++}
++
+ void
+ scan(void)
+ {
+@@ -1471,6 +2045,7 @@ setfocus(Client *c)
  			XA_WINDOW, 32, PropModeReplace,
  			(unsigned char *) &(c->win), 1);
  	}
@@ -895,7 +1063,7 @@ index a96f33c..e6ae0f3 100644
  	sendevent(c, wmatom[WMTakeFocus]);
  }
  
-@@ -1570,6 +2080,7 @@ setup(void)
+@@ -1571,6 +2146,7 @@ setup(void)
  	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
  	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
  	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
@@ -903,7 +1071,7 @@ index a96f33c..e6ae0f3 100644
  	/* init appearance */
  	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
  	for (i = 0; i < LENGTH(colors); i++)
-@@ -1656,6 +2167,331 @@ spawn(const Arg *arg)
+@@ -1657,6 +2233,331 @@ spawn(const Arg *arg)
  	}
  }
  
@@ -1235,7 +1403,7 @@ index a96f33c..e6ae0f3 100644
  void
  tag(const Arg *arg)
  {
-@@ -1720,11 +2556,76 @@ togglefloating(const Arg *arg)
+@@ -1721,11 +2622,76 @@ togglefloating(const Arg *arg)
  		return;
  	selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
  	if (selmon->sel->isfloating)
@@ -1254,9 +1422,9 @@ index a96f33c..e6ae0f3 100644
 +	}
 +    resetcanfocusfloating();
 +
- 	arrange(selmon);
- }
- 
++	arrange(selmon);
++}
++
 +void
 +resetcanfocusfloating()
 +{
@@ -1287,9 +1455,9 @@ index a96f33c..e6ae0f3 100644
 +	if (!selmon->sel)
 +		return;
 +	selmon->sel->issticky = !selmon->sel->issticky;
-+	arrange(selmon);
-+}
-+
+ 	arrange(selmon);
+ }
+ 
 +void
 +togglecanfocusfloating(const Arg *arg)
 +{
@@ -1314,7 +1482,7 @@ index a96f33c..e6ae0f3 100644
  void
  toggletag(const Arg *arg)
  {
-@@ -1757,6 +2658,7 @@ unfocus(Client *c, int setfocus)
+@@ -1758,6 +2724,7 @@ unfocus(Client *c, int setfocus)
  {
  	if (!c)
  		return;
@@ -1322,7 +1490,7 @@ index a96f33c..e6ae0f3 100644
  	grabbuttons(c, 0);
  	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
  	if (setfocus) {
-@@ -1771,6 +2673,9 @@ unmanage(Client *c, int destroyed)
+@@ -1772,6 +2739,9 @@ unmanage(Client *c, int destroyed)
  	Monitor *m = c->mon;
  	XWindowChanges wc;
  
@@ -1332,7 +1500,7 @@ index a96f33c..e6ae0f3 100644
  	detach(c);
  	detachstack(c);
  	if (!destroyed) {
-@@ -1795,12 +2700,24 @@ unmapnotify(XEvent *e)
+@@ -1796,12 +2766,24 @@ unmapnotify(XEvent *e)
  {
  	Client *c;
  	XUnmapEvent *ev = &e->xunmap;
@@ -1362,7 +1530,7 @@ index a96f33c..e6ae0f3 100644
  	}
  }
  
-@@ -1842,15 +2759,19 @@ updatebarpos(Monitor *m)
+@@ -1843,15 +2825,19 @@ updatebarpos(Monitor *m)
  void
  updateclientlist()
  {
@@ -1388,7 +1556,20 @@ index a96f33c..e6ae0f3 100644
  }
  
  int
-@@ -2015,8 +2936,10 @@ updatewindowtype(Client *c)
+@@ -1994,9 +2980,11 @@ updatesizehints(Client *c)
+ void
+ updatestatus(void)
+ {
++	Monitor* m;
+ 	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
+ 		strcpy(stext, "dwm-"VERSION);
+-	drawbar(selmon);
++	for(m = mons; m; m = m->next)
++		drawbar(m);
+ }
+ 
+ void
+@@ -2016,8 +3004,10 @@ updatewindowtype(Client *c)
  
  	if (state == netatom[NetWMFullscreen])
  		setfullscreen(c, 1);
@@ -1400,7 +1581,7 @@ index a96f33c..e6ae0f3 100644
  }
  
  void
-@@ -2063,6 +2986,43 @@ wintoclient(Window w)
+@@ -2064,6 +3054,43 @@ wintoclient(Window w)
  	return NULL;
  }
  
@@ -1444,7 +1625,7 @@ index a96f33c..e6ae0f3 100644
  Monitor *
  wintomon(Window w)
  {
-@@ -2120,14 +3080,38 @@ void
+@@ -2121,14 +3148,38 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;
@@ -1487,9 +1668,17 @@ index a96f33c..e6ae0f3 100644
  }
  
  int
+@@ -2149,6 +3200,7 @@ main(int argc, char *argv[])
+ 		die("pledge");
+ #endif /* __OpenBSD__ */
+ 	scan();
++	runautostart();
+ 	run();
+ 	cleanup();
+ 	XCloseDisplay(dpy);
 diff --git a/dwmc b/dwmc
 new file mode 100644
-index 0000000..5ff8dbc
+index 0000000..f020816
 --- /dev/null
 +++ b/dwmc
 @@ -0,0 +1,40 @@
@@ -1502,7 +1691,7 @@ index 0000000..5ff8dbc
 +case $# in
 +1)
 +	case $1 in
-+	setlayout | view | viewall | togglebar | togglefloating | zoom | killclient | quit)
++	setlayout | view | viewall | togglebar | togglefloating | togglecanfocusfloating | togglesticky | zoom | killclient | quit)
 +		signal $1
 +		;;
 +	*)
@@ -1513,7 +1702,7 @@ index 0000000..5ff8dbc
 +	;;
 +2)
 +	case $1 in
-+	view)
++	view | movethrow)
 +		signal $1 ui $2
 +		;;
 +	viewex | toggleviewex | tagex | toggletagex | setlayoutex | focusstack | incnmaster | focusmon | tagmon)

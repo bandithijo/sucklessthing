@@ -1,8 +1,8 @@
 diff --git a/dwm.c b/dwm.c
-index 5f16260..597cf6c 100644
+index 5646a5c..17e4bc0 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -431,7 +431,7 @@ buttonpress(XEvent *e)
+@@ -433,7 +433,7 @@ buttonpress(XEvent *e)
  		focus(NULL);
  	}
  	if (ev->window == selmon->barwin) {
@@ -11,7 +11,7 @@ index 5f16260..597cf6c 100644
  		do
  			x += TEXTW(tags[i]);
  		while (ev->x >= x && ++i < LENGTH(tags));
-@@ -719,6 +719,12 @@ drawbar(Monitor *m)
+@@ -721,6 +721,12 @@ drawbar(Monitor *m)
  			urg |= c->tags;
  	}
  	x = 0;

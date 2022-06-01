@@ -1,29 +1,8 @@
-diff --git a/config.mk b/config.mk
-index b6eb7e0..7084c33 100644
---- a/config.mk
-+++ b/config.mk
-@@ -1,5 +1,5 @@
- # dwm version
--VERSION = 6.3
-+VERSION = 6.2
- 
- # Customize below to fit your system
- 
 diff --git a/dwm.c b/dwm.c
-index a96f33c..239b0e2 100644
+index 5f16260..5e01c47 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -702,9 +702,6 @@ drawbar(Monitor *m)
- 	unsigned int i, occ = 0, urg = 0;
- 	Client *c;
- 
--	if (!m->showbar)
--		return;
--
- 	/* draw status first so it can be overdrawn by tags later */
- 	if (m == selmon) { /* status is only drawn on selected monitor */
- 		drw_setscheme(drw, scheme[SchemeNorm]);
-@@ -1669,9 +1666,17 @@ tag(const Arg *arg)
+@@ -1670,9 +1670,17 @@ tag(const Arg *arg)
  void
  tagmon(const Arg *arg)
  {

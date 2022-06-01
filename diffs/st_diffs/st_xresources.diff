@@ -1,3 +1,15 @@
+diff --git a/config.mk b/config.mk
+index ddf278a..4c4c5d5 100644
+--- a/config.mk
++++ b/config.mk
+@@ -30,7 +30,6 @@ STLDFLAGS = $(LIBS) $(LDFLAGS)
+ #LIBS = -L$(X11LIB) -lm -lX11 -lutil -lXft \
+ #       `$(PKG_CONFIG) --libs fontconfig` \
+ #       `$(PKG_CONFIG) --libs freetype2`
+-#MANPREFIX = ${PREFIX}/man
+ 
+ # compiler and linker
+ # CC = c99
 diff --git a/x.c b/x.c
 index 2a3bd38..dcca8e7 100644
 --- a/x.c

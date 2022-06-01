@@ -1,5 +1,5 @@
 diff --git a/drw.c b/drw.c
-index 4cdbcbe..d81c004 100644
+index ced7d37..e7bebba 100644
 --- a/drw.c
 +++ b/drw.c
 @@ -16,6 +16,9 @@ static const unsigned char utfmask[UTF_SIZ + 1] = {0xC0, 0x80, 0xE0, 0xF0, 0xF8}

@@ -1,3 +1,30 @@
+diff --git a/FAQ b/FAQ
+index 969b195..0f9609d 100644
+--- a/FAQ
++++ b/FAQ
+@@ -29,8 +29,8 @@ you can manually run `tic -sx st.info`.
+ 
+ ## I would like to have utmp and/or scroll functionality by default
+ 
+-You can add the absolute path of both programs in your config.h file. You only
+-have to modify the value of utmp and scroll variables.
++You can add the absolute patch of both programs in your config.h
++file. You only have to modify the value of utmp and scroll variables.
+ 
+ 
+ ## Why doesn't the Del key work in some programs?
+diff --git a/LICENSE b/LICENSE
+index 3cbf420..d80eb47 100644
+--- a/LICENSE
++++ b/LICENSE
+@@ -1,6 +1,6 @@
+ MIT/X Consortium License
+ 
+-© 2014-2022 Hiltjo Posthuma <hiltjo at codemadness dot org>
++© 2014-2020 Hiltjo Posthuma <hiltjo at codemadness dot org>
+ © 2018 Devin J. Pohly <djpohly at gmail dot com>
+ © 2014-2017 Quentin Rameau <quinq at fifth dot space>
+ © 2009-2012 Aurélien APTEL <aurelien dot aptel at gmail dot com>
 diff --git a/Makefile b/Makefile
 index 470ac86..0bc8774 100644
 --- a/Makefile
@@ -11,6 +38,51 @@ index 470ac86..0bc8774 100644
  OBJ = $(SRC:.c=.o)
  
  all: options st
+diff --git a/config.def.h b/config.def.h
+index 91ab8ca..6f05dce 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -120,8 +120,6 @@ static const char *colorname[] = {
+ 	/* more colors can be added after 255 to use with DefaultXX */
+ 	"#cccccc",
+ 	"#555555",
+-	"gray90", /* default foreground colour */
+-	"black", /* default background colour */
+ };
+ 
+ 
+@@ -129,9 +127,9 @@ static const char *colorname[] = {
+  * Default colors (colorname index)
+  * foreground, background, cursor, reverse cursor
+  */
+-unsigned int defaultfg = 258;
+-unsigned int defaultbg = 259;
+-unsigned int defaultcs = 256;
++unsigned int defaultfg = 7;
++unsigned int defaultbg = 0;
++static unsigned int defaultcs = 256;
+ static unsigned int defaultrcs = 257;
+ 
+ /*
+diff --git a/config.mk b/config.mk
+index ddf278a..c070a4a 100644
+--- a/config.mk
++++ b/config.mk
+@@ -1,5 +1,5 @@
+ # st version
+-VERSION = 0.8.5
++VERSION = 0.8.4
+ 
+ # Customize below to fit your system
+ 
+@@ -30,7 +30,6 @@ STLDFLAGS = $(LIBS) $(LDFLAGS)
+ #LIBS = -L$(X11LIB) -lm -lX11 -lutil -lXft \
+ #       `$(PKG_CONFIG) --libs fontconfig` \
+ #       `$(PKG_CONFIG) --libs freetype2`
+-#MANPREFIX = ${PREFIX}/man
+ 
+ # compiler and linker
+ # CC = c99
 diff --git a/sixel.c b/sixel.c
 new file mode 100644
 index 0000000..97b9c4d
@@ -826,7 +898,7 @@ index 0000000..6176589
 + */
 +int hls_to_rgb(int hue, int lum, int sat);
 diff --git a/st.c b/st.c
-index a9338e1..0037c19 100644
+index 6ba467d..0037c19 100644
 --- a/st.c
 +++ b/st.c
 @@ -17,6 +17,7 @@
@@ -867,15 +939,16 @@ index a9338e1..0037c19 100644
  } Term;
  
  /* CSI Escape sequence structs */
-@@ -161,6 +165,7 @@ static void csidump(void);
+@@ -161,7 +165,7 @@ static void csidump(void);
  static void csihandle(void);
  static void csiparse(void);
  static void csireset(void);
+-static void osc_color_response(int, int, int);
 +static void dcshandle(void);
  static int eschandle(uchar);
  static void strdump(void);
  static void strhandle(void);
-@@ -186,18 +191,18 @@ static void tputc(Rune);
+@@ -187,18 +191,18 @@ static void tputc(Rune);
  static void treset(void);
  static void tscrollup(int, int);
  static void tscrolldown(int, int);
@@ -898,7 +971,7 @@ index a9338e1..0037c19 100644
  static void tdeftran(char);
  static void tstrsequence(uchar);
  
-@@ -226,10 +231,10 @@ static int iofd = 1;
+@@ -227,10 +231,10 @@ static int iofd = 1;
  static int cmdfd;
  static pid_t pid;
  
@@ -913,7 +986,7 @@ index a9338e1..0037c19 100644
  
  ssize_t
  xwrite(int fd, const char *s, size_t len)
-@@ -269,14 +274,12 @@ xrealloc(void *p, size_t len)
+@@ -270,14 +274,12 @@ xrealloc(void *p, size_t len)
  }
  
  char *
@@ -931,7 +1004,48 @@ index a9338e1..0037c19 100644
  }
  
  size_t
-@@ -520,7 +523,7 @@ selsnap(int *x, int *y, int direction)
+@@ -350,10 +352,25 @@ utf8validate(Rune *u, size_t i)
+ 	return i;
+ }
+ 
++static const char base64_digits[] = {
++	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 62, 0, 0, 0,
++	63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 0, 0, 0, -1, 0, 0, 0, 0, 1,
++	2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
++	22, 23, 24, 25, 0, 0, 0, 0, 0, 0, 26, 27, 28, 29, 30, 31, 32, 33, 34,
++	35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 0,
++	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
++};
++
+ char
+ base64dec_getc(const char **src)
+ {
+-	while (**src && !isprint((unsigned char)**src))
++	while (**src && !isprint(**src))
+ 		(*src)++;
+ 	return **src ? *((*src)++) : '=';  /* emulate padding if string ends */
+ }
+@@ -363,13 +380,6 @@ base64dec(const char *src)
+ {
+ 	size_t in_len = strlen(src);
+ 	char *result, *dst;
+-	static const char base64_digits[256] = {
+-		[43] = 62, 0, 0, 0, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,
+-		0, 0, 0, -1, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+-		13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 0, 0, 0, 0,
+-		0, 0, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+-		40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51
+-	};
+ 
+ 	if (in_len % 4)
+ 		in_len += 4 - (in_len % 4);
+@@ -513,7 +523,7 @@ selsnap(int *x, int *y, int direction)
  {
  	int newx, newy, xt, yt;
  	int delim, prevdelim;
@@ -940,7 +1054,7 @@ index a9338e1..0037c19 100644
  
  	switch (sel.snap) {
  	case SNAP_WORD:
-@@ -593,7 +596,7 @@ getsel(void)
+@@ -586,7 +596,7 @@ getsel(void)
  {
  	char *str, *ptr;
  	int y, bufsize, lastx, linelen;
@@ -949,7 +1063,7 @@ index a9338e1..0037c19 100644
  
  	if (sel.ob.x == -1)
  		return NULL;
-@@ -760,7 +763,7 @@ stty(char **args)
+@@ -753,7 +763,7 @@ stty(char **args)
  }
  
  int
@@ -958,7 +1072,7 @@ index a9338e1..0037c19 100644
  {
  	int m, s;
  
-@@ -793,15 +796,14 @@ ttynew(const char *line, char *cmd, const char *out, char **args)
+@@ -786,15 +796,14 @@ ttynew(const char *line, char *cmd, const char *out, char **args)
  		break;
  	case 0:
  		close(iofd);
@@ -976,7 +1090,7 @@ index a9338e1..0037c19 100644
  #ifdef __OpenBSD__
  		if (pledge("stdio getpw proc exec", NULL) == -1)
  			die("pledge\n");
-@@ -1018,6 +1020,7 @@ void
+@@ -1011,6 +1020,7 @@ void
  treset(void)
  {
  	uint i;
@@ -984,7 +1098,7 @@ index a9338e1..0037c19 100644
  
  	term.c = (TCursor){{
  		.mode = ATTR_NULL,
-@@ -1040,6 +1043,9 @@ treset(void)
+@@ -1033,6 +1043,9 @@ treset(void)
  		tclearregion(0, 0, term.col-1, term.row-1);
  		tswapscreen();
  	}
@@ -994,7 +1108,7 @@ index a9338e1..0037c19 100644
  }
  
  void
-@@ -1054,9 +1060,12 @@ void
+@@ -1047,9 +1060,12 @@ void
  tswapscreen(void)
  {
  	Line *tmp = term.line;
@@ -1007,7 +1121,7 @@ index a9338e1..0037c19 100644
  	term.mode ^= MODE_ALTSCREEN;
  	tfulldirt();
  }
-@@ -1077,6 +1086,8 @@ tscrolldown(int orig, int n)
+@@ -1070,6 +1086,8 @@ tscrolldown(int orig, int n)
  		term.line[i] = term.line[i-n];
  		term.line[i-n] = temp;
  	}
@@ -1016,7 +1130,7 @@ index a9338e1..0037c19 100644
  
  	selscroll(orig, n);
  }
-@@ -1086,6 +1097,7 @@ tscrollup(int orig, int n)
+@@ -1079,6 +1097,7 @@ tscrollup(int orig, int n)
  {
  	int i;
  	Line temp;
@@ -1024,7 +1138,7 @@ index a9338e1..0037c19 100644
  
  	LIMIT(n, 0, term.bot-orig+1);
  
-@@ -1098,6 +1110,9 @@ tscrollup(int orig, int n)
+@@ -1091,6 +1110,9 @@ tscrollup(int orig, int n)
  		term.line[i+n] = temp;
  	}
  
@@ -1034,7 +1148,7 @@ index a9338e1..0037c19 100644
  	selscroll(orig, -n);
  }
  
-@@ -1189,9 +1204,9 @@ tmoveto(int x, int y)
+@@ -1182,9 +1204,9 @@ tmoveto(int x, int y)
  }
  
  void
@@ -1046,7 +1160,7 @@ index a9338e1..0037c19 100644
  		"↑", "↓", "→", "←", "█", "▚", "☃", /* A - G */
  		0, 0, 0, 0, 0, 0, 0, 0, /* H - O */
  		0, 0, 0, 0, 0, 0, 0, 0, /* P - W */
-@@ -1303,7 +1318,7 @@ tdeleteline(int n)
+@@ -1296,7 +1318,7 @@ tdeleteline(int n)
  }
  
  int32_t
@@ -1055,7 +1169,7 @@ index a9338e1..0037c19 100644
  {
  	int32_t idx = -1;
  	uint r, g, b;
-@@ -1353,7 +1368,7 @@ tdefcolor(const int *attr, int *npar, int l)
+@@ -1346,7 +1368,7 @@ tdefcolor(const int *attr, int *npar, int l)
  }
  
  void
@@ -1064,7 +1178,7 @@ index a9338e1..0037c19 100644
  {
  	int i;
  	int32_t idx;
-@@ -1471,9 +1486,9 @@ tsetscroll(int t, int b)
+@@ -1464,9 +1486,9 @@ tsetscroll(int t, int b)
  }
  
  void
@@ -1076,7 +1190,7 @@ index a9338e1..0037c19 100644
  
  	for (lim = args + narg; args < lim; ++args) {
  		if (priv) {
-@@ -1600,6 +1615,23 @@ tsetmode(int priv, int set, const int *args, int narg)
+@@ -1593,6 +1615,23 @@ tsetmode(int priv, int set, const int *args, int narg)
  	}
  }
  
@@ -1100,18 +1214,98 @@ index a9338e1..0037c19 100644
  void
  csihandle(void)
  {
-@@ -1845,8 +1877,10 @@ csireset(void)
+@@ -1835,41 +1874,13 @@ csireset(void)
+ 	memset(&csiescseq, 0, sizeof(csiescseq));
+ }
+ 
+-void
+-osc_color_response(int num, int index, int is_osc4)
+-{
+-	int n;
+-	char buf[32];
+-	unsigned char r, g, b;
+-
+-	if (xgetcolor(is_osc4 ? num : index, &r, &g, &b)) {
+-		fprintf(stderr, "erresc: failed to fetch %s color %d\n",
+-		        is_osc4 ? "osc4" : "osc",
+-		        is_osc4 ? num : index);
+-		return;
+-	}
+-
+-	n = snprintf(buf, sizeof buf, "\033]%s%d;rgb:%02x%02x/%02x%02x/%02x%02x\007",
+-	             is_osc4 ? "4;" : "", num, r, r, g, g, b, b);
+-	if (n < 0 || n >= sizeof(buf)) {
+-		fprintf(stderr, "error: %s while printing %s response\n",
+-		        n < 0 ? "snprintf failed" : "truncation occurred",
+-		        is_osc4 ? "osc4" : "osc");
+-	} else {
+-		ttywrite(buf, n, 1);
+-	}
+-}
+-
  void
  strhandle(void)
  {
 +	TermWindow win;
  	char *p = NULL, *dec;
  	int j, narg, par;
+-	const struct { int idx; char *str; } osc_table[] = {
+-		{ defaultfg, "foreground" },
+-		{ defaultbg, "background" },
+-		{ defaultcs, "cursor" }
+-	};
 +	int i;
  
  	term.esc &= ~(ESC_STR_END|ESC_STR);
  	strparse();
-@@ -1906,6 +1940,19 @@ strhandle(void)
+@@ -1903,35 +1914,14 @@ strhandle(void)
+ 				}
+ 			}
+ 			return;
+-		case 10:
+-		case 11:
+-		case 12:
+-			if (narg < 2)
+-				break;
+-			p = strescseq.args[1];
+-			if ((j = par - 10) < 0 || j >= LEN(osc_table))
+-				break; /* shouldn't be possible */
+-
+-			if (!strcmp(p, "?")) {
+-				osc_color_response(par, osc_table[j].idx, 0);
+-			} else if (xsetcolorname(osc_table[j].idx, p)) {
+-				fprintf(stderr, "erresc: invalid %s color: %s\n",
+-				        osc_table[j].str, p);
+-			} else {
+-				tfulldirt();
+-			}
+-			return;
+ 		case 4: /* color set */
+ 			if (narg < 3)
+ 				break;
+ 			p = strescseq.args[2];
+ 			/* FALLTHROUGH */
+-		case 104: /* color reset */
++		case 104: /* color reset, here p = NULL */
+ 			j = (narg > 1) ? atoi(strescseq.args[1]) : -1;
+-
+-			if (p && !strcmp(p, "?")) {
+-				osc_color_response(j, 0, 1);
+-			} else if (xsetcolorname(j, p)) {
++			if (xsetcolorname(j, p)) {
+ 				if (par == 104 && narg <= 1)
+ 					return; /* color reset without parameter */
+ 				fprintf(stderr, "erresc: invalid color j=%d, p=%s\n",
+@@ -1941,7 +1931,7 @@ strhandle(void)
+ 				 * TODO if defaultbg color is changed, borders
+ 				 * are dirty
+ 				 */
+-				tfulldirt();
++				redraw();
+ 			}
+ 			return;
+ 		}
+@@ -1950,6 +1940,19 @@ strhandle(void)
  		xsettitle(strescseq.args[0]);
  		return;
  	case 'P': /* DCS -- Device Control String */
@@ -1131,7 +1325,7 @@ index a9338e1..0037c19 100644
  	case '_': /* APC -- Application Program Command */
  	case '^': /* PM -- Privacy Message */
  		return;
-@@ -2023,7 +2070,7 @@ void
+@@ -2067,7 +2070,7 @@ void
  tdumpline(int n)
  {
  	char buf[UTF_SIZ];
@@ -1140,7 +1334,7 @@ index a9338e1..0037c19 100644
  
  	bp = &term.line[n][0];
  	end = &bp[MIN(tlinelen(n), term.col) - 1];
-@@ -2233,6 +2280,7 @@ eschandle(uchar ascii)
+@@ -2277,6 +2280,7 @@ eschandle(uchar ascii)
  		term.esc |= ESC_UTF8;
  		return 0;
  	case 'P': /* DCS -- Device Control String */
@@ -1148,7 +1342,7 @@ index a9338e1..0037c19 100644
  	case '_': /* APC -- Application Program Command */
  	case '^': /* PM -- Privacy Message */
  	case ']': /* OSC -- Operating System Command */
-@@ -2330,13 +2378,20 @@ tputc(Rune u)
+@@ -2374,13 +2378,20 @@ tputc(Rune u)
  	 * character.
  	 */
  	if (term.esc & ESC_STR) {
@@ -1172,7 +1366,7 @@ index a9338e1..0037c19 100644
  		if (strescseq.len+len >= strescseq.siz) {
  			/*
  			 * Here is a bug in terminals. If the user never sends
-@@ -2387,6 +2442,15 @@ check_control_code:
+@@ -2431,6 +2442,15 @@ check_control_code:
  				csihandle();
  			}
  			return;
@@ -1188,7 +1382,18 @@ index a9338e1..0037c19 100644
  		} else if (term.esc & ESC_UTF8) {
  			tdefutf8(u);
  		} else if (term.esc & ESC_ALTCHARSET) {
-@@ -2591,6 +2655,7 @@ draw(void)
+@@ -2473,10 +2493,6 @@ check_control_code:
+ 	if (width == 2) {
+ 		gp->mode |= ATTR_WIDE;
+ 		if (term.c.x+1 < term.col) {
+-			if (gp[1].mode == ATTR_WIDE && term.c.x+2 < term.col) {
+-				gp[2].u = ' ';
+-				gp[2].mode &= ~ATTR_WDUMMY;
+-			}
+ 			gp[1].u = '\0';
+ 			gp[1].mode = ATTR_WDUMMY;
+ 		}
+@@ -2639,6 +2655,7 @@ draw(void)
  		cx--;
  
  	drawregion(0, 0, term.col, term.row);
@@ -1197,7 +1402,7 @@ index a9338e1..0037c19 100644
  			term.ocx, term.ocy, term.line[term.ocy][term.ocx]);
  	term.ocx = cx;
 diff --git a/st.h b/st.h
-index fa2eddf..ed4db48 100644
+index fd3b0d8..ed4db48 100644
 --- a/st.h
 +++ b/st.h
 @@ -33,6 +33,7 @@ enum glyph_attribute {
@@ -1250,11 +1455,16 @@ index fa2eddf..ed4db48 100644
  
  /* config.h globals */
  extern char *utmp;
+@@ -123,4 +141,3 @@ extern char *termname;
+ extern unsigned int tabspaces;
+ extern unsigned int defaultfg;
+ extern unsigned int defaultbg;
+-extern unsigned int defaultcs;
 diff --git a/win.h b/win.h
-index e6e4369..eb436bb 100644
+index 6de960d..eb436bb 100644
 --- a/win.h
 +++ b/win.h
-@@ -23,10 +23,33 @@ enum win_mode {
+@@ -23,19 +23,47 @@ enum win_mode {
  	                  |MODE_MOUSEMANY,
  };
  
@@ -1288,7 +1498,10 @@ index e6e4369..eb436bb 100644
  void xfinishdraw(void);
  void xloadcols(void);
  int xsetcolorname(int, const char *);
-@@ -36,5 +59,11 @@ int xsetcursor(int);
+-int xgetcolor(int, unsigned char *, unsigned char *, unsigned char *);
+ void xseticontitle(char *);
+ void xsettitle(char *);
+ int xsetcursor(int);
  void xsetmode(int, unsigned int);
  void xsetpointermotion(int);
  void xsetsel(char *);
@@ -1301,7 +1514,7 @@ index e6e4369..eb436bb 100644
  int xstartdraw(void);
  void xximspot(int, int);
 diff --git a/x.c b/x.c
-index 89786b8..568ad70 100644
+index 2a3bd38..568ad70 100644
 --- a/x.c
 +++ b/x.c
 @@ -17,6 +17,7 @@
@@ -1347,20 +1560,187 @@ index 89786b8..568ad70 100644
  static void xunloadfont(Font *);
  static void xunloadfonts(void);
  static void xsetenv(void);
-@@ -254,6 +245,12 @@ static char *opt_title = NULL;
+@@ -252,7 +243,13 @@ static char *opt_line  = NULL;
+ static char *opt_name  = NULL;
+ static char *opt_title = NULL;
  
- static int oldbutton = 3; /* button event on startup: 3 = release */
- 
+-static uint buttons; /* bit field of pressed buttons */
++static int oldbutton = 3; /* button event on startup: 3 = release */
++
 +TermWindow
 +gettermwindow()
 +{
 +	return win;
 +}
-+
+ 
  void
  clipcopy(const Arg *dummy)
+@@ -364,68 +361,61 @@ mousesel(XEvent *e, int done)
+ void
+ mousereport(XEvent *e)
  {
-@@ -952,7 +949,7 @@ xloadfont(Font *f, FcPattern *pattern)
+-	int len, btn, code;
+-	int x = evcol(e), y = evrow(e);
+-	int state = e->xbutton.state;
++	int len, x = evcol(e), y = evrow(e),
++	    button = e->xbutton.button, state = e->xbutton.state;
+ 	char buf[40];
+ 	static int ox, oy;
+ 
+-	if (e->type == MotionNotify) {
++	/* from urxvt */
++	if (e->xbutton.type == MotionNotify) {
+ 		if (x == ox && y == oy)
+ 			return;
+ 		if (!IS_SET(MODE_MOUSEMOTION) && !IS_SET(MODE_MOUSEMANY))
+ 			return;
+-		/* MODE_MOUSEMOTION: no reporting if no button is pressed */
+-		if (IS_SET(MODE_MOUSEMOTION) && buttons == 0)
++		/* MOUSE_MOTION: no reporting if no button is pressed */
++		if (IS_SET(MODE_MOUSEMOTION) && oldbutton == 3)
+ 			return;
+-		/* Set btn to lowest-numbered pressed button, or 12 if no
+-		 * buttons are pressed. */
+-		for (btn = 1; btn <= 11 && !(buttons & (1<<(btn-1))); btn++)
+-			;
+-		code = 32;
++
++		button = oldbutton + 32;
++		ox = x;
++		oy = y;
+ 	} else {
+-		btn = e->xbutton.button;
+-		/* Only buttons 1 through 11 can be encoded */
+-		if (btn < 1 || btn > 11)
+-			return;
+-		if (e->type == ButtonRelease) {
++		if (!IS_SET(MODE_MOUSESGR) && e->xbutton.type == ButtonRelease) {
++			button = 3;
++		} else {
++			button -= Button1;
++			if (button >= 7)
++				button += 128 - 7;
++			else if (button >= 3)
++				button += 64 - 3;
++		}
++		if (e->xbutton.type == ButtonPress) {
++			oldbutton = button;
++			ox = x;
++			oy = y;
++		} else if (e->xbutton.type == ButtonRelease) {
++			oldbutton = 3;
+ 			/* MODE_MOUSEX10: no button release reporting */
+ 			if (IS_SET(MODE_MOUSEX10))
+ 				return;
+-			/* Don't send release events for the scroll wheel */
+-			if (btn == 4 || btn == 5)
++			if (button == 64 || button == 65)
+ 				return;
+ 		}
+-		code = 0;
+ 	}
+ 
+-	ox = x;
+-	oy = y;
+-
+-	/* Encode btn into code. If no button is pressed for a motion event in
+-	 * MODE_MOUSEMANY, then encode it as a release. */
+-	if ((!IS_SET(MODE_MOUSESGR) && e->type == ButtonRelease) || btn == 12)
+-		code += 3;
+-	else if (btn >= 8)
+-		code += 128 + btn - 8;
+-	else if (btn >= 4)
+-		code += 64 + btn - 4;
+-	else
+-		code += btn - 1;
+-
+ 	if (!IS_SET(MODE_MOUSEX10)) {
+-		code += ((state & ShiftMask  ) ?  4 : 0)
+-		      + ((state & Mod1Mask   ) ?  8 : 0) /* meta key: alt */
+-		      + ((state & ControlMask) ? 16 : 0);
++		button += ((state & ShiftMask  ) ? 4  : 0)
++			+ ((state & Mod4Mask   ) ? 8  : 0)
++			+ ((state & ControlMask) ? 16 : 0);
+ 	}
+ 
+ 	if (IS_SET(MODE_MOUSESGR)) {
+ 		len = snprintf(buf, sizeof(buf), "\033[<%d;%d;%d%c",
+-				code, x+1, y+1,
+-				e->type == ButtonRelease ? 'm' : 'M');
++				button, x+1, y+1,
++				e->xbutton.type == ButtonRelease ? 'm' : 'M');
+ 	} else if (x < 223 && y < 223) {
+ 		len = snprintf(buf, sizeof(buf), "\033[M%c%c%c",
+-				32+code, 32+x+1, 32+y+1);
++				32+button, 32+x+1, 32+y+1);
+ 	} else {
+ 		return;
+ 	}
+@@ -468,13 +458,9 @@ mouseaction(XEvent *e, uint release)
+ void
+ bpress(XEvent *e)
+ {
+-	int btn = e->xbutton.button;
+ 	struct timespec now;
+ 	int snap;
+ 
+-	if (1 <= btn && btn <= 11)
+-		buttons |= 1 << (btn-1);
+-
+ 	if (IS_SET(MODE_MOUSE) && !(e->xbutton.state & forcemousemod)) {
+ 		mousereport(e);
+ 		return;
+@@ -483,7 +469,7 @@ bpress(XEvent *e)
+ 	if (mouseaction(e, 0))
+ 		return;
+ 
+-	if (btn == Button1) {
++	if (e->xbutton.button == Button1) {
+ 		/*
+ 		 * If the user clicks below predefined timeouts specific
+ 		 * snapping behaviour is exposed.
+@@ -697,11 +683,6 @@ xsetsel(char *str)
+ void
+ brelease(XEvent *e)
+ {
+-	int btn = e->xbutton.button;
+-
+-	if (1 <= btn && btn <= 11)
+-		buttons &= ~(1 << (btn-1));
+-
+ 	if (IS_SET(MODE_MOUSE) && !(e->xbutton.state & forcemousemod)) {
+ 		mousereport(e);
+ 		return;
+@@ -709,7 +690,7 @@ brelease(XEvent *e)
+ 
+ 	if (mouseaction(e, 1))
+ 		return;
+-	if (btn == Button1)
++	if (e->xbutton.button == Button1)
+ 		mousesel(e, 1);
+ }
+ 
+@@ -815,19 +796,6 @@ xloadcols(void)
+ 	loaded = 1;
+ }
+ 
+-int
+-xgetcolor(int x, unsigned char *r, unsigned char *g, unsigned char *b)
+-{
+-	if (!BETWEEN(x, 0, dc.collen))
+-		return 1;
+-
+-	*r = dc.col[x].color.red >> 8;
+-	*g = dc.col[x].color.green >> 8;
+-	*b = dc.col[x].color.blue >> 8;
+-
+-	return 0;
+-}
+-
+ int
+ xsetcolorname(int x, const char *name)
+ {
+@@ -981,7 +949,7 @@ xloadfont(Font *f, FcPattern *pattern)
  }
  
  void
@@ -1369,7 +1749,7 @@ index 89786b8..568ad70 100644
  {
  	FcPattern *pattern;
  	double fontval;
-@@ -960,7 +957,7 @@ xloadfonts(const char *fontstr, double fontsize)
+@@ -989,7 +957,7 @@ xloadfonts(const char *fontstr, double fontsize)
  	if (fontstr[0] == '-')
  		pattern = XftXlfdParse(fontstr, False, False);
  	else
@@ -1378,7 +1758,22 @@ index 89786b8..568ad70 100644
  
  	if (!pattern)
  		die("can't open font %s\n", fontstr);
-@@ -1588,9 +1585,8 @@ xseticontitle(char *p)
+@@ -1493,12 +1461,12 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
+ 
+ 	/* Render underline and strikethrough. */
+ 	if (base.mode & ATTR_UNDERLINE) {
+-		XftDrawRect(xw.draw, fg, winx, winy + dc.font.ascent * chscale + 1,
++		XftDrawRect(xw.draw, fg, winx, winy + dc.font.ascent + 1,
+ 				width, 1);
+ 	}
+ 
+ 	if (base.mode & ATTR_STRUCK) {
+-		XftDrawRect(xw.draw, fg, winx, winy + 2 * dc.font.ascent * chscale / 3,
++		XftDrawRect(xw.draw, fg, winx, winy + 2 * dc.font.ascent / 3,
+ 				width, 1);
+ 	}
+ 
+@@ -1617,9 +1585,8 @@ xseticontitle(char *p)
  	XTextProperty prop;
  	DEFAULT(p, opt_title);
  
@@ -1390,7 +1785,7 @@ index 89786b8..568ad70 100644
  	XSetWMIconName(xw.dpy, xw.win, &prop);
  	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmiconname);
  	XFree(prop.value);
-@@ -1602,14 +1598,94 @@ xsettitle(char *p)
+@@ -1631,14 +1598,94 @@ xsettitle(char *p)
  	XTextProperty prop;
  	DEFAULT(p, opt_title);
  
@@ -1488,7 +1883,7 @@ index 89786b8..568ad70 100644
  int
  xstartdraw(void)
  {
-@@ -1647,6 +1723,88 @@ xdrawline(Line line, int x1, int y1, int x2)
+@@ -1676,6 +1723,88 @@ xdrawline(Line line, int x1, int y1, int x2)
  		xdrawglyphfontspecs(specs, base, i, ox, y1);
  }
  

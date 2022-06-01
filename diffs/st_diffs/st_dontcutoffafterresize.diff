@@ -1,5 +1,17 @@
+diff --git a/config.mk b/config.mk
+index ddf278a..4c4c5d5 100644
+--- a/config.mk
++++ b/config.mk
+@@ -30,7 +30,6 @@ STLDFLAGS = $(LIBS) $(LDFLAGS)
+ #LIBS = -L$(X11LIB) -lm -lX11 -lutil -lXft \
+ #       `$(PKG_CONFIG) --libs fontconfig` \
+ #       `$(PKG_CONFIG) --libs freetype2`
+-#MANPREFIX = ${PREFIX}/man
+ 
+ # compiler and linker
+ # CC = c99
 diff --git a/st.c b/st.c
-index f43cfd3..ca86416 100644
+index 6ba467d..51328bf 100644
 --- a/st.c
 +++ b/st.c
 @@ -35,6 +35,7 @@
@@ -33,7 +45,7 @@ index f43cfd3..ca86416 100644
  	int *dirty;   /* dirtyness of lines */
  	TCursor c;    /* cursor */
  	int ocx;      /* old cursor col */
-@@ -184,8 +192,8 @@ static void tnewline(int);
+@@ -185,8 +193,8 @@ static void tnewline(int);
  static void tputtab(int);
  static void tputc(Rune);
  static void treset(void);
@@ -44,7 +56,7 @@ index f43cfd3..ca86416 100644
  static void tsetattr(const int *, int);
  static void tsetchar(Rune, const Glyph *, int, int);
  static void tsetdirt(int, int);
-@@ -408,10 +416,10 @@ tlinelen(int y)
+@@ -409,10 +417,10 @@ tlinelen(int y)
  {
  	int i = term.col;
  
@@ -57,7 +69,7 @@ index f43cfd3..ca86416 100644
  		--i;
  
  	return i;
-@@ -520,7 +528,7 @@ selsnap(int *x, int *y, int direction)
+@@ -521,7 +529,7 @@ selsnap(int *x, int *y, int direction)
  		 * Snap around if the word wraps around at the end or
  		 * beginning of a line.
  		 */
@@ -66,7 +78,7 @@ index f43cfd3..ca86416 100644
  		prevdelim = ISDELIM(prevgp->u);
  		for (;;) {
  			newx = *x + direction;
-@@ -535,14 +543,14 @@ selsnap(int *x, int *y, int direction)
+@@ -536,14 +544,14 @@ selsnap(int *x, int *y, int direction)
  					yt = *y, xt = *x;
  				else
  					yt = newy, xt = newx;
@@ -83,7 +95,7 @@ index f43cfd3..ca86416 100644
  			delim = ISDELIM(gp->u);
  			if (!(gp->mode & ATTR_WDUMMY) && (delim != prevdelim
  					|| (delim && gp->u != prevgp->u)))
-@@ -563,14 +571,14 @@ selsnap(int *x, int *y, int direction)
+@@ -564,14 +572,14 @@ selsnap(int *x, int *y, int direction)
  		*x = (direction < 0) ? 0 : term.col - 1;
  		if (direction < 0) {
  			for (; *y > 0; *y += direction) {
@@ -100,7 +112,7 @@ index f43cfd3..ca86416 100644
  						& ATTR_WRAP)) {
  					break;
  				}
-@@ -601,13 +609,13 @@ getsel(void)
+@@ -602,13 +610,13 @@ getsel(void)
  		}
  
  		if (sel.type == SEL_RECTANGULAR) {
@@ -117,7 +129,7 @@ index f43cfd3..ca86416 100644
  		while (last >= gp && last->u == ' ')
  			--last;
  
-@@ -843,6 +851,9 @@ void
+@@ -844,6 +852,9 @@ void
  ttywrite(const char *s, size_t n, int may_echo)
  {
  	const char *next;
@@ -127,7 +139,7 @@ index f43cfd3..ca86416 100644
  
  	if (may_echo && IS_SET(MODE_ECHO))
  		twrite(s, n, 1);
-@@ -1054,13 +1065,53 @@ tswapscreen(void)
+@@ -1055,13 +1066,53 @@ tswapscreen(void)
  }
  
  void
@@ -182,7 +194,7 @@ index f43cfd3..ca86416 100644
  	tsetdirt(orig, term.bot-n);
  	tclearregion(0, term.bot-n+1, term.col-1, term.bot);
  
-@@ -1070,17 +1121,28 @@ tscrolldown(int orig, int n)
+@@ -1071,17 +1122,28 @@ tscrolldown(int orig, int n)
  		term.line[i-n] = temp;
  	}
  
@@ -213,7 +225,7 @@ index f43cfd3..ca86416 100644
  	tclearregion(0, orig, term.col-1, orig+n-1);
  	tsetdirt(orig+n, term.bot);
  
-@@ -1090,7 +1152,8 @@ tscrollup(int orig, int n)
+@@ -1091,7 +1153,8 @@ tscrollup(int orig, int n)
  		term.line[i+n] = temp;
  	}
  
@@ -223,7 +235,7 @@ index f43cfd3..ca86416 100644
  }
  
  void
-@@ -1119,7 +1182,7 @@ tnewline(int first_col)
+@@ -1120,7 +1183,7 @@ tnewline(int first_col)
  	int y = term.c.y;
  
  	if (y == term.bot) {
@@ -232,7 +244,7 @@ index f43cfd3..ca86416 100644
  	} else {
  		y++;
  	}
-@@ -1227,8 +1290,8 @@ tclearregion(int x1, int y1, int x2, int y2)
+@@ -1228,8 +1291,8 @@ tclearregion(int x1, int y1, int x2, int y2)
  	if (y1 > y2)
  		temp = y1, y1 = y2, y2 = temp;
  
@@ -243,7 +255,7 @@ index f43cfd3..ca86416 100644
  	LIMIT(y1, 0, term.row-1);
  	LIMIT(y2, 0, term.row-1);
  
-@@ -1284,14 +1347,14 @@ void
+@@ -1285,14 +1348,14 @@ void
  tinsertblankline(int n)
  {
  	if (BETWEEN(term.c.y, term.top, term.bot))
@@ -260,7 +272,7 @@ index f43cfd3..ca86416 100644
  }
  
  int32_t
-@@ -1728,11 +1791,11 @@ csihandle(void)
+@@ -1729,11 +1792,11 @@ csihandle(void)
  		break;
  	case 'S': /* SU -- Scroll <n> line up */
  		DEFAULT(csiescseq.arg[0], 1);
@@ -274,7 +286,7 @@ index f43cfd3..ca86416 100644
  		break;
  	case 'L': /* IL -- Insert <n> blank lines */
  		DEFAULT(csiescseq.arg[0], 1);
-@@ -2322,7 +2385,7 @@ eschandle(uchar ascii)
+@@ -2296,7 +2359,7 @@ eschandle(uchar ascii)
  		return 0;
  	case 'D': /* IND -- Linefeed */
  		if (term.c.y == term.bot) {
@@ -283,7 +295,7 @@ index f43cfd3..ca86416 100644
  		} else {
  			tmoveto(term.c.x, term.c.y+1);
  		}
-@@ -2335,7 +2398,7 @@ eschandle(uchar ascii)
+@@ -2309,7 +2372,7 @@ eschandle(uchar ascii)
  		break;
  	case 'M': /* RI -- Reverse index */
  		if (term.c.y == term.top) {
@@ -292,7 +304,7 @@ index f43cfd3..ca86416 100644
  		} else {
  			tmoveto(term.c.x, term.c.y-1);
  		}
-@@ -2549,12 +2612,19 @@ twrite(const char *buf, int buflen, int show_ctrl)
+@@ -2523,12 +2586,19 @@ twrite(const char *buf, int buflen, int show_ctrl)
  void
  tresize(int col, int row)
  {
@@ -315,7 +327,7 @@ index f43cfd3..ca86416 100644
  	if (col < 1 || row < 1) {
  		fprintf(stderr,
  		        "tresize: error resizing to %dx%d\n", col, row);
-@@ -2586,6 +2656,14 @@ tresize(int col, int row)
+@@ -2560,6 +2630,14 @@ tresize(int col, int row)
  	term.dirty = xrealloc(term.dirty, row * sizeof(*term.dirty));
  	term.tabs = xrealloc(term.tabs, col * sizeof(*term.tabs));
  
@@ -330,7 +342,7 @@ index f43cfd3..ca86416 100644
  	/* resize each row to new width, zero-pad if needed */
  	for (i = 0; i < minrow; i++) {
  		term.line[i] = xrealloc(term.line[i], col * sizeof(Glyph));
-@@ -2597,17 +2675,18 @@ tresize(int col, int row)
+@@ -2571,17 +2649,18 @@ tresize(int col, int row)
  		term.line[i] = xmalloc(col * sizeof(Glyph));
  		term.alt[i] = xmalloc(col * sizeof(Glyph));
  	}
@@ -353,7 +365,7 @@ index f43cfd3..ca86416 100644
  	term.row = row;
  	/* reset scrolling region */
  	tsetscroll(0, row-1);
-@@ -2644,7 +2723,7 @@ drawregion(int x1, int y1, int x2, int y2)
+@@ -2618,7 +2697,7 @@ drawregion(int x1, int y1, int x2, int y2)
  			continue;
  
  		term.dirty[y] = 0;
@@ -362,7 +374,7 @@ index f43cfd3..ca86416 100644
  	}
  }
  
-@@ -2665,8 +2744,9 @@ draw(void)
+@@ -2639,8 +2718,9 @@ draw(void)
  		cx--;
  
  	drawregion(0, 0, term.col, term.row);
@@ -375,7 +387,7 @@ index f43cfd3..ca86416 100644
  	term.ocy = term.c.y;
  	xfinishdraw();
 diff --git a/st.h b/st.h
-index 519b9bd..da36b34 100644
+index fd3b0d8..818a6f8 100644
 --- a/st.h
 +++ b/st.h
 @@ -81,6 +81,8 @@ void die(const char *, ...);

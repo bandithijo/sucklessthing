@@ -1,8 +1,8 @@
 diff --git a/dwm.c b/dwm.c
-index 5f16260..7681f83 100644
+index 5646a5c..42bdbb0 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -1287,6 +1287,16 @@ resizeclient(Client *c, int x, int y, int w, int h)
+@@ -1289,6 +1289,16 @@ resizeclient(Client *c, int x, int y, int w, int h)
  	c->oldw = c->w; c->w = wc.width = w;
  	c->oldh = c->h; c->h = wc.height = h;
  	wc.border_width = c->bw;

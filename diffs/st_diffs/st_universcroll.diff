@@ -1,8 +1,20 @@
+diff --git a/config.mk b/config.mk
+index ddf278a..4c4c5d5 100644
+--- a/config.mk
++++ b/config.mk
+@@ -30,7 +30,6 @@ STLDFLAGS = $(LIBS) $(LDFLAGS)
+ #LIBS = -L$(X11LIB) -lm -lX11 -lutil -lXft \
+ #       `$(PKG_CONFIG) --libs fontconfig` \
+ #       `$(PKG_CONFIG) --libs freetype2`
+-#MANPREFIX = ${PREFIX}/man
+ 
+ # compiler and linker
+ # CC = c99
 diff --git a/st.c b/st.c
-index f43cfd3..27f7611 100644
+index 6ba467d..2967148 100644
 --- a/st.c
 +++ b/st.c
-@@ -1042,6 +1042,11 @@ tnew(int col, int row)
+@@ -1043,6 +1043,11 @@ tnew(int col, int row)
  	treset();
  }
  
@@ -15,7 +27,7 @@ index f43cfd3..27f7611 100644
  tswapscreen(void)
  {
 diff --git a/st.h b/st.h
-index 519b9bd..e4b2e67 100644
+index fd3b0d8..fa9c0d0 100644
 --- a/st.h
 +++ b/st.h
 @@ -87,6 +87,7 @@ void sendbreak(const Arg *);

@@ -1,3 +1,15 @@
+diff --git a/LICENSE b/LICENSE
+index 995172f..d221f09 100644
+--- a/LICENSE
++++ b/LICENSE
+@@ -17,7 +17,6 @@ MIT/X Consortium License
+ © 2015-2016 Quentin Rameau <quinq@fifth.space>
+ © 2015-2016 Eric Pruitt <eric.pruitt@gmail.com>
+ © 2016-2017 Markus Teich <markus.teich@stusta.mhn.de>
+-© 2020-2022 Chris Down <chris@chrisdown.name>
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a
+ copy of this software and associated documentation files (the "Software"),
 diff --git a/config.def.h b/config.def.h
 index a2ac963..1c0b587 100644
 --- a/config.def.h
@@ -11,7 +23,7 @@ index a2ac963..1c0b587 100644
  static const Layout layouts[] = {
  	/* symbol     arrange function */
 diff --git a/config.mk b/config.mk
-index b6eb7e0..7084c33 100644
+index 81c493e..7084c33 100644
 --- a/config.mk
 +++ b/config.mk
 @@ -1,5 +1,5 @@
@@ -21,10 +33,205 @@ index b6eb7e0..7084c33 100644
  
  # Customize below to fit your system
  
+@@ -19,7 +19,6 @@ FREETYPELIBS = -lfontconfig -lXft
+ FREETYPEINC = /usr/include/freetype2
+ # OpenBSD (uncomment)
+ #FREETYPEINC = ${X11INC}/freetype2
+-#MANPREFIX = ${PREFIX}/man
+ 
+ # includes and libs
+ INCS = -I${X11INC} -I${FREETYPEINC}
+diff --git a/drw.c b/drw.c
+index ced7d37..4cdbcbe 100644
+--- a/drw.c
++++ b/drw.c
+@@ -251,10 +251,12 @@ drw_rect(Drw *drw, int x, int y, unsigned int w, unsigned int h, int filled, int
+ int
+ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lpad, const char *text, int invert)
+ {
+-	int i, ty, ellipsis_x = 0;
+-	unsigned int tmpw, ew, ellipsis_w = 0, ellipsis_len;
++	char buf[1024];
++	int ty;
++	unsigned int ew;
+ 	XftDraw *d = NULL;
+ 	Fnt *usedfont, *curfont, *nextfont;
++	size_t i, len;
+ 	int utf8strlen, utf8charlen, render = x || y || w || h;
+ 	long utf8codepoint = 0;
+ 	const char *utf8str;
+@@ -262,17 +264,13 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
+ 	FcPattern *fcpattern;
+ 	FcPattern *match;
+ 	XftResult result;
+-	int charexists = 0, overflow = 0;
+-	/* keep track of a couple codepoints for which we have no match. */
+-	enum { nomatches_len = 64 };
+-	static struct { long codepoint[nomatches_len]; unsigned int idx; } nomatches;
+-	static unsigned int ellipsis_width = 0;
++	int charexists = 0;
+ 
+-	if (!drw || (render && (!drw->scheme || !w)) || !text || !drw->fonts)
++	if (!drw || (render && !drw->scheme) || !text || !drw->fonts)
+ 		return 0;
+ 
+ 	if (!render) {
+-		w = invert ? invert : ~invert;
++		w = ~w;
+ 	} else {
+ 		XSetForeground(drw->dpy, drw->gc, drw->scheme[invert ? ColFg : ColBg].pixel);
+ 		XFillRectangle(drw->dpy, drw->drawable, drw->gc, x, y, w, h);
+@@ -284,10 +282,8 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
+ 	}
+ 
+ 	usedfont = drw->fonts;
+-	if (!ellipsis_width && render)
+-		ellipsis_width = drw_fontset_getwidth(drw, "...");
+ 	while (1) {
+-		ew = ellipsis_len = utf8strlen = 0;
++		utf8strlen = 0;
+ 		utf8str = text;
+ 		nextfont = NULL;
+ 		while (*text) {
+@@ -295,27 +291,9 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
+ 			for (curfont = drw->fonts; curfont; curfont = curfont->next) {
+ 				charexists = charexists || XftCharExists(drw->dpy, curfont->xfont, utf8codepoint);
+ 				if (charexists) {
+-					drw_font_getexts(curfont, text, utf8charlen, &tmpw, NULL);
+-					if (ew + ellipsis_width <= w) {
+-						/* keep track where the ellipsis still fits */
+-						ellipsis_x = x + ew;
+-						ellipsis_w = w - ew;
+-						ellipsis_len = utf8strlen;
+-					}
+-
+-					if (ew + tmpw > w) {
+-						overflow = 1;
+-						/* called from drw_fontset_getwidth_clamp():
+-						 * it wants the width AFTER the overflow
+-						 */
+-						if (!render)
+-							x += tmpw;
+-						else
+-							utf8strlen = ellipsis_len;
+-					} else if (curfont == usedfont) {
++					if (curfont == usedfont) {
+ 						utf8strlen += utf8charlen;
+ 						text += utf8charlen;
+-						ew += tmpw;
+ 					} else {
+ 						nextfont = curfont;
+ 					}
+@@ -323,25 +301,36 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
+ 				}
+ 			}
+ 
+-			if (overflow || !charexists || nextfont)
++			if (!charexists || nextfont)
+ 				break;
+ 			else
+ 				charexists = 0;
+ 		}
+ 
+ 		if (utf8strlen) {
+-			if (render) {
+-				ty = y + (h - usedfont->h) / 2 + usedfont->xfont->ascent;
+-				XftDrawStringUtf8(d, &drw->scheme[invert ? ColBg : ColFg],
+-				                  usedfont->xfont, x, ty, (XftChar8 *)utf8str, utf8strlen);
++			drw_font_getexts(usedfont, utf8str, utf8strlen, &ew, NULL);
++			/* shorten text if necessary */
++			for (len = MIN(utf8strlen, sizeof(buf) - 1); len && ew > w; len--)
++				drw_font_getexts(usedfont, utf8str, len, &ew, NULL);
++
++			if (len) {
++				memcpy(buf, utf8str, len);
++				buf[len] = '\0';
++				if (len < utf8strlen)
++					for (i = len; i && i > len - 3; buf[--i] = '.')
++						; /* NOP */
++
++				if (render) {
++					ty = y + (h - usedfont->h) / 2 + usedfont->xfont->ascent;
++					XftDrawStringUtf8(d, &drw->scheme[invert ? ColBg : ColFg],
++					                  usedfont->xfont, x, ty, (XftChar8 *)buf, len);
++				}
++				x += ew;
++				w -= ew;
+ 			}
+-			x += ew;
+-			w -= ew;
+ 		}
+-		if (render && overflow)
+-			drw_text(drw, ellipsis_x, y, ellipsis_w, h, 0, "...", invert);
+ 
+-		if (!*text || overflow) {
++		if (!*text) {
+ 			break;
+ 		} else if (nextfont) {
+ 			charexists = 0;
+@@ -351,12 +340,6 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
+ 			 * character must be drawn. */
+ 			charexists = 1;
+ 
+-			for (i = 0; i < nomatches_len; ++i) {
+-				/* avoid calling XftFontMatch if we know we won't find a match */
+-				if (utf8codepoint == nomatches.codepoint[i])
+-					goto no_match;
+-			}
+-
+ 			fccharset = FcCharSetCreate();
+ 			FcCharSetAddChar(fccharset, utf8codepoint);
+ 
+@@ -385,8 +368,6 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
+ 					curfont->next = usedfont;
+ 				} else {
+ 					xfont_free(usedfont);
+-					nomatches.codepoint[++nomatches.idx % nomatches_len] = utf8codepoint;
+-no_match:
+ 					usedfont = drw->fonts;
+ 				}
+ 			}
+@@ -416,15 +397,6 @@ drw_fontset_getwidth(Drw *drw, const char *text)
+ 	return drw_text(drw, 0, 0, 0, 0, 0, text, 0);
+ }
+ 
+-unsigned int
+-drw_fontset_getwidth_clamp(Drw *drw, const char *text, unsigned int n)
+-{
+-	unsigned int tmp = 0;
+-	if (drw && drw->fonts && text && n)
+-		tmp = drw_text(drw, 0, 0, 0, 0, 0, text, n);
+-	return MIN(n, tmp);
+-}
+-
+ void
+ drw_font_getexts(Fnt *font, const char *text, unsigned int len, unsigned int *w, unsigned int *h)
+ {
+diff --git a/drw.h b/drw.h
+index 6471431..4bcd5ad 100644
+--- a/drw.h
++++ b/drw.h
+@@ -35,7 +35,6 @@ void drw_free(Drw *drw);
+ Fnt *drw_fontset_create(Drw* drw, const char *fonts[], size_t fontcount);
+ void drw_fontset_free(Fnt* set);
+ unsigned int drw_fontset_getwidth(Drw *drw, const char *text);
+-unsigned int drw_fontset_getwidth_clamp(Drw *drw, const char *text, unsigned int n);
+ void drw_font_getexts(Fnt *font, const char *text, unsigned int len, unsigned int *w, unsigned int *h);
+ 
+ /* Colorscheme abstraction */
 diff --git a/dwm.c b/dwm.c
-index 5f16260..83a7f8a 100644
+index 5646a5c..83a7f8a 100644
 --- a/dwm.c
 +++ b/dwm.c
+@@ -89,7 +89,7 @@ struct Client {
+ 	float mina, maxa;
+ 	int x, y, w, h;
+ 	int oldx, oldy, oldw, oldh;
+-	int basew, baseh, incw, inch, maxw, maxh, minw, minh, hintsvalid;
++	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
+ 	int bw, oldbw;
+ 	unsigned int tags;
+ 	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
 @@ -149,6 +149,7 @@ static void arrangemon(Monitor *m);
  static void attach(Client *c);
  static void attachstack(Client *c);
@@ -33,7 +240,16 @@ index 5f16260..83a7f8a 100644
  static void checkotherwm(void);
  static void cleanup(void);
  static void cleanupmon(Monitor *mon);
-@@ -456,6 +457,23 @@ buttonpress(XEvent *e)
+@@ -345,8 +346,6 @@ applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact)
+ 	if (*w < bh)
+ 		*w = bh;
+ 	if (resizehints || c->isfloating || !c->mon->lt[c->mon->sellt]->arrange) {
+-		if (!c->hintsvalid)
+-			updatesizehints(c);
+ 		/* see last two sentences in ICCCM 4.1.2.3 */
+ 		baseismin = c->basew == c->minw && c->baseh == c->minh;
+ 		if (!baseismin) { /* temporarily remove base dimensions */
+@@ -458,6 +457,23 @@ buttonpress(XEvent *e)
  			buttons[i].func(click == ClkTagBar && buttons[i].arg.i == 0 ? &arg : &buttons[i].arg);
  }
  
@@ -57,7 +273,7 @@ index 5f16260..83a7f8a 100644
  void
  checkotherwm(void)
  {
-@@ -487,7 +505,6 @@ cleanup(void)
+@@ -489,7 +505,6 @@ cleanup(void)
  		drw_cur_free(drw, cursor[i]);
  	for (i = 0; i < LENGTH(colors); i++)
  		free(scheme[i]);
@@ -65,7 +281,7 @@ index 5f16260..83a7f8a 100644
  	XDestroyWindow(dpy, wmcheckwin);
  	drw_free(drw);
  	XSync(dpy, False);
-@@ -703,9 +720,6 @@ drawbar(Monitor *m)
+@@ -705,9 +720,6 @@ drawbar(Monitor *m)
  	unsigned int i, occ = 0, urg = 0;
  	Client *c;
  
@@ -75,7 +291,7 @@ index 5f16260..83a7f8a 100644
  	/* draw status first so it can be overdrawn by tags later */
  	if (m == selmon) { /* status is only drawn on selected monitor */
  		drw_setscheme(drw, scheme[SchemeNorm]);
-@@ -839,7 +853,7 @@ focusstack(const Arg *arg)
+@@ -841,7 +853,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
  
@@ -84,12 +300,97 @@ index 5f16260..83a7f8a 100644
  		return;
  	if (arg->i > 0) {
  		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -1064,7 +1078,7 @@ manage(Window w, XWindowAttributes *wa)
- 	XSelectInput(dpy, w, EnterWindowMask|FocusChangeMask|PropertyChangeMask|StructureNotifyMask);
- 	grabbuttons(c, 0);
- 	if (!c->isfloating)
--		c->isfloating = c->oldstate = t || c->isfixed;
-+		c->isfloating = c->oldstate = trans != None || c->isfixed;
- 	if (c->isfloating)
- 		XRaiseWindow(dpy, c->win);
- 	attach(c);
+@@ -1235,7 +1247,7 @@ propertynotify(XEvent *e)
+ 				arrange(c->mon);
+ 			break;
+ 		case XA_WM_NORMAL_HINTS:
+-			c->hintsvalid = 0;
++			updatesizehints(c);
+ 			break;
+ 		case XA_WM_HINTS:
+ 			updatewmhints(c);
+@@ -1877,42 +1889,42 @@ updategeom(void)
+ 				memcpy(&unique[j++], &info[i], sizeof(XineramaScreenInfo));
+ 		XFree(info);
+ 		nn = j;
+-
+-		/* new monitors if nn > n */
+-		for (i = n; i < nn; i++) {
+-			for (m = mons; m && m->next; m = m->next);
+-			if (m)
+-				m->next = createmon();
+-			else
+-				mons = createmon();
+-		}
+-		for (i = 0, m = mons; i < nn && m; m = m->next, i++)
+-			if (i >= n
+-			|| unique[i].x_org != m->mx || unique[i].y_org != m->my
+-			|| unique[i].width != m->mw || unique[i].height != m->mh)
+-			{
+-				dirty = 1;
+-				m->num = i;
+-				m->mx = m->wx = unique[i].x_org;
+-				m->my = m->wy = unique[i].y_org;
+-				m->mw = m->ww = unique[i].width;
+-				m->mh = m->wh = unique[i].height;
+-				updatebarpos(m);
++		if (n <= nn) { /* new monitors available */
++			for (i = 0; i < (nn - n); i++) {
++				for (m = mons; m && m->next; m = m->next);
++				if (m)
++					m->next = createmon();
++				else
++					mons = createmon();
+ 			}
+-		/* removed monitors if n > nn */
+-		for (i = nn; i < n; i++) {
+-			for (m = mons; m && m->next; m = m->next);
+-			while ((c = m->clients)) {
+-				dirty = 1;
+-				m->clients = c->next;
+-				detachstack(c);
+-				c->mon = mons;
+-				attach(c);
+-				attachstack(c);
++			for (i = 0, m = mons; i < nn && m; m = m->next, i++)
++				if (i >= n
++				|| unique[i].x_org != m->mx || unique[i].y_org != m->my
++				|| unique[i].width != m->mw || unique[i].height != m->mh)
++				{
++					dirty = 1;
++					m->num = i;
++					m->mx = m->wx = unique[i].x_org;
++					m->my = m->wy = unique[i].y_org;
++					m->mw = m->ww = unique[i].width;
++					m->mh = m->wh = unique[i].height;
++					updatebarpos(m);
++				}
++		} else { /* less monitors available nn < n */
++			for (i = nn; i < n; i++) {
++				for (m = mons; m && m->next; m = m->next);
++				while ((c = m->clients)) {
++					dirty = 1;
++					m->clients = c->next;
++					detachstack(c);
++					c->mon = mons;
++					attach(c);
++					attachstack(c);
++				}
++				if (m == selmon)
++					selmon = mons;
++				cleanupmon(m);
+ 			}
+-			if (m == selmon)
+-				selmon = mons;
+-			cleanupmon(m);
+ 		}
+ 		free(unique);
+ 	} else
+@@ -1991,7 +2003,6 @@ updatesizehints(Client *c)
+ 	} else
+ 		c->maxa = c->mina = 0.0;
+ 	c->isfixed = (c->maxw && c->maxh && c->maxw == c->minw && c->maxh == c->minh);
+-	c->hintsvalid = 1;
+ }
+ 
+ void
