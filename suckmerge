@@ -62,7 +62,8 @@ dwm_branches = [
   'togglefloatingcenter',  # 42  : center^3, canfocusfloating^6
   'barheight',             # 43*
   'coloremoji',            # 44
-  'dwmlogoleft',           # 45 <-
+  'dwmlogoleft',           # 45
+  'preserveonrestart',     # 46  : netclientliststacking^5, savefloats^1 <-
 ]
 
 # For st

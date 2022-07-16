@@ -1,5 +1,5 @@
 diff --git a/drw.c b/drw.c
-index 4cdbcbe..cd899f8 100644
+index ced7d37..8a7bb35 100644
 --- a/drw.c
 +++ b/drw.c
 @@ -203,6 +203,8 @@ drw_clr_create(Drw *drw, Clr *dest, const char *clrname)

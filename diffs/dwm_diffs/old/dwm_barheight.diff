@@ -1,8 +1,8 @@
 diff --git a/dwm.c b/dwm.c
-index 5f16260..89b75ef 100644
+index 5646a5c..b298f90 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -1550,7 +1550,7 @@ setup(void)
+@@ -1552,7 +1552,7 @@ setup(void)
  	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
  		die("no fonts could be loaded.");
  	lrpad = drw->fonts->h;

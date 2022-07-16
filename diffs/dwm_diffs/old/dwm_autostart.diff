@@ -40,7 +40,7 @@ index ddc8321..86e73f9 100644
  dwm is customized by creating a custom config.h and (re)compiling the source
  code. This keeps it fast, secure and simple.
 diff --git a/dwm.c b/dwm.c
-index 5f16260..e21caa7 100644
+index 5646a5c..55d8162 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -29,6 +29,7 @@
@@ -88,7 +88,7 @@ index 5f16260..e21caa7 100644
  static char stext[256];
  static int screen;
  static int sw, sh;           /* X display screen geometry width, height */
-@@ -785,6 +792,16 @@ expose(XEvent *e)
+@@ -787,6 +794,16 @@ expose(XEvent *e)
  		drawbar(m);
  }
  
@@ -105,7 +105,7 @@ index 5f16260..e21caa7 100644
  void
  focus(Client *c)
  {
-@@ -1204,15 +1221,6 @@ nexttiled(Client *c)
+@@ -1206,15 +1223,6 @@ nexttiled(Client *c)
  	return c;
  }
  
@@ -121,7 +121,7 @@ index 5f16260..e21caa7 100644
  void
  propertynotify(XEvent *e)
  {
-@@ -1385,6 +1393,83 @@ run(void)
+@@ -1387,6 +1395,83 @@ run(void)
  			handler[ev.type](&ev); /* call handler */
  }
  
@@ -205,7 +205,7 @@ index 5f16260..e21caa7 100644
  void
  scan(void)
  {
-@@ -2121,14 +2206,38 @@ void
+@@ -2124,14 +2209,38 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;
@@ -248,7 +248,7 @@ index 5f16260..e21caa7 100644
  }
  
  int
-@@ -2149,6 +2258,7 @@ main(int argc, char *argv[])
+@@ -2152,6 +2261,7 @@ main(int argc, char *argv[])
  		die("pledge");
  #endif /* __OpenBSD__ */
  	scan();

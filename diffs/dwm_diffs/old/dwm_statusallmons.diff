@@ -1,8 +1,8 @@
 diff --git a/dwm.c b/dwm.c
-index 5f16260..2aa4769 100644
+index 5646a5c..7d7a60a 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -707,7 +707,7 @@ drawbar(Monitor *m)
+@@ -709,7 +709,7 @@ drawbar(Monitor *m)
  		return;
  
  	/* draw status first so it can be overdrawn by tags later */
@@ -11,7 +11,7 @@ index 5f16260..2aa4769 100644
  		drw_setscheme(drw, scheme[SchemeNorm]);
  		tw = TEXTW(stext) - lrpad + 2; /* 2px right padding */
  		drw_text(drw, m->ww - tw, 0, tw, bh, 0, stext, 0);
-@@ -1994,9 +1994,11 @@ updatesizehints(Client *c)
+@@ -1997,9 +1997,11 @@ updatesizehints(Client *c)
  void
  updatestatus(void)
  {

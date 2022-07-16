@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 5f16260..26766bf 100644
+index 5646a5c..47654c8 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -87,6 +87,7 @@ typedef struct Client Client;
@@ -9,7 +9,7 @@ index 5f16260..26766bf 100644
 +	float cfact;
  	int x, y, w, h;
  	int oldx, oldy, oldw, oldh;
- 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
+ 	int basew, baseh, incw, inch, maxw, maxh, minw, minh, hintsvalid;
 @@ -119,6 +120,7 @@ struct Monitor {
  	int by;               /* bar geometry */
  	int mx, my, mw, mh;   /* screen size */
@@ -28,7 +28,7 @@ index 5f16260..26766bf 100644
  static void setmfact(const Arg *arg);
  static void setup(void);
  static void seturgent(Client *c, int urg);
-@@ -640,6 +644,7 @@ createmon(void)
+@@ -642,6 +646,7 @@ createmon(void)
  	m->nmaster = nmaster;
  	m->showbar = showbar;
  	m->topbar = topbar;
@@ -36,7 +36,7 @@ index 5f16260..26766bf 100644
  	m->lt[0] = &layouts[0];
  	m->lt[1] = &layouts[1 % LENGTH(layouts)];
  	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
-@@ -1034,6 +1039,7 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1036,6 +1041,7 @@ manage(Window w, XWindowAttributes *wa)
  	c->w = c->oldw = wa->width;
  	c->h = c->oldh = wa->height;
  	c->oldbw = wa->border_width;
@@ -44,7 +44,7 @@ index 5f16260..26766bf 100644
  
  	updatetitle(c);
  	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
-@@ -1117,7 +1123,7 @@ monocle(Monitor *m)
+@@ -1119,7 +1125,7 @@ monocle(Monitor *m)
  	if (n > 0) /* override layout symbol */
  		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
  	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
@@ -53,7 +53,7 @@ index 5f16260..26766bf 100644
  }
  
  void
-@@ -1287,6 +1293,16 @@ resizeclient(Client *c, int x, int y, int w, int h)
+@@ -1289,6 +1295,16 @@ resizeclient(Client *c, int x, int y, int w, int h)
  	c->oldw = c->w; c->w = wc.width = w;
  	c->oldh = c->h; c->h = wc.height = h;
  	wc.border_width = c->bw;
@@ -70,7 +70,7 @@ index 5f16260..26766bf 100644
  	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
  	configure(c);
  	XSync(dpy, False);
-@@ -1502,6 +1518,16 @@ setfullscreen(Client *c, int fullscreen)
+@@ -1504,6 +1520,16 @@ setfullscreen(Client *c, int fullscreen)
  	}
  }
  
@@ -87,7 +87,7 @@ index 5f16260..26766bf 100644
  void
  setlayout(const Arg *arg)
  {
-@@ -1516,6 +1542,23 @@ setlayout(const Arg *arg)
+@@ -1518,6 +1544,23 @@ setlayout(const Arg *arg)
  		drawbar(selmon);
  }
  
@@ -111,7 +111,7 @@ index 5f16260..26766bf 100644
  /* arg > 1.0 will set mfact absolutely */
  void
  setmfact(const Arg *arg)
-@@ -1678,28 +1721,45 @@ tagmon(const Arg *arg)
+@@ -1680,28 +1723,45 @@ tagmon(const Arg *arg)
  void
  tile(Monitor *m)
  {

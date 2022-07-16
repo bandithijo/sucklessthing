@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 5f16260..d6acea2 100644
+index 5646a5c..ad05307 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -146,6 +146,7 @@ static void applyrules(Client *c);
@@ -10,7 +10,7 @@ index 5f16260..d6acea2 100644
  static void attach(Client *c);
  static void attachstack(Client *c);
  static void buttonpress(XEvent *e);
-@@ -400,6 +401,31 @@ arrangemon(Monitor *m)
+@@ -402,6 +403,31 @@ arrangemon(Monitor *m)
  		m->lt[m->sellt]->arrange(m);
  }
  

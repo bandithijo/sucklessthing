@@ -1,5 +1,5 @@
 diff --git a/drw.c b/drw.c
-index 4cdbcbe..9ded131 100644
+index ced7d37..3e9fb20 100644
 --- a/drw.c
 +++ b/drw.c
 @@ -248,6 +248,26 @@ drw_rect(Drw *drw, int x, int y, unsigned int w, unsigned int h, int filled, int
@@ -30,10 +30,10 @@ index 4cdbcbe..9ded131 100644
  drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lpad, const char *text, int invert)
  {
 diff --git a/drw.h b/drw.h
-index 4bcd5ad..cb1f24b 100644
+index 6471431..19d3743 100644
 --- a/drw.h
 +++ b/drw.h
-@@ -51,6 +51,7 @@ void drw_setscheme(Drw *drw, Clr *scm);
+@@ -52,6 +52,7 @@ void drw_setscheme(Drw *drw, Clr *scm);
  
  /* Drawing functions */
  void drw_rect(Drw *drw, int x, int y, unsigned int w, unsigned int h, int filled, int invert);
@@ -42,10 +42,10 @@ index 4bcd5ad..cb1f24b 100644
  
  /* Map functions */
 diff --git a/dwm.c b/dwm.c
-index 5f16260..e3930a8 100644
+index 5646a5c..764fdce 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -739,6 +739,8 @@ drawbar(Monitor *m)
+@@ -741,6 +741,8 @@ drawbar(Monitor *m)
  			drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
  			if (m->sel->isfloating)
  				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);

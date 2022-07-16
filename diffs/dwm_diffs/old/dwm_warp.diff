@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 5f16260..11a2c9e 100644
+index 5646a5c..95ce784 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -228,6 +228,7 @@ static void updatetitle(Client *c);
@@ -10,7 +10,7 @@ index 5f16260..11a2c9e 100644
  static Client *wintoclient(Window w);
  static Monitor *wintomon(Window w);
  static int xerror(Display *dpy, XErrorEvent *ee);
-@@ -832,6 +833,8 @@ focusmon(const Arg *arg)
+@@ -834,6 +835,8 @@ focusmon(const Arg *arg)
  	unfocus(selmon->sel, 0);
  	selmon = m;
  	focus(NULL);
@@ -19,7 +19,7 @@ index 5f16260..11a2c9e 100644
  }
  
  void
-@@ -2051,6 +2054,35 @@ view(const Arg *arg)
+@@ -2054,6 +2057,35 @@ view(const Arg *arg)
  	arrange(selmon);
  }
  

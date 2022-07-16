@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 5f16260..768803d 100644
+index 5646a5c..be83df9 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -169,6 +169,7 @@ static void focus(Client *c);
@@ -10,7 +10,7 @@ index 5f16260..768803d 100644
  static Atom getatomprop(Client *c, Atom prop);
  static int getrootptr(int *x, int *y);
  static long getstate(Window w);
-@@ -860,6 +861,20 @@ focusstack(const Arg *arg)
+@@ -862,6 +863,20 @@ focusstack(const Arg *arg)
  	}
  }
  

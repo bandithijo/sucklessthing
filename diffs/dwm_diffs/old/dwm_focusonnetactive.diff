@@ -1,8 +1,8 @@
 diff --git a/dwm.c b/dwm.c
-index 5f16260..8b19473 100644
+index 5646a5c..9b24240 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -516,6 +516,7 @@ clientmessage(XEvent *e)
+@@ -518,6 +518,7 @@ clientmessage(XEvent *e)
  {
  	XClientMessageEvent *cme = &e->xclient;
  	Client *c = wintoclient(cme->window);
@@ -10,7 +10,7 @@ index 5f16260..8b19473 100644
  
  	if (!c)
  		return;
-@@ -525,8 +526,13 @@ clientmessage(XEvent *e)
+@@ -527,8 +528,13 @@ clientmessage(XEvent *e)
  			setfullscreen(c, (cme->data.l[0] == 1 /* _NET_WM_STATE_ADD    */
  				|| (cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */ && !c->isfullscreen)));
  	} else if (cme->message_type == netatom[NetActiveWindow]) {
