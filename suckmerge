@@ -63,7 +63,8 @@ dwm_branches = [
   'barheight',             # 43*
   'coloremoji',            # 44
   'dwmlogoleft',           # 45
-  'preserveonrestart',     # 46  : netclientliststacking^5, savefloats^1 <-
+  'preserveonrestart',     # 46  : netclientliststacking^5, savefloats^1
+  'quitprompt',            # 47* : placemouse^12 <-
 ]
 
 # For st
