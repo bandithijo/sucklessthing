@@ -1,0 +1,28 @@
+diff --git a/config.def.h b/config.def.h
+index 1e102fe..23b11d6 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -65,10 +65,10 @@ static const int CACHE_SIZE_FALLBACK = 32 * 1024 * 1024; /* fallback to 32MiB if
+ #ifdef _THUMBS_CONFIG
+ 
+ /* thumbnail sizes in pixels (width == height): */
+-static const int thumb_sizes[] = { 32, 64, 96, 128, 160 };
++static const int thumb_sizes[] = { 32, 64, 96, 128, 160, 360 };
+ 
+ /* thumbnail size at startup, index into thumb_sizes[]: */
+-static const int THUMB_SIZE = 3;
++static const int THUMB_SIZE = 4;
+ 
+ #endif
+ #ifdef _MAPPINGS_CONFIG
+diff --git a/examples/key-handler b/examples/key-handler
+index 7dac1b5..fe90af5 100755
+--- a/examples/key-handler
++++ b/examples/key-handler
+@@ -37,5 +37,6 @@ case "$1" in
+ "C-comma")  rotate 270 ;;
+ "C-period") rotate  90 ;;
+ "C-slash")  rotate 180 ;;
++"C-d")      while read file; do mv "$file" ~/.trash; done ;;
+ esac
+ 

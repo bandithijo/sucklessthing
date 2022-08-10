@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index a2ac963..7c7b108 100644
+index a2ac963..2096066 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -2,50 +2,174 @@
@@ -7,10 +7,10 @@ index a2ac963..7c7b108 100644
  /* appearance */
  static const unsigned int borderpx  = 1;        /* border pixel of windows */
 -static const unsigned int snap      = 32;       /* snap pixel */
-+static const int gappx              = 0;        /* gaps between windows */
++static const int gappx              = 9;        /* gaps between windows */
 +static const unsigned int snap      = 5;        /* snap pixel */
  static const int showbar            = 1;        /* 0 means no bar */
-+static const int user_bh            = 24;       /* bar height, default 18 */
++static const int user_bh            = 26;       /* bar height, default 18 */
  static const int topbar             = 1;        /* 0 means bottom bar */
 -static const char *fonts[]          = { "monospace:size=10" };
 -static const char dmenufont[]       = "monospace:size=10";
@@ -29,13 +29,13 @@ index a2ac963..7c7b108 100644
 +static const int warpenable         = 0;        /* 0 means disable, 1 means enable */
 +static const int warpcursorposition = 0;        /* 0 means center, 1 means bottom right, 2 means bottom center */
 +static const char *fonts[]          = {
-+    "JetBrainsMono Nerd Font Bandit:style=Medium:pixelsize=15",
-+    "Twitter Color Emoji:pixelsize=15:antialias=true:autohint=true"
++    "JetBrainsMono Nerd Font Bandit:style=Medium:pixelsize=17",
++    "Twitter Color Emoji:pixelsize=17:antialias=true:autohint=true"
  };
-+    /* "Twemoji:pixelsize=15:antialias=true:autohint=true" */
-+    /* "JoyPixels:pixelsize=15:antialias=true:autohint=true", */
-+    /* "Noto Color Emoji:style=Regular:pixelsize=15:antialias=true:autohint=true", */
-+    /* "octicons:style=Medium:pixelsize=15" */
++    /* "Twemoji:pixelsize=17:antialias=true:autohint=true" */
++    /* "JoyPixels:pixelsize=17:antialias=true:autohint=true", */
++    /* "Noto Color Emoji:style=Regular:pixelsize=17:antialias=true:autohint=true", */
++    /* "octicons:style=Medium:pixelsize=17" */
 +static char normbgcolor[]           = "#1e1e1e";
 +static char normbordercolor[]       = "#444444";
 +static char normfgcolor[]           = "#bbbbbb";
@@ -85,9 +85,9 @@ index a2ac963..7c7b108 100644
 +    { "Thunar",               "thunar",             NULL,                         1 << 2,        0,            0,           -1 },
 +    { "Org.gnome.Nautilus",   NULL,                 NULL,                         1 << 2,        0,            0,           -1 },
 +    { "St",                   NULL,                 "st",                         0,             1,            0,           -1 },
-+    { "St",                   NULL,                 "NeoMutt",                    1 << 6,        0,            0,           -1 },
++    { "St",                   NULL,                 "Neomutt",                    1 << 6,        0,            0,           -1 },
 +    { "St",                   NULL,                 "Ranger",                     0,             0,            0,           -1 },
-+    { "St",                   NULL,                 "NewsBoat",                   1 << 4,        0,            0,           -1 },
++    { "St",                   NULL,                 "Newsboat",                   1 << 4,        0,            0,           -1 },
 +    { "St",                   NULL,                 "WeeChat",                    1 << 5,        0,            0,           -1 },
 +    { "Transmission-gtk",     NULL,                 NULL,                         1 << 4,        0,            0,           -1 },
 +    { "Postbird",             NULL,                 NULL,                         0,             0,            0,           -1 },
@@ -102,6 +102,9 @@ index a2ac963..7c7b108 100644
 +    /* Floating */
 +    { "TelegramDesktop",      NULL,                 "Media viewer",               1 << 7,        1,            1,           -1 },
 +    { "KotatogramDesktop",    NULL,                 "Media viewer",               1 << 7,        1,            1,           -1 },
++    { "firefox",              "Browser",            "About Mozilla Firefox",      0,             0,            1,           -1 },
++    { "Firefox",              "Browser",            "About Mozilla Firefox",      0,             0,            1,           -1 },
++    { "Tor Browser",          "Browser",            "About Tor Browser",          0,             0,            1,           -1 },
 +    { "Tor Browser",          "Navigator",          NULL,                         2,             1,            1,           -1 },
 +    { "St",                   NULL,                 "st+",                        0,             1,            1,           -1 },
 +    { "St",                   NULL,                 "st+:",                       0,             0,            1,           -1 },
@@ -111,12 +114,11 @@ index a2ac963..7c7b108 100644
 +    { "Gcolor3",              NULL,                 "Color picker",               0,             0,            1,           -1 },
 +    { "Gnome-calculator",     NULL,                 "Calculator",                 0,             0,            1,           -1 },
 +    { "gnome-calculator",     NULL,                 "Calculator",                 0,             0,            1,           -1 },
-+    { "Hexchat",              NULL,                 "Network List - HexChat",     1 << 5,        1,            1,           -1 },
 +    { "SimpleScreenRecorder", NULL,                 NULL,                         0,             1,            1,           -1 },
++    { "Soffice",              "soffice",            NULL,                         0,             0,            0,           -1 },
 +    { "Soffice",              NULL,                 "Print",                      0,             1,            1,           -1 },
 +    { "Chrome",               NULL,                 "Save File",                  2,             0,            1,           -1 },
 +    { "Barrier",              NULL,                 NULL,                         1 << 3,        0,            1,           -1 },
-+    { "Soffice",              "soffice",            NULL,                         0,             0,            0,           -1 },
 +    { "Thunar",               "thunar",             "File Operation Progress",    0,             0,            1,           -1 },
 +    { "System-config-printer.py", NULL,             NULL,                         0,             1,            1,           -1 },
 +    { "Nm-connection-editor", NULL,                 "Network Connections",        0,             0,            1,           -1 },
@@ -132,9 +134,6 @@ index a2ac963..7c7b108 100644
 +    { "guvcview",             NULL,                 NULL,                         0,             0,            1,           -1 },
 +    { "Key-mon",              NULL,                 NULL,                         0,             1,            1,           -1 },
 +    { "Gnome-power-statistics", NULL,               NULL,                         0,             1,            1,           -1 },
-+    { "firefox",              "Browser",            "About Mozilla Firefox",      0,             0,            1,           -1 },
-+    { "Firefox",              "Browser",            "About Mozilla Firefox",      0,             0,            1,           -1 },
-+    { "Tor Browser",          "Browser",            "About Tor Browser",          0,             0,            1,           -1 },
 +    { "xdman-Main",           NULL,                 NULL,                         0,             0,            1,           -1 },
 +    { "Gkamus",               NULL,                 NULL,                         0,             1,            1,           -1 },
 +    { "Kamus",                NULL,                 NULL,                         0,             1,            1,           -1 },
@@ -162,6 +161,7 @@ index a2ac963..7c7b108 100644
 +    { "Cpupower-gui",         NULL,                 NULL,                         0,             1,            1,           -1 },
 +    { "HDSentinel_GUI",       NULL,                 NULL,                         0,             1,            1,           -1 },
 +    { "QjackCtl",             NULL,                 NULL,                         0,             1,            1,           -1 },
++    { "Xephyr",               NULL,                 NULL,                         0,             1,            1,           -1 },
 +    /* class                  instance              title                         tags mask      iscentered    isfloating   monitor */
 +    /* Scratchpad */
 +    { NULL,                   NULL,                 "hidden",               scratchpad_mask,     0,            1,           -1 },
@@ -248,7 +248,7 @@ index a2ac963..7c7b108 100644
 -	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
 +	{ MODKEY,                       XK_d,      spawn,             SHCMD("/usr/bin/dmenu-apps") },
 +	{ MODKEY|ShiftMask,             XK_Return, spawn,             {.v = termcmd } },
-+    { MODKEY,                       XK_b,      togglebar,         {0} },
++	{ MODKEY,                       XK_b,      togglebar,         {0} },
 +	{ MODKEY,                       XK_j,      focusstack,        {.i = +1 } },
 +	{ MODKEY,                       XK_k,      focusstack,        {.i = -1 } },
 +	{ MODKEY,                       XK_i,      incnmaster,        {.i = +1 } },
@@ -281,16 +281,16 @@ index a2ac963..7c7b108 100644
 +	{ MODKEY|ShiftMask,             XK_space,  togglefloating,    {0} },
 +	{ MODKEY|ShiftMask,             XK_f,      togglefullscr,     {0} },
 +	{ MODKEY,                       XK_s,      togglesticky,      {0} },
-+    { MODKEY|ShiftMask,             XK_s,      togglecanfocusfloating, {0} },
++	{ MODKEY|ShiftMask,             XK_s,      togglecanfocusfloating, {0} },
 +	{ MODKEY,                       XK_comma,  focusmon,          {.i = -1 } },
 +	{ MODKEY,                       XK_period, focusmon,          {.i = +1 } },
 +	{ MODKEY|ShiftMask,             XK_comma,  tagmon,            {.i = -1 } },
 +	{ MODKEY|ShiftMask,             XK_period, tagmon,            {.i = +1 } },
 +	{ MODKEY,                       XK_F5,     xrdb,              {.v = NULL } },
-+	{ MODKEY,                       0x5b,      setgaps,           {.i = -1 } },
-+	{ MODKEY,                       0x5d,      setgaps,           {.i = +1 } },
++	{ MODKEY,                       0x5b,      setgaps,           {.i = -9 } },
++	{ MODKEY,                       0x5d,      setgaps,           {.i = +9 } },
 +	{ MODKEY|ShiftMask,             XK_equal,  setgaps,           {.i = 0  } },
-+    { MODKEY|ControlMask,           XK_space,  focusmaster,       {0} },
++	{ MODKEY|ControlMask,           XK_space,  focusmaster,       {0} },
 +	{ MODKEY,                       XK_u,      swalstopsel,       {0} },
 +	TAGKEYS(                        XK_1,                         0)
 +	TAGKEYS(                        XK_2,                         1)
@@ -302,7 +302,7 @@ index a2ac963..7c7b108 100644
 +	TAGKEYS(                        XK_8,                         7)
 +	TAGKEYS(                        XK_9,                         8)
 +	TAGKEYS(                        XK_0,                         9)
-+	{ MODKEY|ShiftMask,             XK_q,      quit,              {0} },
++	{ MODKEY|ShiftMask,             XK_q,      quitprompt,        {0} },
 +	{ MODKEY,                       XK_minus,  scratchpad_show,   {0} },
 +	{ MODKEY|ShiftMask,             XK_minus,  scratchpad_hide,   {0} },
 +	{ MODKEY|ControlMask,           XK_minus,  scratchpad_remove, {0} },
@@ -320,14 +320,14 @@ index a2ac963..7c7b108 100644
 +	{ MODKEY|Mod1Mask,              XK_Up,     moveresize,        {.v = "  0x   0y   0w -10h" } },
 +	{ MODKEY|Mod1Mask,              XK_Right,  moveresize,        {.v = "  0x   0y  10w   0h" } },
 +	{ MODKEY|Mod1Mask,              XK_Left,   moveresize,        {.v = "  0x   0y -10w   0h" } },
-+    { MODKEY|ControlMask,           XK_Up,     movethrow,         {.ui = DIR_N  }},
-+    { MODKEY|ControlMask,           XK_Down,   movethrow,         {.ui = DIR_S  }},
-+    { MODKEY|ControlMask,           XK_Left,   movethrow,         {.ui = DIR_W  }},
-+    { MODKEY|ControlMask,           XK_Right,  movethrow,         {.ui = DIR_E  }},
-+    { MODKEY|ControlMask,           XK_g,      movethrow,         {.ui = DIR_C  }},
++        { MODKEY|ControlMask,           XK_Up,     movethrow,         {.ui = DIR_N  }},
++        { MODKEY|ControlMask,           XK_Down,   movethrow,         {.ui = DIR_S  }},
++        { MODKEY|ControlMask,           XK_Left,   movethrow,         {.ui = DIR_W  }},
++        { MODKEY|ControlMask,           XK_Right,  movethrow,         {.ui = DIR_E  }},
++        { MODKEY|ControlMask,           XK_g,      movethrow,         {.ui = DIR_C  }},
 +
-+    // Custom Keys
-+    /* I have migrated all this custom keys with SXHKD */
++        // Custom Keys
++        /* I have migrated all this custom keys with SXHKD */
  };
  
  /* button definitions */
@@ -446,10 +446,21 @@ index a2ac963..7c7b108 100644
 +	{ "movethrow",      movethrow },
 +};
 diff --git a/dwm.c b/dwm.c
-index 5646a5c..0ce2c63 100644
+index 87d0ada..7bf0fab 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -1646,8 +1646,6 @@ sigchld(int unused)
+@@ -1049,7 +1049,9 @@ manage(Window w, XWindowAttributes *wa)
+ 	if (c->y + HEIGHT(c) > c->mon->my + c->mon->mh)
+ 		c->y = c->mon->my + c->mon->mh - HEIGHT(c);
+ 	c->x = MAX(c->x, c->mon->mx);
+-	c->y = MAX(c->y, c->mon->wy);
++	/* only fix client y-offset, if the client center might cover the bar */
++	c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
++		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
+ 	c->bw = borderpx;
+ 
+ 	wc.border_width = c->bw;
+@@ -1639,8 +1641,6 @@ sigchld(int unused)
  void
  spawn(const Arg *arg)
  {

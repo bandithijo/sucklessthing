@@ -40,7 +40,7 @@ index ddc8321..86e73f9 100644
  dwm is customized by creating a custom config.h and (re)compiling the source
  code. This keeps it fast, secure and simple.
 diff --git a/dwm.c b/dwm.c
-index 5646a5c..79f6e05 100644
+index 87d0ada..5b34f1f 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -29,6 +29,7 @@
@@ -77,7 +77,7 @@ index 5646a5c..79f6e05 100644
  static void movemouse(const Arg *arg);
 +static void movethrow(const Arg *arg);
  static Client *nexttiled(Client *c);
--static void pop(Client *);
+-static void pop(Client *c);
  static void propertynotify(XEvent *e);
  static void quit(const Arg *arg);
  static Monitor *recttomon(int x, int y, int w, int h);
@@ -162,7 +162,18 @@ index 5646a5c..79f6e05 100644
  void
  focus(Client *c)
  {
-@@ -1199,6 +1198,92 @@ movemouse(const Arg *arg)
+@@ -1049,7 +1048,9 @@ manage(Window w, XWindowAttributes *wa)
+ 	if (c->y + HEIGHT(c) > c->mon->my + c->mon->mh)
+ 		c->y = c->mon->my + c->mon->mh - HEIGHT(c);
+ 	c->x = MAX(c->x, c->mon->mx);
+-	c->y = MAX(c->y, c->mon->wy);
++	/* only fix client y-offset, if the client center might cover the bar */
++	c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
++		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
+ 	c->bw = borderpx;
+ 
+ 	wc.border_width = c->bw;
+@@ -1193,6 +1194,92 @@ movemouse(const Arg *arg)
  	}
  }
  
@@ -255,7 +266,7 @@ index 5646a5c..79f6e05 100644
  Client *
  nexttiled(Client *c)
  {
-@@ -1206,15 +1291,6 @@ nexttiled(Client *c)
+@@ -1200,15 +1287,6 @@ nexttiled(Client *c)
  	return c;
  }
  
@@ -271,7 +282,7 @@ index 5646a5c..79f6e05 100644
  void
  propertynotify(XEvent *e)
  {
-@@ -1387,6 +1463,83 @@ run(void)
+@@ -1381,6 +1459,83 @@ run(void)
  			handler[ev.type](&ev); /* call handler */
  }
  
@@ -355,7 +366,7 @@ index 5646a5c..79f6e05 100644
  void
  scan(void)
  {
-@@ -1997,9 +2150,11 @@ updatesizehints(Client *c)
+@@ -1989,9 +2144,11 @@ updatesizehints(Client *c)
  void
  updatestatus(void)
  {
@@ -368,18 +379,16 @@ index 5646a5c..79f6e05 100644
  }
  
  void
-@@ -2124,14 +2279,38 @@ void
+@@ -2116,12 +2273,37 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;
 +	Client *at = NULL, *cold, *cprevious = NULL;
  
- 	if (!selmon->lt[selmon->sellt]->arrange
- 	|| (selmon->sel && selmon->sel->isfloating))
+ 	if (!selmon->lt[selmon->sellt]->arrange || !c || c->isfloating)
  		return;
--	if (c == nexttiled(selmon->clients))
--		if (!c || !(c = nexttiled(c->next)))
--			return;
+-	if (c == nexttiled(selmon->clients) && !(c = nexttiled(c->next)))
+-		return;
 -	pop(c);
 +	if (c == nexttiled(selmon->clients)) {
 +		at = findbefore(prevzoom);
@@ -411,7 +420,7 @@ index 5646a5c..79f6e05 100644
  }
  
  int
-@@ -2152,6 +2331,7 @@ main(int argc, char *argv[])
+@@ -2142,6 +2324,7 @@ main(int argc, char *argv[])
  		die("pledge");
  #endif /* __OpenBSD__ */
  	scan();
