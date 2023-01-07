@@ -14,7 +14,7 @@ index 77bcbc0..66cf909 100644
  	sed "s/VERSION/${VERSION}/g" < dwm.1 > ${DESTDIR}${MANPREFIX}/man1/dwm.1
  	chmod 644 ${DESTDIR}${MANPREFIX}/man1/dwm.1
 diff --git a/dwm.c b/dwm.c
-index 5646a5c..5923da1 100644
+index e5efb6a..ac21ce7 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -106,6 +106,11 @@ typedef struct {
@@ -42,7 +42,7 @@ index 5646a5c..5923da1 100644
  static void motionnotify(XEvent *e);
  static void movemouse(const Arg *arg);
  static Client *nexttiled(Client *c);
--static void pop(Client *);
+-static void pop(Client *c);
  static void propertynotify(XEvent *e);
  static void quit(const Arg *arg);
  static Monitor *recttomon(int x, int y, int w, int h);
@@ -71,7 +71,7 @@ index 5646a5c..5923da1 100644
  void
  focus(Client *c)
  {
-@@ -1005,6 +1022,49 @@ keypress(XEvent *e)
+@@ -1003,6 +1020,49 @@ keypress(XEvent *e)
  			keys[i].func(&(keys[i].arg));
  }
  
@@ -121,7 +121,7 @@ index 5646a5c..5923da1 100644
  void
  killclient(const Arg *arg)
  {
-@@ -1206,15 +1266,6 @@ nexttiled(Client *c)
+@@ -1200,15 +1260,6 @@ nexttiled(Client *c)
  	return c;
  }
  
@@ -137,7 +137,7 @@ index 5646a5c..5923da1 100644
  void
  propertynotify(XEvent *e)
  {
-@@ -1222,8 +1273,10 @@ propertynotify(XEvent *e)
+@@ -1216,8 +1267,10 @@ propertynotify(XEvent *e)
  	Window trans;
  	XPropertyEvent *ev = &e->xproperty;
  
@@ -150,18 +150,16 @@ index 5646a5c..5923da1 100644
  	else if (ev->state == PropertyDelete)
  		return; /* ignore */
  	else if ((c = wintoclient(ev->window))) {
-@@ -2124,14 +2177,38 @@ void
+@@ -2114,12 +2167,37 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;
 +	Client *at = NULL, *cold, *cprevious = NULL;
  
- 	if (!selmon->lt[selmon->sellt]->arrange
- 	|| (selmon->sel && selmon->sel->isfloating))
+ 	if (!selmon->lt[selmon->sellt]->arrange || !c || c->isfloating)
  		return;
--	if (c == nexttiled(selmon->clients))
--		if (!c || !(c = nexttiled(c->next)))
--			return;
+-	if (c == nexttiled(selmon->clients) && !(c = nexttiled(c->next)))
+-		return;
 -	pop(c);
 +	if (c == nexttiled(selmon->clients)) {
 +		at = findbefore(prevzoom);

@@ -1,8 +1,8 @@
 diff --git a/dwm.c b/dwm.c
-index 5646a5c..66c9f85 100644
+index e5efb6a..db4bdab 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -1672,9 +1672,17 @@ tag(const Arg *arg)
+@@ -1661,9 +1661,17 @@ tag(const Arg *arg)
  void
  tagmon(const Arg *arg)
  {

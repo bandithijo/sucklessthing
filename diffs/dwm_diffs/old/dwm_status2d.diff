@@ -40,7 +40,7 @@ index ddc8321..86e73f9 100644
  dwm is customized by creating a custom config.h and (re)compiling the source
  code. This keeps it fast, secure and simple.
 diff --git a/dwm.c b/dwm.c
-index 5646a5c..a3c636b 100644
+index e5efb6a..1f3c7b3 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -29,6 +29,7 @@
@@ -69,7 +69,7 @@ index 5646a5c..a3c636b 100644
 +static void moveresize(const Arg *arg);
  static void movemouse(const Arg *arg);
  static Client *nexttiled(Client *c);
--static void pop(Client *);
+-static void pop(Client *c);
  static void propertynotify(XEvent *e);
  static void quit(const Arg *arg);
  static Monitor *recttomon(int x, int y, int w, int h);
@@ -95,7 +95,7 @@ index 5646a5c..a3c636b 100644
 +static char stext[1024];
  static int screen;
  static int sw, sh;           /* X display screen geometry width, height */
- static int bh, blw = 0;      /* bar geometry */
+ static int bh;               /* bar height */
 @@ -250,7 +258,6 @@ static void (*handler[LASTEvent]) (XEvent *) = {
  	[ConfigureRequest] = configurerequest,
  	[ConfigureNotify] = configurenotify,
@@ -285,7 +285,7 @@ index 5646a5c..a3c636b 100644
  void
  focus(Client *c)
  {
-@@ -1199,6 +1304,55 @@ movemouse(const Arg *arg)
+@@ -1193,6 +1298,55 @@ movemouse(const Arg *arg)
  	}
  }
  
@@ -341,7 +341,7 @@ index 5646a5c..a3c636b 100644
  Client *
  nexttiled(Client *c)
  {
-@@ -1206,15 +1360,6 @@ nexttiled(Client *c)
+@@ -1200,15 +1354,6 @@ nexttiled(Client *c)
  	return c;
  }
  
@@ -357,7 +357,7 @@ index 5646a5c..a3c636b 100644
  void
  propertynotify(XEvent *e)
  {
-@@ -1387,6 +1532,83 @@ run(void)
+@@ -1381,6 +1526,83 @@ run(void)
  			handler[ev.type](&ev); /* call handler */
  }
  
@@ -441,7 +441,7 @@ index 5646a5c..a3c636b 100644
  void
  scan(void)
  {
-@@ -1574,7 +1796,8 @@ setup(void)
+@@ -1568,7 +1790,8 @@ setup(void)
  	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
  	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
  	/* init appearance */
@@ -451,7 +451,7 @@ index 5646a5c..a3c636b 100644
  	for (i = 0; i < LENGTH(colors); i++)
  		scheme[i] = drw_scm_create(drw, colors[i], 3);
  	/* init bars */
-@@ -1997,9 +2220,11 @@ updatesizehints(Client *c)
+@@ -1987,9 +2210,11 @@ updatesizehints(Client *c)
  void
  updatestatus(void)
  {
@@ -464,18 +464,16 @@ index 5646a5c..a3c636b 100644
  }
  
  void
-@@ -2124,14 +2349,38 @@ void
+@@ -2114,12 +2339,37 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;
 +	Client *at = NULL, *cold, *cprevious = NULL;
  
- 	if (!selmon->lt[selmon->sellt]->arrange
- 	|| (selmon->sel && selmon->sel->isfloating))
+ 	if (!selmon->lt[selmon->sellt]->arrange || !c || c->isfloating)
  		return;
--	if (c == nexttiled(selmon->clients))
--		if (!c || !(c = nexttiled(c->next)))
--			return;
+-	if (c == nexttiled(selmon->clients) && !(c = nexttiled(c->next)))
+-		return;
 -	pop(c);
 +	if (c == nexttiled(selmon->clients)) {
 +		at = findbefore(prevzoom);
@@ -507,7 +505,7 @@ index 5646a5c..a3c636b 100644
  }
  
  int
-@@ -2152,6 +2401,7 @@ main(int argc, char *argv[])
+@@ -2140,6 +2390,7 @@ main(int argc, char *argv[])
  		die("pledge");
  #endif /* __OpenBSD__ */
  	scan();

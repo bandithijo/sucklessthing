@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 5646a5c..44d31f9 100644
+index e5efb6a..3822b58 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -87,6 +87,7 @@ typedef struct Client Client;
@@ -18,7 +18,7 @@ index 5646a5c..44d31f9 100644
  static void setmfact(const Arg *arg);
  static void setup(void);
  static void seturgent(Client *c, int urg);
-@@ -1036,6 +1038,7 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1034,6 +1036,7 @@ manage(Window w, XWindowAttributes *wa)
  	c->w = c->oldw = wa->width;
  	c->h = c->oldh = wa->height;
  	c->oldbw = wa->border_width;
@@ -26,7 +26,7 @@ index 5646a5c..44d31f9 100644
  
  	updatetitle(c);
  	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
-@@ -1518,6 +1521,23 @@ setlayout(const Arg *arg)
+@@ -1512,6 +1515,23 @@ setlayout(const Arg *arg)
  		drawbar(selmon);
  }
  
@@ -50,7 +50,7 @@ index 5646a5c..44d31f9 100644
  /* arg > 1.0 will set mfact absolutely */
  void
  setmfact(const Arg *arg)
-@@ -1681,9 +1701,15 @@ void
+@@ -1670,9 +1690,15 @@ void
  tile(Monitor *m)
  {
  	unsigned int i, n, h, mw, my, ty;
@@ -67,7 +67,7 @@ index 5646a5c..44d31f9 100644
  	if (n == 0)
  		return;
  
-@@ -1693,15 +1719,17 @@ tile(Monitor *m)
+@@ -1682,15 +1708,17 @@ tile(Monitor *m)
  		mw = m->ww;
  	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
  		if (i < m->nmaster) {

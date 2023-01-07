@@ -1,16 +1,17 @@
 diff --git a/config.def.h b/config.def.h
-index a2ac963..2096066 100644
+index 9efa774..bc6e7ad 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -2,50 +2,174 @@
+@@ -2,50 +2,181 @@
  
  /* appearance */
  static const unsigned int borderpx  = 1;        /* border pixel of windows */
 -static const unsigned int snap      = 32;       /* snap pixel */
-+static const int gappx              = 9;        /* gaps between windows */
++static const int gappx              = 14;       /* gaps between windows */
 +static const unsigned int snap      = 5;        /* snap pixel */
  static const int showbar            = 1;        /* 0 means no bar */
-+static const int user_bh            = 26;       /* bar height, default 18 */
++static const int user_bh            = 32;       /* bar height, default 18 */
++static const int topbarpadding      = 32;       /* top bar padding, default 0 */
  static const int topbar             = 1;        /* 0 means bottom bar */
 -static const char *fonts[]          = { "monospace:size=10" };
 -static const char dmenufont[]       = "monospace:size=10";
@@ -46,6 +47,7 @@ index a2ac963..2096066 100644
 +       /*               fg           bg           border   */
 +       [SchemeNorm] = { normfgcolor, normbgcolor, normbordercolor },
 +       [SchemeSel]  = { selfgcolor,  selbgcolor,  selbordercolor  },
++       [SchemeOff]  = { selbgcolor,  selbgcolor,  selbordercolor  },
 +};
 +static const XPoint stickyicon[]    = { {0,0}, {4,0}, {4,9}, {0,9}, {0,0} }; /* represents the icon as an array of vertices */
 +static const XPoint stickyiconbb    = {4,9};	/* defines the bottom right corner of the polygon's bounding box (speeds up scaling) */
@@ -70,14 +72,16 @@ index a2ac963..2096066 100644
 +    /* Non FLoating */
 +    { "Gimp-2.10",            NULL,                 NULL,                         0,             0,            0,           -1 },
 +    { "firefox",              NULL,                 NULL,                         2,             0,            0,           -1 },
++    { "firefoxdeveloperedition", NULL,              NULL,                         2,             0,            0,           -1 },
 +    { "Firefox",              NULL,                 NULL,                         2,             0,            0,           -1 },
++    { "Firefox Developer Edition", NULL,            NULL,                         2,             0,            0,           -1 },
 +    { "Google-chrome",        NULL,                 NULL,                         2,             0,            0,           -1 },
 +    { NULL,                   NULL,                 "Google Chrome",              2,             0,            0,           -1 },
 +    { "qutebrowser",          NULL,                 NULL,                         2,             0,            0,           -1 },
 +    { "TelegramDesktop",      NULL,                 NULL,                         1 << 7,        0,            0,           -1 },
 +    { "KotatogramDesktop",    NULL,                 NULL,                         1 << 7,        0,            0,           -1 },
 +    { "discord",              NULL,                 NULL,                         1 << 7,        0,            0,           -1 },
-+    { "Slack",                NULL,                 NULL,                         1 << 7,        0,            0,            1 },
++    { "Slack",                NULL,                 NULL,                         1 << 7,        0,            0,           -1 },
 +    { "Thunderbird",          NULL,                 NULL,                         1 << 6,        0,            0,           -1 },
 +    { "Hexchat",              NULL,                 NULL,                         1 << 5,        0,            0,           -1 },
 +    { "mpv",                  NULL,                 NULL,                         0,             0,            0,           -1 },
@@ -87,8 +91,8 @@ index a2ac963..2096066 100644
 +    { "St",                   NULL,                 "st",                         0,             1,            0,           -1 },
 +    { "St",                   NULL,                 "Neomutt",                    1 << 6,        0,            0,           -1 },
 +    { "St",                   NULL,                 "Ranger",                     0,             0,            0,           -1 },
-+    { "St",                   NULL,                 "Newsboat",                   1 << 4,        0,            0,           -1 },
-+    { "St",                   NULL,                 "WeeChat",                    1 << 5,        0,            0,           -1 },
++    { "St",                   NULL,                 "Newsboat",                   1 << 6,        0,            0,           -1 },
++    { "St",                   NULL,                 "WeeChat",                    1 << 7,        0,            0,           -1 },
 +    { "Transmission-gtk",     NULL,                 NULL,                         1 << 4,        0,            0,           -1 },
 +    { "Postbird",             NULL,                 NULL,                         0,             0,            0,           -1 },
 +    { "xdman-Main",           NULL,                 "XDM 2020",                   0,             0,            0,           -1 },
@@ -97,12 +101,14 @@ index a2ac963..2096066 100644
 +    { "calibre",              NULL,                 NULL,                         0,             1,            0,           -1 },
 +    { "Soffice",              "soffice",            NULL,                         0,             0,            0,            0 },
 +    { "Soffice",              "soffice",            "Presenting: ",               0,             0,            0,            1 },
-+    { "Postman",              NULL,                 NULL,                         0,             0,            0,            1 },
++    { "Postman",              NULL,                 NULL,                         0,             0,            0,           -1 },
++    { "DBeaver",              "DBeaver",            NULL,                         1 << 4,        1,            0,           -1 },
 +    /* class                  instance              title                         tags mask      iscentered    isfloating   monitor */
 +    /* Floating */
 +    { "TelegramDesktop",      NULL,                 "Media viewer",               1 << 7,        1,            1,           -1 },
 +    { "KotatogramDesktop",    NULL,                 "Media viewer",               1 << 7,        1,            1,           -1 },
 +    { "firefox",              "Browser",            "About Mozilla Firefox",      0,             0,            1,           -1 },
++    { "firefoxdeveloperedition", "Browser",         "About Firefox Developer Edition", 0,        0,            1,           -1 },
 +    { "Firefox",              "Browser",            "About Mozilla Firefox",      0,             0,            1,           -1 },
 +    { "Tor Browser",          "Browser",            "About Tor Browser",          0,             0,            1,           -1 },
 +    { "Tor Browser",          "Navigator",          NULL,                         2,             1,            1,           -1 },
@@ -119,7 +125,7 @@ index a2ac963..2096066 100644
 +    { "Soffice",              NULL,                 "Print",                      0,             1,            1,           -1 },
 +    { "Chrome",               NULL,                 "Save File",                  2,             0,            1,           -1 },
 +    { "Barrier",              NULL,                 NULL,                         1 << 3,        0,            1,           -1 },
-+    { "Thunar",               "thunar",             "File Operation Progress",    0,             0,            1,           -1 },
++    { "Thunar",               "thunar",             "File Operation Progress",    0,             1,            1,           -1 },
 +    { "System-config-printer.py", NULL,             NULL,                         0,             1,            1,           -1 },
 +    { "Nm-connection-editor", NULL,                 "Network Connections",        0,             0,            1,           -1 },
 +    { "Pavucontrol",          NULL,                 NULL,                         0,             1,            1,           -1 },
@@ -162,6 +168,7 @@ index a2ac963..2096066 100644
 +    { "HDSentinel_GUI",       NULL,                 NULL,                         0,             1,            1,           -1 },
 +    { "QjackCtl",             NULL,                 NULL,                         0,             1,            1,           -1 },
 +    { "Xephyr",               NULL,                 NULL,                         0,             1,            1,           -1 },
++    { "Java",                 "java",               "DBeaver ",                   1 << 4,        1,            1,           -1 },
 +    /* class                  instance              title                         tags mask      iscentered    isfloating   monitor */
 +    /* Scratchpad */
 +    { NULL,                   NULL,                 "hidden",               scratchpad_mask,     0,            1,           -1 },
@@ -202,7 +209,7 @@ index a2ac963..2096066 100644
  #define TAGKEYS(KEY,TAG) \
  	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
  	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-@@ -56,61 +180,195 @@ static const Layout layouts[] = {
+@@ -56,61 +187,195 @@ static const Layout layouts[] = {
  #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
  
  /* commands */
@@ -211,7 +218,7 @@ index a2ac963..2096066 100644
  static const char *termcmd[]  = { "st", NULL };
  
 +#include "movestack.c"
- static Key keys[] = {
+ static const Key keys[] = {
  	/* modifier                     key        function        argument */
 -	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 -	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
@@ -287,8 +294,8 @@ index a2ac963..2096066 100644
 +	{ MODKEY|ShiftMask,             XK_comma,  tagmon,            {.i = -1 } },
 +	{ MODKEY|ShiftMask,             XK_period, tagmon,            {.i = +1 } },
 +	{ MODKEY,                       XK_F5,     xrdb,              {.v = NULL } },
-+	{ MODKEY,                       0x5b,      setgaps,           {.i = -9 } },
-+	{ MODKEY,                       0x5d,      setgaps,           {.i = +9 } },
++	{ MODKEY|ShiftMask,             0x5b,      setgaps,           {.i = -14 } },
++	{ MODKEY|ShiftMask,             0x5d,      setgaps,           {.i = +14 } },
 +	{ MODKEY|ShiftMask,             XK_equal,  setgaps,           {.i = 0  } },
 +	{ MODKEY|ControlMask,           XK_space,  focusmaster,       {0} },
 +	{ MODKEY,                       XK_u,      swalstopsel,       {0} },
@@ -332,7 +339,7 @@ index a2ac963..2096066 100644
  
  /* button definitions */
  /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
- static Button buttons[] = {
+ static const Button buttons[] = {
 -	/* click                event mask      button          function        argument */
 -	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
 -	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
@@ -446,21 +453,44 @@ index a2ac963..2096066 100644
 +	{ "movethrow",      movethrow },
 +};
 diff --git a/dwm.c b/dwm.c
-index 87d0ada..7bf0fab 100644
+index 03baf42..e5efb6a 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -1049,7 +1049,9 @@ manage(Window w, XWindowAttributes *wa)
- 	if (c->y + HEIGHT(c) > c->mon->my + c->mon->mh)
- 		c->y = c->mon->my + c->mon->mh - HEIGHT(c);
- 	c->x = MAX(c->x, c->mon->mx);
--	c->y = MAX(c->y, c->mon->wy);
-+	/* only fix client y-offset, if the client center might cover the bar */
-+	c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
-+		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
- 	c->bw = borderpx;
+@@ -955,26 +955,16 @@ grabkeys(void)
+ {
+ 	updatenumlockmask();
+ 	{
+-		unsigned int i, j, k;
++		unsigned int i, j;
+ 		unsigned int modifiers[] = { 0, LockMask, numlockmask, numlockmask|LockMask };
+-		int start, end, skip;
+-		KeySym *syms;
++		KeyCode code;
  
- 	wc.border_width = c->bw;
-@@ -1639,8 +1641,6 @@ sigchld(int unused)
+ 		XUngrabKey(dpy, AnyKey, AnyModifier, root);
+-		XDisplayKeycodes(dpy, &start, &end);
+-		syms = XGetKeyboardMapping(dpy, start, end - start + 1, &skip);
+-		if (!syms)
+-			return;
+-		for (k = start; k <= end; k++)
+-			for (i = 0; i < LENGTH(keys); i++)
+-				/* skip modifier codes, we do that ourselves */
+-				if (keys[i].keysym == syms[(k - start) * skip])
+-					for (j = 0; j < LENGTH(modifiers); j++)
+-						XGrabKey(dpy, k,
+-							 keys[i].mod | modifiers[j],
+-							 root, True,
+-							 GrabModeAsync, GrabModeAsync);
+-		XFree(syms);
++		for (i = 0; i < LENGTH(keys); i++)
++			if ((code = XKeysymToKeycode(dpy, keys[i].keysym)))
++				for (j = 0; j < LENGTH(modifiers); j++)
++					XGrabKey(dpy, code, keys[i].mod | modifiers[j], root,
++						True, GrabModeAsync, GrabModeAsync);
+ 	}
+ }
+ 
+@@ -1649,8 +1639,6 @@ sigchld(int unused)
  void
  spawn(const Arg *arg)
  {

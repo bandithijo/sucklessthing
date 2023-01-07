@@ -1,8 +1,8 @@
 diff --git a/config.mk b/config.mk
-index 0df3fc8..3423b6a 100644
+index b0bd246..1b80b0e 100644
 --- a/config.mk
 +++ b/config.mk
-@@ -20,7 +20,7 @@ FREETYPEINC = /usr/include/freetype2
+@@ -21,7 +21,7 @@ FREETYPEINC = /usr/include/freetype2
  
  # includes and libs
  INCS = -I$(X11INC) -I$(FREETYPEINC)
@@ -26,7 +26,7 @@ index 323f93c..c036baa 100644
  dmenu grabs the keyboard before reading stdin if not reading from a tty. This
  is faster, but will lock up X until stdin reaches end\-of\-file.
 diff --git a/dmenu.c b/dmenu.c
-index 839f6cc..ecbcbd1 100644
+index 818313a..3ff99cf 100644
 --- a/dmenu.c
 +++ b/dmenu.c
 @@ -1,6 +1,7 @@
@@ -156,7 +156,46 @@ index 839f6cc..ecbcbd1 100644
  	static char **tokv = NULL;
  	static int tokn = 0;
  
-@@ -633,6 +729,7 @@ setup(void)
+@@ -517,9 +613,9 @@ insert:
+ 	case XK_Tab:
+ 		if (!sel)
+ 			return;
+-		cursor = strnlen(sel->text, sizeof text - 1);
+-		memcpy(text, sel->text, cursor);
+-		text[cursor] = '\0';
++		strncpy(text, sel->text, sizeof text - 1);
++		text[sizeof text - 1] = '\0';
++		cursor = strlen(text);
+ 		match();
+ 		break;
+ 	}
+@@ -549,18 +645,18 @@ paste(void)
+ static void
+ readstdin(void)
+ {
+-	char *line = NULL;
+-	size_t i, junk, size = 0;
+-	ssize_t len;
++	char buf[sizeof text], *p;
++	size_t i, size = 0;
+ 
+ 	/* read each line from stdin and add it to the item list */
+-	for (i = 0; (len = getline(&line, &junk, stdin)) != -1; i++, line = NULL) {
++	for (i = 0; fgets(buf, sizeof buf, stdin); i++) {
+ 		if (i + 1 >= size / sizeof *items)
+ 			if (!(items = realloc(items, (size += BUFSIZ))))
+ 				die("cannot realloc %zu bytes:", size);
+-		if (line[len - 1] == '\n')
+-			line[len - 1] = '\0';
+-		items[i].text = line;
++		if ((p = strchr(buf, '\n')))
++			*p = '\0';
++		if (!(items[i].text = strdup(buf)))
++			die("cannot strdup %zu bytes:", strlen(buf) + 1);
+ 		items[i].out = 0;
+ 	}
+ 	if (items)
+@@ -632,6 +728,7 @@ setup(void)
  	bh = drw->fonts->h + 2;
  	lines = MAX(lines, 0);
  	mh = (lines + 1) * bh;
@@ -164,7 +203,7 @@ index 839f6cc..ecbcbd1 100644
  #ifdef XINERAMA
  	i = 0;
  	if (parentwin == root && (info = XineramaQueryScreens(dpy, &n))) {
-@@ -659,9 +756,16 @@ setup(void)
+@@ -658,9 +755,16 @@ setup(void)
  				if (INTERSECT(x, y, 1, 1, info[i]) != 0)
  					break;
  
@@ -184,7 +223,7 @@ index 839f6cc..ecbcbd1 100644
  		XFree(info);
  	} else
  #endif
-@@ -669,11 +773,18 @@ setup(void)
+@@ -668,11 +772,17 @@ setup(void)
  		if (!XGetWindowAttributes(dpy, parentwin, &wa))
  			die("could not get embedding window attributes: 0x%lx",
  			    parentwin);
@@ -203,11 +242,10 @@ index 839f6cc..ecbcbd1 100644
 +		}
  	}
 -	promptw = (prompt && *prompt) ? TEXTW(prompt) - lrpad / 4 : 0;
-+	inputw = MIN(inputw, mw/3);
- 	for (item = items; item && item->text; ++item) {
- 		if ((tmp = textw_clamp(item->text, mw/3)) > inputw) {
- 			if ((inputw = tmp) == mw/3)
-@@ -734,8 +845,12 @@ main(int argc, char *argv[])
+ 	inputw = mw / 3; /* input width: ~33% of monitor width */
+ 	match();
+ 
+@@ -728,8 +838,12 @@ main(int argc, char *argv[])
  			exit(0);
  		} else if (!strcmp(argv[i], "-b")) /* appears at the bottom of the screen */
  			topbar = 0;

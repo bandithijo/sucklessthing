@@ -1,17 +1,17 @@
 diff --git a/dwm.c b/dwm.c
-index 5646a5c..8e06994 100644
+index e5efb6a..786eef1 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -210,6 +210,8 @@ static void spawn(const Arg *arg);
  static void tag(const Arg *arg);
  static void tagmon(const Arg *arg);
- static void tile(Monitor *);
-+static void bstack(Monitor *);
-+static void bstackhoriz(Monitor *);
+ static void tile(Monitor *m);
++static void bstack(Monitor *m);
++static void bstackhoriz(Monitor *m);
  static void togglebar(const Arg *arg);
  static void togglefloating(const Arg *arg);
  static void toggletag(const Arg *arg);
-@@ -1705,6 +1707,98 @@ tile(Monitor *m)
+@@ -1694,6 +1696,98 @@ tile(Monitor *m)
  		}
  }
  

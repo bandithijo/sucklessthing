@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 87d0ada..1d12c85 100644
+index 03baf42..3822b58 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -87,6 +87,7 @@ typedef struct Client Client;
@@ -18,7 +18,41 @@ index 87d0ada..1d12c85 100644
  static void setmfact(const Arg *arg);
  static void setup(void);
  static void seturgent(Client *c, int urg);
-@@ -1034,6 +1036,7 @@ manage(Window w, XWindowAttributes *wa)
+@@ -955,26 +957,16 @@ grabkeys(void)
+ {
+ 	updatenumlockmask();
+ 	{
+-		unsigned int i, j, k;
++		unsigned int i, j;
+ 		unsigned int modifiers[] = { 0, LockMask, numlockmask, numlockmask|LockMask };
+-		int start, end, skip;
+-		KeySym *syms;
++		KeyCode code;
+ 
+ 		XUngrabKey(dpy, AnyKey, AnyModifier, root);
+-		XDisplayKeycodes(dpy, &start, &end);
+-		syms = XGetKeyboardMapping(dpy, start, end - start + 1, &skip);
+-		if (!syms)
+-			return;
+-		for (k = start; k <= end; k++)
+-			for (i = 0; i < LENGTH(keys); i++)
+-				/* skip modifier codes, we do that ourselves */
+-				if (keys[i].keysym == syms[(k - start) * skip])
+-					for (j = 0; j < LENGTH(modifiers); j++)
+-						XGrabKey(dpy, k,
+-							 keys[i].mod | modifiers[j],
+-							 root, True,
+-							 GrabModeAsync, GrabModeAsync);
+-		XFree(syms);
++		for (i = 0; i < LENGTH(keys); i++)
++			if ((code = XKeysymToKeycode(dpy, keys[i].keysym)))
++				for (j = 0; j < LENGTH(modifiers); j++)
++					XGrabKey(dpy, code, keys[i].mod | modifiers[j], root,
++						True, GrabModeAsync, GrabModeAsync);
+ 	}
+ }
+ 
+@@ -1044,6 +1036,7 @@ manage(Window w, XWindowAttributes *wa)
  	c->w = c->oldw = wa->width;
  	c->h = c->oldh = wa->height;
  	c->oldbw = wa->border_width;
@@ -26,18 +60,7 @@ index 87d0ada..1d12c85 100644
  
  	updatetitle(c);
  	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
-@@ -1049,7 +1052,9 @@ manage(Window w, XWindowAttributes *wa)
- 	if (c->y + HEIGHT(c) > c->mon->my + c->mon->mh)
- 		c->y = c->mon->my + c->mon->mh - HEIGHT(c);
- 	c->x = MAX(c->x, c->mon->mx);
--	c->y = MAX(c->y, c->mon->wy);
-+	/* only fix client y-offset, if the client center might cover the bar */
-+	c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
-+		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
- 	c->bw = borderpx;
- 
- 	wc.border_width = c->bw;
-@@ -1512,6 +1517,23 @@ setlayout(const Arg *arg)
+@@ -1522,6 +1515,23 @@ setlayout(const Arg *arg)
  		drawbar(selmon);
  }
  
@@ -61,7 +84,16 @@ index 87d0ada..1d12c85 100644
  /* arg > 1.0 will set mfact absolutely */
  void
  setmfact(const Arg *arg)
-@@ -1672,9 +1694,15 @@ void
+@@ -1649,8 +1659,6 @@ sigchld(int unused)
+ void
+ spawn(const Arg *arg)
+ {
+-	if (arg->v == dmenucmd)
+-		dmenumon[0] = '0' + selmon->num;
+ 	if (fork() == 0) {
+ 		if (dpy)
+ 			close(ConnectionNumber(dpy));
+@@ -1682,9 +1690,15 @@ void
  tile(Monitor *m)
  {
  	unsigned int i, n, h, mw, my, ty;
@@ -78,7 +110,7 @@ index 87d0ada..1d12c85 100644
  	if (n == 0)
  		return;
  
-@@ -1684,15 +1712,17 @@ tile(Monitor *m)
+@@ -1694,15 +1708,17 @@ tile(Monitor *m)
  		mw = m->ww;
  	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
  		if (i < m->nmaster) {

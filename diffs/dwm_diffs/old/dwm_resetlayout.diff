@@ -1,8 +1,8 @@
 diff --git a/dwm.c b/dwm.c
-index 5646a5c..9adeaac 100644
+index e5efb6a..ffbf7a2 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -189,6 +189,7 @@ static void pop(Client *);
+@@ -189,6 +189,7 @@ static void pop(Client *c);
  static void propertynotify(XEvent *e);
  static void quit(const Arg *arg);
  static Monitor *recttomon(int x, int y, int w, int h);
@@ -10,7 +10,7 @@ index 5646a5c..9adeaac 100644
  static void resize(Client *c, int x, int y, int w, int h, int interact);
  static void resizeclient(Client *c, int x, int y, int w, int h);
  static void resizemouse(const Arg *arg);
-@@ -1272,6 +1273,16 @@ recttomon(int x, int y, int w, int h)
+@@ -1266,6 +1267,16 @@ recttomon(int x, int y, int w, int h)
  	return r;
  }
  
@@ -27,7 +27,7 @@ index 5646a5c..9adeaac 100644
  void
  resize(Client *c, int x, int y, int w, int h, int interact)
  {
-@@ -1289,6 +1300,16 @@ resizeclient(Client *c, int x, int y, int w, int h)
+@@ -1283,6 +1294,16 @@ resizeclient(Client *c, int x, int y, int w, int h)
  	c->oldw = c->w; c->w = wc.width = w;
  	c->oldh = c->h; c->h = wc.height = h;
  	wc.border_width = c->bw;

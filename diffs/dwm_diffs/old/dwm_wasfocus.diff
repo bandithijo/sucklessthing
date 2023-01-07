@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 5646a5c..7c79183 100644
+index e5efb6a..0a8a7f9 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -49,7 +49,7 @@
@@ -21,7 +21,7 @@ index 5646a5c..7c79183 100644
  	Client *snext;
  	Monitor *mon;
 @@ -212,6 +212,7 @@ static void tagmon(const Arg *arg);
- static void tile(Monitor *);
+ static void tile(Monitor *m);
  static void togglebar(const Arg *arg);
  static void togglefloating(const Arg *arg);
 +static void togglesticky(const Arg *arg);
@@ -37,7 +37,7 @@ index 5646a5c..7c79183 100644
  		for (c = selmon->stack; c && !ISVISIBLE(c); c = c->snext);
  	if (selmon->sel && selmon->sel != c)
  		unfocus(selmon->sel, 0);
-@@ -1363,6 +1366,17 @@ restack(Monitor *m)
+@@ -1357,6 +1360,17 @@ restack(Monitor *m)
  		return;
  	if (m->sel->isfloating || !m->lt[m->sellt]->arrange)
  		XRaiseWindow(dpy, m->sel->win);
@@ -55,7 +55,7 @@ index 5646a5c..7c79183 100644
  	if (m->lt[m->sellt]->arrange) {
  		wc.stack_mode = Below;
  		wc.sibling = m->barwin;
-@@ -1473,6 +1487,7 @@ setfocus(Client *c)
+@@ -1467,6 +1481,7 @@ setfocus(Client *c)
  			XA_WINDOW, 32, PropModeReplace,
  			(unsigned char *) &(c->win), 1);
  	}
@@ -63,7 +63,7 @@ index 5646a5c..7c79183 100644
  	sendevent(c, wmatom[WMTakeFocus]);
  }
  
-@@ -1725,9 +1740,36 @@ togglefloating(const Arg *arg)
+@@ -1714,9 +1729,36 @@ togglefloating(const Arg *arg)
  	if (selmon->sel->isfloating)
  		resize(selmon->sel, selmon->sel->x, selmon->sel->y,
  			selmon->sel->w, selmon->sel->h, 0);
@@ -100,7 +100,7 @@ index 5646a5c..7c79183 100644
  void
  toggletag(const Arg *arg)
  {
-@@ -1760,6 +1802,7 @@ unfocus(Client *c, int setfocus)
+@@ -1749,6 +1791,7 @@ unfocus(Client *c, int setfocus)
  {
  	if (!c)
  		return;

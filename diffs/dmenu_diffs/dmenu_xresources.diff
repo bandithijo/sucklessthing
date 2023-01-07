@@ -1,5 +1,5 @@
 diff --git a/dmenu.c b/dmenu.c
-index 839f6cc..ecfe99c 100644
+index 818313a..6a49576 100644
 --- a/dmenu.c
 +++ b/dmenu.c
 @@ -15,6 +15,7 @@
@@ -21,7 +21,46 @@ index 839f6cc..ecfe99c 100644
  #include "config.h"
  
  static int (*fstrncmp)(const char *, const char *, size_t) = strncmp;
-@@ -623,8 +628,13 @@ setup(void)
+@@ -517,9 +522,9 @@ insert:
+ 	case XK_Tab:
+ 		if (!sel)
+ 			return;
+-		cursor = strnlen(sel->text, sizeof text - 1);
+-		memcpy(text, sel->text, cursor);
+-		text[cursor] = '\0';
++		strncpy(text, sel->text, sizeof text - 1);
++		text[sizeof text - 1] = '\0';
++		cursor = strlen(text);
+ 		match();
+ 		break;
+ 	}
+@@ -549,18 +554,18 @@ paste(void)
+ static void
+ readstdin(void)
+ {
+-	char *line = NULL;
+-	size_t i, junk, size = 0;
+-	ssize_t len;
++	char buf[sizeof text], *p;
++	size_t i, size = 0;
+ 
+ 	/* read each line from stdin and add it to the item list */
+-	for (i = 0; (len = getline(&line, &junk, stdin)) != -1; i++, line = NULL) {
++	for (i = 0; fgets(buf, sizeof buf, stdin); i++) {
+ 		if (i + 1 >= size / sizeof *items)
+ 			if (!(items = realloc(items, (size += BUFSIZ))))
+ 				die("cannot realloc %zu bytes:", size);
+-		if (line[len - 1] == '\n')
+-			line[len - 1] = '\0';
+-		items[i].text = line;
++		if ((p = strchr(buf, '\n')))
++			*p = '\0';
++		if (!(items[i].text = strdup(buf)))
++			die("cannot strdup %zu bytes:", strlen(buf) + 1);
+ 		items[i].out = 0;
+ 	}
+ 	if (items)
+@@ -622,8 +627,13 @@ setup(void)
  	int a, di, n, area = 0;
  #endif
  	/* init appearance */
@@ -37,7 +76,7 @@ index 839f6cc..ecfe99c 100644
  
  	clip = XInternAtom(dpy, "CLIPBOARD",   False);
  	utf8 = XInternAtom(dpy, "UTF8_STRING", False);
-@@ -721,6 +731,41 @@ usage(void)
+@@ -715,6 +725,41 @@ usage(void)
  	exit(1);
  }
  
@@ -79,7 +118,7 @@ index 839f6cc..ecfe99c 100644
  int
  main(int argc, char *argv[])
  {
-@@ -749,15 +794,15 @@ main(int argc, char *argv[])
+@@ -743,15 +788,15 @@ main(int argc, char *argv[])
  		else if (!strcmp(argv[i], "-p"))   /* adds prompt to left of input field */
  			prompt = argv[++i];
  		else if (!strcmp(argv[i], "-fn"))  /* font or font set */
@@ -100,7 +139,7 @@ index 839f6cc..ecfe99c 100644
  		else if (!strcmp(argv[i], "-w"))   /* embedding window id */
  			embed = argv[++i];
  		else
-@@ -775,8 +820,23 @@ main(int argc, char *argv[])
+@@ -769,8 +814,23 @@ main(int argc, char *argv[])
  		die("could not get embedding window attributes: 0x%lx",
  		    parentwin);
  	drw = drw_create(dpy, screen, root, wa.width, wa.height);

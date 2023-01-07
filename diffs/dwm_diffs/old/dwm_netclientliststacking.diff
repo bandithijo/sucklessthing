@@ -64,7 +64,7 @@ index ddc8321..86e73f9 100644
  dwm is customized by creating a custom config.h and (re)compiling the source
  code. This keeps it fast, secure and simple.
 diff --git a/dwm.c b/dwm.c
-index 5646a5c..6266610 100644
+index e5efb6a..7f1b96e 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -29,6 +29,7 @@
@@ -163,7 +163,7 @@ index 5646a5c..6266610 100644
  static void movemouse(const Arg *arg);
 +static void movethrow(const Arg *arg);
  static Client *nexttiled(Client *c);
--static void pop(Client *);
+-static void pop(Client *c);
  static void propertynotify(XEvent *e);
  static void quit(const Arg *arg);
  static Monitor *recttomon(int x, int y, int w, int h);
@@ -191,7 +191,7 @@ index 5646a5c..6266610 100644
 +static void swalstopsel(const Arg *unused);
  static void tag(const Arg *arg);
  static void tagmon(const Arg *arg);
- static void tile(Monitor *);
+ static void tile(Monitor *m);
 @@ -229,6 +274,7 @@ static void updatewindowtype(Client *c);
  static void updatewmhints(Client *c);
  static void view(const Arg *arg);
@@ -441,7 +441,7 @@ index 5646a5c..6266610 100644
  void
  focus(Client *c)
  {
-@@ -1005,6 +1156,49 @@ keypress(XEvent *e)
+@@ -1003,6 +1154,49 @@ keypress(XEvent *e)
  			keys[i].func(&(keys[i].arg));
  }
  
@@ -491,7 +491,7 @@ index 5646a5c..6266610 100644
  void
  killclient(const Arg *arg)
  {
-@@ -1073,6 +1267,8 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1069,6 +1263,8 @@ manage(Window w, XWindowAttributes *wa)
  	attachstack(c);
  	XChangeProperty(dpy, root, netatom[NetClientList], XA_WINDOW, 32, PropModeAppend,
  		(unsigned char *) &(c->win), 1);
@@ -500,7 +500,7 @@ index 5646a5c..6266610 100644
  	XMoveResizeWindow(dpy, c->win, c->x + 2 * sw, c->y, c->w, c->h); /* some windows require this */
  	setclientstate(c, NormalState);
  	if (c->mon == selmon)
-@@ -1096,15 +1292,37 @@ mappingnotify(XEvent *e)
+@@ -1092,13 +1288,35 @@ mappingnotify(XEvent *e)
  void
  maprequest(XEvent *e)
  {
@@ -509,9 +509,7 @@ index 5646a5c..6266610 100644
  	XMapRequestEvent *ev = &e->xmaprequest;
 +	Swallow *s;
  
- 	if (!XGetWindowAttributes(dpy, ev->window, &wa))
- 		return;
- 	if (wa.override_redirect)
+ 	if (!XGetWindowAttributes(dpy, ev->window, &wa) || wa.override_redirect)
  		return;
 -	if (!wintoclient(ev->window))
 -		manage(ev->window, &wa);
@@ -540,7 +538,7 @@ index 5646a5c..6266610 100644
  }
  
  void
-@@ -1199,6 +1417,92 @@ movemouse(const Arg *arg)
+@@ -1193,6 +1411,92 @@ movemouse(const Arg *arg)
  	}
  }
  
@@ -633,7 +631,7 @@ index 5646a5c..6266610 100644
  Client *
  nexttiled(Client *c)
  {
-@@ -1206,25 +1510,20 @@ nexttiled(Client *c)
+@@ -1200,25 +1504,20 @@ nexttiled(Client *c)
  	return c;
  }
  
@@ -666,7 +664,7 @@ index 5646a5c..6266610 100644
  		return; /* ignore */
  	else if ((c = wintoclient(ev->window))) {
  		switch(ev->atom) {
-@@ -1246,6 +1545,9 @@ propertynotify(XEvent *e)
+@@ -1240,6 +1539,9 @@ propertynotify(XEvent *e)
  			updatetitle(c);
  			if (c == c->mon->sel)
  				drawbar(c->mon);
@@ -676,7 +674,7 @@ index 5646a5c..6266610 100644
  		}
  		if (ev->atom == netatom[NetWMWindowType])
  			updatewindowtype(c);
-@@ -1387,6 +1689,83 @@ run(void)
+@@ -1381,6 +1683,83 @@ run(void)
  			handler[ev.type](&ev); /* call handler */
  }
  
@@ -760,7 +758,7 @@ index 5646a5c..6266610 100644
  void
  scan(void)
  {
-@@ -1569,10 +1948,12 @@ setup(void)
+@@ -1563,10 +1942,12 @@ setup(void)
  	netatom[NetWMWindowType] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
  	netatom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
  	netatom[NetClientList] = XInternAtom(dpy, "_NET_CLIENT_LIST", False);
@@ -773,7 +771,7 @@ index 5646a5c..6266610 100644
  	/* init appearance */
  	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
  	for (i = 0; i < LENGTH(colors); i++)
-@@ -1592,6 +1973,7 @@ setup(void)
+@@ -1586,6 +1967,7 @@ setup(void)
  	XChangeProperty(dpy, root, netatom[NetSupported], XA_ATOM, 32,
  		PropModeReplace, (unsigned char *) netatom, NetLast);
  	XDeleteProperty(dpy, root, netatom[NetClientList]);
@@ -781,7 +779,7 @@ index 5646a5c..6266610 100644
  	/* select events */
  	wa.cursor = cursor[CurNormal]->cursor;
  	wa.event_mask = SubstructureRedirectMask|SubstructureNotifyMask
-@@ -1659,6 +2041,331 @@ spawn(const Arg *arg)
+@@ -1648,6 +2030,331 @@ spawn(const Arg *arg)
  	}
  }
  
@@ -1113,7 +1111,7 @@ index 5646a5c..6266610 100644
  void
  tag(const Arg *arg)
  {
-@@ -1774,6 +2481,9 @@ unmanage(Client *c, int destroyed)
+@@ -1763,6 +2470,9 @@ unmanage(Client *c, int destroyed)
  	Monitor *m = c->mon;
  	XWindowChanges wc;
  
@@ -1123,7 +1121,7 @@ index 5646a5c..6266610 100644
  	detach(c);
  	detachstack(c);
  	if (!destroyed) {
-@@ -1798,12 +2508,24 @@ unmapnotify(XEvent *e)
+@@ -1788,12 +2498,24 @@ unmapnotify(XEvent *e)
  {
  	Client *c;
  	XUnmapEvent *ev = &e->xunmap;
@@ -1153,7 +1151,7 @@ index 5646a5c..6266610 100644
  	}
  }
  
-@@ -1845,13 +2567,24 @@ updatebarpos(Monitor *m)
+@@ -1835,13 +2557,24 @@ updatebarpos(Monitor *m)
  void
  updateclientlist()
  {
@@ -1181,7 +1179,7 @@ index 5646a5c..6266610 100644
  				XA_WINDOW, 32, PropModeAppend,
  				(unsigned char *) &(c->win), 1);
  }
-@@ -1997,9 +2730,11 @@ updatesizehints(Client *c)
+@@ -1987,9 +2720,11 @@ updatesizehints(Client *c)
  void
  updatestatus(void)
  {
@@ -1194,7 +1192,7 @@ index 5646a5c..6266610 100644
  }
  
  void
-@@ -2067,6 +2802,43 @@ wintoclient(Window w)
+@@ -2057,6 +2792,43 @@ wintoclient(Window w)
  	return NULL;
  }
  
@@ -1238,18 +1236,16 @@ index 5646a5c..6266610 100644
  Monitor *
  wintomon(Window w)
  {
-@@ -2124,14 +2896,38 @@ void
+@@ -2114,12 +2886,37 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;
 +	Client *at = NULL, *cold, *cprevious = NULL;
  
- 	if (!selmon->lt[selmon->sellt]->arrange
- 	|| (selmon->sel && selmon->sel->isfloating))
+ 	if (!selmon->lt[selmon->sellt]->arrange || !c || c->isfloating)
  		return;
--	if (c == nexttiled(selmon->clients))
--		if (!c || !(c = nexttiled(c->next)))
--			return;
+-	if (c == nexttiled(selmon->clients) && !(c = nexttiled(c->next)))
+-		return;
 -	pop(c);
 +	if (c == nexttiled(selmon->clients)) {
 +		at = findbefore(prevzoom);
@@ -1281,7 +1277,7 @@ index 5646a5c..6266610 100644
  }
  
  int
-@@ -2152,6 +2948,7 @@ main(int argc, char *argv[])
+@@ -2140,6 +2937,7 @@ main(int argc, char *argv[])
  		die("pledge");
  #endif /* __OpenBSD__ */
  	scan();
@@ -1462,12 +1458,12 @@ index 0000000..9400606
 +	fi
 +esac
 diff --git a/util.c b/util.c
-index fe044fc..1f51877 100644
+index 96b82c9..6c62295 100644
 --- a/util.c
 +++ b/util.c
-@@ -33,3 +33,33 @@ die(const char *fmt, ...) {
- 
- 	exit(1);
+@@ -34,3 +34,33 @@ ecalloc(size_t nmemb, size_t size)
+ 		die("calloc:");
+ 	return p;
  }
 +
 +/*

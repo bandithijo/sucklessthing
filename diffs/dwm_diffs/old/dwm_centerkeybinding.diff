@@ -11,7 +11,7 @@ index 995172f..d221f09 100644
  Permission is hereby granted, free of charge, to any person obtaining a
  copy of this software and associated documentation files (the "Software"),
 diff --git a/config.def.h b/config.def.h
-index a2ac963..1c0b587 100644
+index 061ad66..1c0b587 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -35,7 +35,6 @@ static const Rule rules[] = {
@@ -22,6 +22,29 @@ index a2ac963..1c0b587 100644
  
  static const Layout layouts[] = {
  	/* symbol     arrange function */
+@@ -56,10 +55,11 @@ static const Layout layouts[] = {
+ #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+ 
+ /* commands */
+-static const char *dmenucmd[] = { "dmenu_run", "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
++static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
++static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+ static const char *termcmd[]  = { "st", NULL };
+ 
+-static const Key keys[] = {
++static Key keys[] = {
+ 	/* modifier                     key        function        argument */
+ 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
+ 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
+@@ -98,7 +98,7 @@ static const Key keys[] = {
+ 
+ /* button definitions */
+ /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
+-static const Button buttons[] = {
++static Button buttons[] = {
+ 	/* click                event mask      button          function        argument */
+ 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
+ 	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
 diff --git a/config.mk b/config.mk
 index 81c493e..7084c33 100644
 --- a/config.mk
@@ -42,10 +65,30 @@ index 81c493e..7084c33 100644
  # includes and libs
  INCS = -I${X11INC} -I${FREETYPEINC}
 diff --git a/drw.c b/drw.c
-index ced7d37..4cdbcbe 100644
+index a58a2b4..4cdbcbe 100644
 --- a/drw.c
 +++ b/drw.c
-@@ -251,10 +251,12 @@ drw_rect(Drw *drw, int x, int y, unsigned int w, unsigned int h, int filled, int
+@@ -133,6 +133,19 @@ xfont_create(Drw *drw, const char *fontname, FcPattern *fontpattern)
+ 		die("no font specified.");
+ 	}
+ 
++	/* Do not allow using color fonts. This is a workaround for a BadLength
++	 * error from Xft with color glyphs. Modelled on the Xterm workaround. See
++	 * https://bugzilla.redhat.com/show_bug.cgi?id=1498269
++	 * https://lists.suckless.org/dev/1701/30932.html
++	 * https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=916349
++	 * and lots more all over the internet.
++	 */
++	FcBool iscol;
++	if(FcPatternGetBool(xfont->pattern, FC_COLOR, 0, &iscol) == FcResultMatch && iscol) {
++		XftFontClose(drw->dpy, xfont);
++		return NULL;
++	}
++
+ 	font = ecalloc(1, sizeof(Fnt));
+ 	font->xfont = xfont;
+ 	font->pattern = pattern;
+@@ -238,10 +251,12 @@ drw_rect(Drw *drw, int x, int y, unsigned int w, unsigned int h, int filled, int
  int
  drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lpad, const char *text, int invert)
  {
@@ -60,7 +103,7 @@ index ced7d37..4cdbcbe 100644
  	int utf8strlen, utf8charlen, render = x || y || w || h;
  	long utf8codepoint = 0;
  	const char *utf8str;
-@@ -262,17 +264,13 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
+@@ -249,17 +264,13 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
  	FcPattern *fcpattern;
  	FcPattern *match;
  	XftResult result;
@@ -81,7 +124,7 @@ index ced7d37..4cdbcbe 100644
  	} else {
  		XSetForeground(drw->dpy, drw->gc, drw->scheme[invert ? ColFg : ColBg].pixel);
  		XFillRectangle(drw->dpy, drw->drawable, drw->gc, x, y, w, h);
-@@ -284,10 +282,8 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
+@@ -271,10 +282,8 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
  	}
  
  	usedfont = drw->fonts;
@@ -93,7 +136,7 @@ index ced7d37..4cdbcbe 100644
  		utf8str = text;
  		nextfont = NULL;
  		while (*text) {
-@@ -295,27 +291,9 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
+@@ -282,27 +291,9 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
  			for (curfont = drw->fonts; curfont; curfont = curfont->next) {
  				charexists = charexists || XftCharExists(drw->dpy, curfont->xfont, utf8codepoint);
  				if (charexists) {
@@ -122,7 +165,7 @@ index ced7d37..4cdbcbe 100644
  					} else {
  						nextfont = curfont;
  					}
-@@ -323,25 +301,36 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
+@@ -310,25 +301,36 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
  				}
  			}
  
@@ -169,7 +212,7 @@ index ced7d37..4cdbcbe 100644
  			break;
  		} else if (nextfont) {
  			charexists = 0;
-@@ -351,12 +340,6 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
+@@ -338,12 +340,6 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
  			 * character must be drawn. */
  			charexists = 1;
  
@@ -182,7 +225,15 @@ index ced7d37..4cdbcbe 100644
  			fccharset = FcCharSetCreate();
  			FcCharSetAddChar(fccharset, utf8codepoint);
  
-@@ -385,8 +368,6 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
+@@ -355,6 +351,7 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
+ 			fcpattern = FcPatternDuplicate(drw->fonts->pattern);
+ 			FcPatternAddCharSet(fcpattern, FC_CHARSET, fccharset);
+ 			FcPatternAddBool(fcpattern, FC_SCALABLE, FcTrue);
++			FcPatternAddBool(fcpattern, FC_COLOR, FcFalse);
+ 
+ 			FcConfigSubstitute(NULL, fcpattern, FcMatchPattern);
+ 			FcDefaultSubstitute(fcpattern);
+@@ -371,8 +368,6 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
  					curfont->next = usedfont;
  				} else {
  					xfont_free(usedfont);
@@ -191,7 +242,7 @@ index ced7d37..4cdbcbe 100644
  					usedfont = drw->fonts;
  				}
  			}
-@@ -416,15 +397,6 @@ drw_fontset_getwidth(Drw *drw, const char *text)
+@@ -402,15 +397,6 @@ drw_fontset_getwidth(Drw *drw, const char *text)
  	return drw_text(drw, 0, 0, 0, 0, 0, text, 0);
  }
  
@@ -220,7 +271,7 @@ index 6471431..4bcd5ad 100644
  
  /* Colorscheme abstraction */
 diff --git a/dwm.c b/dwm.c
-index 5646a5c..83a7f8a 100644
+index e5efb6a..83a7f8a 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -89,7 +89,7 @@ struct Client {
@@ -240,6 +291,33 @@ index 5646a5c..83a7f8a 100644
  static void checkotherwm(void);
  static void cleanup(void);
  static void cleanupmon(Monitor *mon);
+@@ -185,7 +186,7 @@ static void monocle(Monitor *m);
+ static void motionnotify(XEvent *e);
+ static void movemouse(const Arg *arg);
+ static Client *nexttiled(Client *c);
+-static void pop(Client *c);
++static void pop(Client *);
+ static void propertynotify(XEvent *e);
+ static void quit(const Arg *arg);
+ static Monitor *recttomon(int x, int y, int w, int h);
+@@ -209,7 +210,7 @@ static void sigchld(int unused);
+ static void spawn(const Arg *arg);
+ static void tag(const Arg *arg);
+ static void tagmon(const Arg *arg);
+-static void tile(Monitor *m);
++static void tile(Monitor *);
+ static void togglebar(const Arg *arg);
+ static void togglefloating(const Arg *arg);
+ static void toggletag(const Arg *arg);
+@@ -240,7 +241,7 @@ static const char broken[] = "broken";
+ static char stext[256];
+ static int screen;
+ static int sw, sh;           /* X display screen geometry width, height */
+-static int bh;               /* bar height */
++static int bh, blw = 0;      /* bar geometry */
+ static int lrpad;            /* sum of left and right padding for text */
+ static int (*xerrorxlib)(Display *, XErrorEvent *);
+ static unsigned int numlockmask = 0;
 @@ -345,8 +346,6 @@ applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact)
  	if (*w < bh)
  		*w = bh;
@@ -249,6 +327,15 @@ index 5646a5c..83a7f8a 100644
  		/* see last two sentences in ICCCM 4.1.2.3 */
  		baseismin = c->basew == c->minw && c->baseh == c->minh;
  		if (!baseismin) { /* temporarily remove base dimensions */
+@@ -440,7 +439,7 @@ buttonpress(XEvent *e)
+ 		if (i < LENGTH(tags)) {
+ 			click = ClkTagBar;
+ 			arg.ui = 1 << i;
+-		} else if (ev->x < x + TEXTW(selmon->ltsymbol))
++		} else if (ev->x < x + blw)
+ 			click = ClkLtSymbol;
+ 		else if (ev->x > selmon->ww - (int)TEXTW(stext))
+ 			click = ClkStatusText;
 @@ -458,6 +457,23 @@ buttonpress(XEvent *e)
  			buttons[i].func(click == ClkTagBar && buttons[i].arg.i == 0 ? &arg : &buttons[i].arg);
  }
@@ -291,6 +378,15 @@ index 5646a5c..83a7f8a 100644
  	/* draw status first so it can be overdrawn by tags later */
  	if (m == selmon) { /* status is only drawn on selected monitor */
  		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -731,7 +743,7 @@ drawbar(Monitor *m)
+ 				urg & 1 << i);
+ 		x += w;
+ 	}
+-	w = TEXTW(m->ltsymbol);
++	w = blw = TEXTW(m->ltsymbol);
+ 	drw_setscheme(drw, scheme[SchemeNorm]);
+ 	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
+ 
 @@ -841,7 +853,7 @@ focusstack(const Arg *arg)
  {
  	Client *c = NULL, *i;
@@ -300,7 +396,57 @@ index 5646a5c..83a7f8a 100644
  		return;
  	if (arg->i > 0) {
  		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-@@ -1235,7 +1247,7 @@ propertynotify(XEvent *e)
+@@ -918,11 +930,13 @@ gettextprop(Window w, Atom atom, char *text, unsigned int size)
+ 	text[0] = '\0';
+ 	if (!XGetTextProperty(dpy, w, &name, atom) || !name.nitems)
+ 		return 0;
+-	if (name.encoding == XA_STRING) {
++	if (name.encoding == XA_STRING)
+ 		strncpy(text, (char *)name.value, size - 1);
+-	} else if (XmbTextPropertyToTextList(dpy, &name, &list, &n) >= Success && n > 0 && *list) {
+-		strncpy(text, *list, size - 1);
+-		XFreeStringList(list);
++	else {
++		if (XmbTextPropertyToTextList(dpy, &name, &list, &n) >= Success && n > 0 && *list) {
++			strncpy(text, *list, size - 1);
++			XFreeStringList(list);
++		}
+ 	}
+ 	text[size - 1] = '\0';
+ 	XFree(name.value);
+@@ -1044,12 +1058,14 @@ manage(Window w, XWindowAttributes *wa)
+ 		applyrules(c);
+ 	}
+ 
+-	if (c->x + WIDTH(c) > c->mon->wx + c->mon->ww)
+-		c->x = c->mon->wx + c->mon->ww - WIDTH(c);
+-	if (c->y + HEIGHT(c) > c->mon->wy + c->mon->wh)
+-		c->y = c->mon->wy + c->mon->wh - HEIGHT(c);
+-	c->x = MAX(c->x, c->mon->wx);
+-	c->y = MAX(c->y, c->mon->wy);
++	if (c->x + WIDTH(c) > c->mon->mx + c->mon->mw)
++		c->x = c->mon->mx + c->mon->mw - WIDTH(c);
++	if (c->y + HEIGHT(c) > c->mon->my + c->mon->mh)
++		c->y = c->mon->my + c->mon->mh - HEIGHT(c);
++	c->x = MAX(c->x, c->mon->mx);
++	/* only fix client y-offset, if the client center might cover the bar */
++	c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
++		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
+ 	c->bw = borderpx;
+ 
+ 	wc.border_width = c->bw;
+@@ -1095,7 +1111,9 @@ maprequest(XEvent *e)
+ 	static XWindowAttributes wa;
+ 	XMapRequestEvent *ev = &e->xmaprequest;
+ 
+-	if (!XGetWindowAttributes(dpy, ev->window, &wa) || wa.override_redirect)
++	if (!XGetWindowAttributes(dpy, ev->window, &wa))
++		return;
++	if (wa.override_redirect)
+ 		return;
+ 	if (!wintoclient(ev->window))
+ 		manage(ev->window, &wa);
+@@ -1229,7 +1247,7 @@ propertynotify(XEvent *e)
  				arrange(c->mon);
  			break;
  		case XA_WM_NORMAL_HINTS:
@@ -309,7 +455,41 @@ index 5646a5c..83a7f8a 100644
  			break;
  		case XA_WM_HINTS:
  			updatewmhints(c);
-@@ -1877,42 +1889,42 @@ updategeom(void)
+@@ -1597,6 +1615,7 @@ setup(void)
+ 	focus(NULL);
+ }
+ 
++
+ void
+ seturgent(Client *c, int urg)
+ {
+@@ -1639,12 +1658,16 @@ sigchld(int unused)
+ void
+ spawn(const Arg *arg)
+ {
++	if (arg->v == dmenucmd)
++		dmenumon[0] = '0' + selmon->num;
+ 	if (fork() == 0) {
+ 		if (dpy)
+ 			close(ConnectionNumber(dpy));
+ 		setsid();
+ 		execvp(((char **)arg->v)[0], (char **)arg->v);
+-		die("dwm: execvp '%s' failed:", ((char **)arg->v)[0]);
++		fprintf(stderr, "dwm: execvp %s", ((char **)arg->v)[0]);
++		perror(" failed");
++		exit(EXIT_SUCCESS);
+ 	}
+ }
+ 
+@@ -1769,7 +1792,6 @@ unmanage(Client *c, int destroyed)
+ 		wc.border_width = c->oldbw;
+ 		XGrabServer(dpy); /* avoid race conditions */
+ 		XSetErrorHandler(xerrordummy);
+-		XSelectInput(dpy, c->win, NoEventMask);
+ 		XConfigureWindow(dpy, c->win, CWBorderWidth, &wc); /* restore border */
+ 		XUngrabButton(dpy, AnyButton, AnyModifier, c->win);
+ 		setclientstate(c, WithdrawnState);
+@@ -1867,42 +1889,42 @@ updategeom(void)
  				memcpy(&unique[j++], &info[i], sizeof(XineramaScreenInfo));
  		XFree(info);
  		nn = j;
@@ -386,7 +566,7 @@ index 5646a5c..83a7f8a 100644
  		}
  		free(unique);
  	} else
-@@ -1991,7 +2003,6 @@ updatesizehints(Client *c)
+@@ -1981,7 +2003,6 @@ updatesizehints(Client *c)
  	} else
  		c->maxa = c->mina = 0.0;
  	c->isfixed = (c->maxw && c->maxh && c->maxw == c->minw && c->maxh == c->minh);
@@ -394,3 +574,58 @@ index 5646a5c..83a7f8a 100644
  }
  
  void
+@@ -2115,10 +2136,12 @@ zoom(const Arg *arg)
+ {
+ 	Client *c = selmon->sel;
+ 
+-	if (!selmon->lt[selmon->sellt]->arrange || !c || c->isfloating)
+-		return;
+-	if (c == nexttiled(selmon->clients) && !(c = nexttiled(c->next)))
++	if (!selmon->lt[selmon->sellt]->arrange
++	|| (selmon->sel && selmon->sel->isfloating))
+ 		return;
++	if (c == nexttiled(selmon->clients))
++		if (!c || !(c = nexttiled(c->next)))
++			return;
+ 	pop(c);
+ }
+ 
+diff --git a/util.c b/util.c
+index 96b82c9..fe044fc 100644
+--- a/util.c
++++ b/util.c
+@@ -6,9 +6,18 @@
+ 
+ #include "util.h"
+ 
+-void
+-die(const char *fmt, ...)
++void *
++ecalloc(size_t nmemb, size_t size)
+ {
++	void *p;
++
++	if (!(p = calloc(nmemb, size)))
++		die("calloc:");
++	return p;
++}
++
++void
++die(const char *fmt, ...) {
+ 	va_list ap;
+ 
+ 	va_start(ap, fmt);
+@@ -24,13 +33,3 @@ die(const char *fmt, ...)
+ 
+ 	exit(1);
+ }
+-
+-void *
+-ecalloc(size_t nmemb, size_t size)
+-{
+-	void *p;
+-
+-	if (!(p = calloc(nmemb, size)))
+-		die("calloc:");
+-	return p;
+-}

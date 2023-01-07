@@ -1,8 +1,8 @@
 diff --git a/dmenu.c b/dmenu.c
-index 98507d9..5419a7c 100644
+index 839f6cc..166dbe0 100644
 --- a/dmenu.c
 +++ b/dmenu.c
-@@ -619,7 +619,7 @@ setup(void)
+@@ -630,7 +630,7 @@ setup(void)
  	utf8 = XInternAtom(dpy, "UTF8_STRING", False);
  
  	/* calculate menu geometry */

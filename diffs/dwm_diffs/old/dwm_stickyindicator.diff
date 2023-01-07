@@ -1,8 +1,8 @@
 diff --git a/drw.c b/drw.c
-index ced7d37..3e9fb20 100644
+index a58a2b4..010cb23 100644
 --- a/drw.c
 +++ b/drw.c
-@@ -248,6 +248,26 @@ drw_rect(Drw *drw, int x, int y, unsigned int w, unsigned int h, int filled, int
+@@ -235,6 +235,26 @@ drw_rect(Drw *drw, int x, int y, unsigned int w, unsigned int h, int filled, int
  		XDrawRectangle(drw->dpy, drw->drawable, drw->gc, x, y, w - 1, h - 1);
  }
  
@@ -42,7 +42,7 @@ index 6471431..19d3743 100644
  
  /* Map functions */
 diff --git a/dwm.c b/dwm.c
-index 5646a5c..764fdce 100644
+index e5efb6a..da09fda 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -741,6 +741,8 @@ drawbar(Monitor *m)

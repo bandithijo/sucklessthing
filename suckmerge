@@ -60,10 +60,11 @@ dwm_branches = [
   'sendmoncenter',         # 40
   'stickyindicator',       # 41*
   'togglefloatingcenter',  # 42  : center^3, canfocusfloating^6
-  'barheight',             # 43*
+  'barheight',             # 43* : dragmfact^7
   'dwmlogoleft',           # 44
   'preserveonrestart',     # 45  : netclientliststacking^5, savefloats^1
-  'quitprompt',            # 46* : placemouse^12 <-
+  'quitprompt',            # 46* : placemouse^12
+  'taglayouts',            # 47* : pertag, ru-gaps^2 <-
 ]
 
 # For st
@@ -198,10 +199,7 @@ def guide_info(dir_name)
   | STATUSBAR:                                                           |
   +----------------------------------------------------------------------+
   | Bandithijo's DWM doesn't bring the status bar.                       |
-  | You should bring your own. My recommendation is dwmblocks.           |
-  | But, I prefer built my own status.                                   |
-  |                                                                      |
-  | Sample: https://s.id/bandithijo-dwmbar                               |
+  | You should bring your own. My recommendation is slstatus.            |
   +----------------------------------------------------------------------+
   +----------------------------------------------------------------------+
   | KEYBOARD:                                                            |

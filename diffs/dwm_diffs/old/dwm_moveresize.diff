@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 5646a5c..5aadee9 100644
+index e5efb6a..833adb4 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -183,6 +183,7 @@ static void mappingnotify(XEvent *e);
@@ -9,8 +9,8 @@ index 5646a5c..5aadee9 100644
 +static void moveresize(const Arg *arg);
  static void movemouse(const Arg *arg);
  static Client *nexttiled(Client *c);
- static void pop(Client *);
-@@ -1199,6 +1200,55 @@ movemouse(const Arg *arg)
+ static void pop(Client *c);
+@@ -1193,6 +1194,55 @@ movemouse(const Arg *arg)
  	}
  }
  

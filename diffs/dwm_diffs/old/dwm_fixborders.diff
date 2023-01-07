@@ -1,8 +1,8 @@
 diff --git a/drw.c b/drw.c
-index ced7d37..8a7bb35 100644
+index a58a2b4..163eb51 100644
 --- a/drw.c
 +++ b/drw.c
-@@ -203,6 +203,8 @@ drw_clr_create(Drw *drw, Clr *dest, const char *clrname)
+@@ -190,6 +190,8 @@ drw_clr_create(Drw *drw, Clr *dest, const char *clrname)
  	                       DefaultColormap(drw->dpy, drw->screen),
  	                       clrname, dest))
  		die("error, cannot allocate color '%s'", clrname);

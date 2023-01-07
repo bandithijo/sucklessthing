@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 5646a5c..7d7a60a 100644
+index e5efb6a..f41b086 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -709,7 +709,7 @@ drawbar(Monitor *m)
@@ -11,7 +11,7 @@ index 5646a5c..7d7a60a 100644
  		drw_setscheme(drw, scheme[SchemeNorm]);
  		tw = TEXTW(stext) - lrpad + 2; /* 2px right padding */
  		drw_text(drw, m->ww - tw, 0, tw, bh, 0, stext, 0);
-@@ -1997,9 +1997,11 @@ updatesizehints(Client *c)
+@@ -1987,9 +1987,11 @@ updatesizehints(Client *c)
  void
  updatestatus(void)
  {

@@ -25,7 +25,7 @@ index 323f93c..d0a734a 100644
  .BI \-m " monitor"
  dmenu is displayed on the monitor number supplied. Monitor numbers are starting
 diff --git a/dmenu.c b/dmenu.c
-index 839f6cc..66269c7 100644
+index 818313a..833b8c6 100644
 --- a/dmenu.c
 +++ b/dmenu.c
 @@ -84,7 +84,7 @@ calcoffsets(void)
@@ -56,7 +56,46 @@ index 839f6cc..66269c7 100644
  	} else if (matches) {
  		/* draw horizontal list */
  		x += inputw;
-@@ -742,9 +748,13 @@ main(int argc, char *argv[])
+@@ -517,9 +523,9 @@ insert:
+ 	case XK_Tab:
+ 		if (!sel)
+ 			return;
+-		cursor = strnlen(sel->text, sizeof text - 1);
+-		memcpy(text, sel->text, cursor);
+-		text[cursor] = '\0';
++		strncpy(text, sel->text, sizeof text - 1);
++		text[sizeof text - 1] = '\0';
++		cursor = strlen(text);
+ 		match();
+ 		break;
+ 	}
+@@ -549,18 +555,18 @@ paste(void)
+ static void
+ readstdin(void)
+ {
+-	char *line = NULL;
+-	size_t i, junk, size = 0;
+-	ssize_t len;
++	char buf[sizeof text], *p;
++	size_t i, size = 0;
+ 
+ 	/* read each line from stdin and add it to the item list */
+-	for (i = 0; (len = getline(&line, &junk, stdin)) != -1; i++, line = NULL) {
++	for (i = 0; fgets(buf, sizeof buf, stdin); i++) {
+ 		if (i + 1 >= size / sizeof *items)
+ 			if (!(items = realloc(items, (size += BUFSIZ))))
+ 				die("cannot realloc %zu bytes:", size);
+-		if (line[len - 1] == '\n')
+-			line[len - 1] = '\0';
+-		items[i].text = line;
++		if ((p = strchr(buf, '\n')))
++			*p = '\0';
++		if (!(items[i].text = strdup(buf)))
++			die("cannot strdup %zu bytes:", strlen(buf) + 1);
+ 		items[i].out = 0;
+ 	}
+ 	if (items)
+@@ -736,9 +742,13 @@ main(int argc, char *argv[])
  		} else if (i + 1 == argc)
  			usage();
  		/* these options take one argument */

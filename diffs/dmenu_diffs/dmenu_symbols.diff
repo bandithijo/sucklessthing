@@ -1,0 +1,108 @@
+diff --git a/dmenu.c b/dmenu.c
+index 818313a..44df6e0 100644
+--- a/dmenu.c
++++ b/dmenu.c
+@@ -24,6 +24,8 @@
+                              * MAX(0, MIN((y)+(h),(r).y_org+(r).height) - MAX((y),(r).y_org)))
+ #define LENGTH(X)             (sizeof X / sizeof X[0])
+ #define TEXTW(X)              (drw_fontset_getwidth(drw, (X)) + lrpad)
++#define NUMBERSMAXDIGITS      100
++#define NUMBERSBUFSIZE        (NUMBERSMAXDIGITS * 2) + 1
+ 
+ /* enums */
+ enum { SchemeNorm, SchemeSel, SchemeOut, SchemeLast }; /* color schemes */
+@@ -34,6 +36,7 @@ struct item {
+ 	int out;
+ };
+ 
++static char numbers[NUMBERSBUFSIZE] = "";
+ static char text[BUFSIZ] = "";
+ static char *embed;
+ static int bh, mw, mh;
+@@ -143,6 +146,21 @@ drawitem(struct item *item, int x, int y, int w)
+ 	return drw_text(drw, x, y, w, bh, lrpad / 2, item->text, 0);
+ }
+ 
++static void
++recalculatenumbers()
++{
++	unsigned int numer = 0, denom = 0;
++	struct item *item;
++	if (matchend) {
++		numer++;
++		for (item = matchend; item && item->left; item = item->left)
++			numer++;
++	}
++	for (item = items; item && item->text; item++)
++		denom++;
++	snprintf(numbers, NUMBERSBUFSIZE, "%d/%d", numer, denom);
++}
++
+ static void
+ drawmenu(void)
+ {
+@@ -168,6 +186,7 @@ drawmenu(void)
+ 		drw_rect(drw, x + curpos, 2, 2, bh - 4, 1, 0);
+ 	}
+ 
++	recalculatenumbers();
+ 	if (lines > 0) {
+ 		/* draw vertical list */
+ 		for (item = curr; item != next; item = item->right)
+@@ -182,13 +201,15 @@ drawmenu(void)
+ 		}
+ 		x += w;
+ 		for (item = curr; item != next; item = item->right)
+-			x = drawitem(item, x, 0, textw_clamp(item->text, mw - x - TEXTW(">")));
++			x = drawitem(item, x, 0, textw_clamp(item->text, mw - x - TEXTW(">") - TEXTW(numbers)));
+ 		if (next) {
+ 			w = TEXTW(">");
+ 			drw_setscheme(drw, scheme[SchemeNorm]);
+-			drw_text(drw, mw - w, 0, w, bh, lrpad / 2, ">", 0);
++			drw_text(drw, mw - w - TEXTW(numbers), 0, w, bh, lrpad / 2, ">", 0);
+ 		}
+ 	}
++	drw_setscheme(drw, scheme[SchemeNorm]);
++	drw_text(drw, mw - TEXTW(numbers), 0, TEXTW(numbers), bh, lrpad / 2, numbers, 0);
+ 	drw_map(drw, win, 0, 0, mw, mh);
+ }
+ 
+@@ -517,9 +538,9 @@ insert:
+ 	case XK_Tab:
+ 		if (!sel)
+ 			return;
+-		cursor = strnlen(sel->text, sizeof text - 1);
+-		memcpy(text, sel->text, cursor);
+-		text[cursor] = '\0';
++		strncpy(text, sel->text, sizeof text - 1);
++		text[sizeof text - 1] = '\0';
++		cursor = strlen(text);
+ 		match();
+ 		break;
+ 	}
+@@ -549,18 +570,18 @@ paste(void)
+ static void
+ readstdin(void)
+ {
+-	char *line = NULL;
+-	size_t i, junk, size = 0;
+-	ssize_t len;
++	char buf[sizeof text], *p;
++	size_t i, size = 0;
+ 
+ 	/* read each line from stdin and add it to the item list */
+-	for (i = 0; (len = getline(&line, &junk, stdin)) != -1; i++, line = NULL) {
++	for (i = 0; fgets(buf, sizeof buf, stdin); i++) {
+ 		if (i + 1 >= size / sizeof *items)
+ 			if (!(items = realloc(items, (size += BUFSIZ))))
+ 				die("cannot realloc %zu bytes:", size);
+-		if (line[len - 1] == '\n')
+-			line[len - 1] = '\0';
+-		items[i].text = line;
++		if ((p = strchr(buf, '\n')))
++			*p = '\0';
++		if (!(items[i].text = strdup(buf)))
++			die("cannot strdup %zu bytes:", strlen(buf) + 1);
+ 		items[i].out = 0;
+ 	}
+ 	if (items)

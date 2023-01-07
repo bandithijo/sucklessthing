@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 5646a5c..2ba3a91 100644
+index e5efb6a..3989a7e 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -49,7 +49,7 @@
@@ -42,7 +42,7 @@ index 5646a5c..2ba3a91 100644
  static void run(void);
  static void scan(void);
 @@ -212,6 +215,9 @@ static void tagmon(const Arg *arg);
- static void tile(Monitor *);
+ static void tile(Monitor *m);
  static void togglebar(const Arg *arg);
  static void togglefloating(const Arg *arg);
 +static void togglecanfocusfloating(const Arg *arg);
@@ -103,7 +103,7 @@ index 5646a5c..2ba3a91 100644
  					c = i;
  	}
  	if (c) {
-@@ -1063,6 +1075,14 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1059,6 +1071,14 @@ manage(Window w, XWindowAttributes *wa)
  	updatewindowtype(c);
  	updatesizehints(c);
  	updatewmhints(c);
@@ -118,7 +118,7 @@ index 5646a5c..2ba3a91 100644
  	XSelectInput(dpy, w, EnterWindowMask|FocusChangeMask|PropertyChangeMask|StructureNotifyMask);
  	grabbuttons(c, 0);
  	if (!c->isfloating)
-@@ -1363,6 +1383,17 @@ restack(Monitor *m)
+@@ -1357,6 +1377,17 @@ restack(Monitor *m)
  		return;
  	if (m->sel->isfloating || !m->lt[m->sellt]->arrange)
  		XRaiseWindow(dpy, m->sel->win);
@@ -136,7 +136,7 @@ index 5646a5c..2ba3a91 100644
  	if (m->lt[m->sellt]->arrange) {
  		wc.stack_mode = Below;
  		wc.sibling = m->barwin;
-@@ -1473,6 +1504,7 @@ setfocus(Client *c)
+@@ -1467,6 +1498,7 @@ setfocus(Client *c)
  			XA_WINDOW, 32, PropModeReplace,
  			(unsigned char *) &(c->win), 1);
  	}
@@ -144,7 +144,7 @@ index 5646a5c..2ba3a91 100644
  	sendevent(c, wmatom[WMTakeFocus]);
  }
  
-@@ -1723,11 +1755,80 @@ togglefloating(const Arg *arg)
+@@ -1712,11 +1744,80 @@ togglefloating(const Arg *arg)
  		return;
  	selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
  	if (selmon->sel->isfloating)
@@ -227,7 +227,7 @@ index 5646a5c..2ba3a91 100644
  void
  toggletag(const Arg *arg)
  {
-@@ -1760,6 +1861,7 @@ unfocus(Client *c, int setfocus)
+@@ -1749,6 +1850,7 @@ unfocus(Client *c, int setfocus)
  {
  	if (!c)
  		return;
@@ -235,7 +235,7 @@ index 5646a5c..2ba3a91 100644
  	grabbuttons(c, 0);
  	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
  	if (setfocus) {
-@@ -2019,8 +2121,10 @@ updatewindowtype(Client *c)
+@@ -2009,8 +2111,10 @@ updatewindowtype(Client *c)
  
  	if (state == netatom[NetWMFullscreen])
  		setfullscreen(c, 1);
