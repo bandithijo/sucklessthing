@@ -90,7 +90,8 @@ st_branches = [
   'defaultfontsize',   # 20
   'dontcutoffafterresize',# 21 : scrollback
   'swapmouse',         # 22
-  'titleparsingfix',   # 23  : scrollback <-
+  'titleparsingfix',   # 23  : scrollback
+  'glyphwidesupport',  # 24  : boxdraw, invert, undercurl <-
 ]
 
 # For slock
