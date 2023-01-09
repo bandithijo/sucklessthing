@@ -11,7 +11,7 @@ index 995172f..d221f09 100644
  Permission is hereby granted, free of charge, to any person obtaining a
  copy of this software and associated documentation files (the "Software"),
 diff --git a/config.def.h b/config.def.h
-index 061ad66..1c0b587 100644
+index 9efa774..1c0b587 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -35,7 +35,6 @@ static const Rule rules[] = {
@@ -22,13 +22,8 @@ index 061ad66..1c0b587 100644
  
  static const Layout layouts[] = {
  	/* symbol     arrange function */
-@@ -56,10 +55,11 @@ static const Layout layouts[] = {
- #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
- 
- /* commands */
--static const char *dmenucmd[] = { "dmenu_run", "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-+static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+@@ -60,7 +59,7 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn()
+ static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
  static const char *termcmd[]  = { "st", NULL };
  
 -static const Key keys[] = {
@@ -36,7 +31,7 @@ index 061ad66..1c0b587 100644
  	/* modifier                     key        function        argument */
  	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
  	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
-@@ -98,7 +98,7 @@ static const Key keys[] = {
+@@ -99,7 +98,7 @@ static const Key keys[] = {
  
  /* button definitions */
  /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
@@ -46,12 +41,12 @@ index 061ad66..1c0b587 100644
  	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
  	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
 diff --git a/config.mk b/config.mk
-index 81c493e..7084c33 100644
+index ef8acf7..7084c33 100644
 --- a/config.mk
 +++ b/config.mk
 @@ -1,5 +1,5 @@
  # dwm version
--VERSION = 6.3
+-VERSION = 6.4
 +VERSION = 6.2
  
  # Customize below to fit your system
@@ -271,7 +266,7 @@ index 6471431..4bcd5ad 100644
  
  /* Colorscheme abstraction */
 diff --git a/dwm.c b/dwm.c
-index e5efb6a..83a7f8a 100644
+index 03baf42..83a7f8a 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -89,7 +89,7 @@ struct Client {
@@ -414,7 +409,41 @@ index e5efb6a..83a7f8a 100644
  	}
  	text[size - 1] = '\0';
  	XFree(name.value);
-@@ -1044,12 +1058,14 @@ manage(Window w, XWindowAttributes *wa)
+@@ -955,26 +969,16 @@ grabkeys(void)
+ {
+ 	updatenumlockmask();
+ 	{
+-		unsigned int i, j, k;
++		unsigned int i, j;
+ 		unsigned int modifiers[] = { 0, LockMask, numlockmask, numlockmask|LockMask };
+-		int start, end, skip;
+-		KeySym *syms;
++		KeyCode code;
+ 
+ 		XUngrabKey(dpy, AnyKey, AnyModifier, root);
+-		XDisplayKeycodes(dpy, &start, &end);
+-		syms = XGetKeyboardMapping(dpy, start, end - start + 1, &skip);
+-		if (!syms)
+-			return;
+-		for (k = start; k <= end; k++)
+-			for (i = 0; i < LENGTH(keys); i++)
+-				/* skip modifier codes, we do that ourselves */
+-				if (keys[i].keysym == syms[(k - start) * skip])
+-					for (j = 0; j < LENGTH(modifiers); j++)
+-						XGrabKey(dpy, k,
+-							 keys[i].mod | modifiers[j],
+-							 root, True,
+-							 GrabModeAsync, GrabModeAsync);
+-		XFree(syms);
++		for (i = 0; i < LENGTH(keys); i++)
++			if ((code = XKeysymToKeycode(dpy, keys[i].keysym)))
++				for (j = 0; j < LENGTH(modifiers); j++)
++					XGrabKey(dpy, code, keys[i].mod | modifiers[j], root,
++						True, GrabModeAsync, GrabModeAsync);
+ 	}
+ }
+ 
+@@ -1054,12 +1058,14 @@ manage(Window w, XWindowAttributes *wa)
  		applyrules(c);
  	}
  
@@ -435,7 +464,7 @@ index e5efb6a..83a7f8a 100644
  	c->bw = borderpx;
  
  	wc.border_width = c->bw;
-@@ -1095,7 +1111,9 @@ maprequest(XEvent *e)
+@@ -1105,7 +1111,9 @@ maprequest(XEvent *e)
  	static XWindowAttributes wa;
  	XMapRequestEvent *ev = &e->xmaprequest;
  
@@ -446,7 +475,7 @@ index e5efb6a..83a7f8a 100644
  		return;
  	if (!wintoclient(ev->window))
  		manage(ev->window, &wa);
-@@ -1229,7 +1247,7 @@ propertynotify(XEvent *e)
+@@ -1239,7 +1247,7 @@ propertynotify(XEvent *e)
  				arrange(c->mon);
  			break;
  		case XA_WM_NORMAL_HINTS:
@@ -455,7 +484,7 @@ index e5efb6a..83a7f8a 100644
  			break;
  		case XA_WM_HINTS:
  			updatewmhints(c);
-@@ -1597,6 +1615,7 @@ setup(void)
+@@ -1607,6 +1615,7 @@ setup(void)
  	focus(NULL);
  }
  
@@ -463,14 +492,7 @@ index e5efb6a..83a7f8a 100644
  void
  seturgent(Client *c, int urg)
  {
-@@ -1639,12 +1658,16 @@ sigchld(int unused)
- void
- spawn(const Arg *arg)
- {
-+	if (arg->v == dmenucmd)
-+		dmenumon[0] = '0' + selmon->num;
- 	if (fork() == 0) {
- 		if (dpy)
+@@ -1656,7 +1665,9 @@ spawn(const Arg *arg)
  			close(ConnectionNumber(dpy));
  		setsid();
  		execvp(((char **)arg->v)[0], (char **)arg->v);
@@ -481,7 +503,7 @@ index e5efb6a..83a7f8a 100644
  	}
  }
  
-@@ -1769,7 +1792,6 @@ unmanage(Client *c, int destroyed)
+@@ -1781,7 +1792,6 @@ unmanage(Client *c, int destroyed)
  		wc.border_width = c->oldbw;
  		XGrabServer(dpy); /* avoid race conditions */
  		XSetErrorHandler(xerrordummy);
@@ -489,7 +511,7 @@ index e5efb6a..83a7f8a 100644
  		XConfigureWindow(dpy, c->win, CWBorderWidth, &wc); /* restore border */
  		XUngrabButton(dpy, AnyButton, AnyModifier, c->win);
  		setclientstate(c, WithdrawnState);
-@@ -1867,42 +1889,42 @@ updategeom(void)
+@@ -1879,42 +1889,42 @@ updategeom(void)
  				memcpy(&unique[j++], &info[i], sizeof(XineramaScreenInfo));
  		XFree(info);
  		nn = j;
@@ -566,7 +588,7 @@ index e5efb6a..83a7f8a 100644
  		}
  		free(unique);
  	} else
-@@ -1981,7 +2003,6 @@ updatesizehints(Client *c)
+@@ -1993,7 +2003,6 @@ updatesizehints(Client *c)
  	} else
  		c->maxa = c->mina = 0.0;
  	c->isfixed = (c->maxw && c->maxh && c->maxw == c->minw && c->maxh == c->minh);
@@ -574,7 +596,7 @@ index e5efb6a..83a7f8a 100644
  }
  
  void
-@@ -2115,10 +2136,12 @@ zoom(const Arg *arg)
+@@ -2127,10 +2136,12 @@ zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;
  

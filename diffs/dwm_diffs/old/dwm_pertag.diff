@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index e5efb6a..6bb27ed 100644
+index 03baf42..6bb27ed 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -111,6 +111,7 @@ typedef struct {
@@ -63,7 +63,40 @@ index e5efb6a..6bb27ed 100644
  	return m;
  }
  
-@@ -971,7 +997,7 @@ grabkeys(void)
+@@ -955,33 +981,23 @@ grabkeys(void)
+ {
+ 	updatenumlockmask();
+ 	{
+-		unsigned int i, j, k;
++		unsigned int i, j;
+ 		unsigned int modifiers[] = { 0, LockMask, numlockmask, numlockmask|LockMask };
+-		int start, end, skip;
+-		KeySym *syms;
++		KeyCode code;
+ 
+ 		XUngrabKey(dpy, AnyKey, AnyModifier, root);
+-		XDisplayKeycodes(dpy, &start, &end);
+-		syms = XGetKeyboardMapping(dpy, start, end - start + 1, &skip);
+-		if (!syms)
+-			return;
+-		for (k = start; k <= end; k++)
+-			for (i = 0; i < LENGTH(keys); i++)
+-				/* skip modifier codes, we do that ourselves */
+-				if (keys[i].keysym == syms[(k - start) * skip])
+-					for (j = 0; j < LENGTH(modifiers); j++)
+-						XGrabKey(dpy, k,
+-							 keys[i].mod | modifiers[j],
+-							 root, True,
+-							 GrabModeAsync, GrabModeAsync);
+-		XFree(syms);
++		for (i = 0; i < LENGTH(keys); i++)
++			if ((code = XKeysymToKeycode(dpy, keys[i].keysym)))
++				for (j = 0; j < LENGTH(modifiers); j++)
++					XGrabKey(dpy, code, keys[i].mod | modifiers[j], root,
++						True, GrabModeAsync, GrabModeAsync);
+ 	}
+ }
+ 
  void
  incnmaster(const Arg *arg)
  {
@@ -72,7 +105,7 @@ index e5efb6a..6bb27ed 100644
  	arrange(selmon);
  }
  
-@@ -1502,9 +1528,9 @@ void
+@@ -1512,9 +1528,9 @@ void
  setlayout(const Arg *arg)
  {
  	if (!arg || !arg->v || arg->v != selmon->lt[selmon->sellt])
@@ -84,7 +117,7 @@ index e5efb6a..6bb27ed 100644
  	strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, sizeof selmon->ltsymbol);
  	if (selmon->sel)
  		arrange(selmon);
-@@ -1523,7 +1549,7 @@ setmfact(const Arg *arg)
+@@ -1533,7 +1549,7 @@ setmfact(const Arg *arg)
  	f = arg->f < 1.0 ? arg->f + selmon->mfact : arg->f - 1.0;
  	if (f < 0.05 || f > 0.95)
  		return;
@@ -93,7 +126,16 @@ index e5efb6a..6bb27ed 100644
  	arrange(selmon);
  }
  
-@@ -1697,7 +1723,7 @@ tile(Monitor *m)
+@@ -1649,8 +1665,6 @@ sigchld(int unused)
+ void
+ spawn(const Arg *arg)
+ {
+-	if (arg->v == dmenucmd)
+-		dmenumon[0] = '0' + selmon->num;
+ 	if (fork() == 0) {
+ 		if (dpy)
+ 			close(ConnectionNumber(dpy));
+@@ -1709,7 +1723,7 @@ tile(Monitor *m)
  void
  togglebar(const Arg *arg)
  {
@@ -102,7 +144,7 @@ index e5efb6a..6bb27ed 100644
  	updatebarpos(selmon);
  	XMoveResizeWindow(dpy, selmon->barwin, selmon->wx, selmon->by, selmon->ww, bh);
  	arrange(selmon);
-@@ -1736,9 +1762,33 @@ void
+@@ -1748,9 +1762,33 @@ void
  toggleview(const Arg *arg)
  {
  	unsigned int newtagset = selmon->tagset[selmon->seltags] ^ (arg->ui & TAGMASK);
@@ -136,7 +178,7 @@ index e5efb6a..6bb27ed 100644
  		focus(NULL);
  		arrange(selmon);
  	}
-@@ -2035,11 +2085,37 @@ updatewmhints(Client *c)
+@@ -2047,11 +2085,37 @@ updatewmhints(Client *c)
  void
  view(const Arg *arg)
  {

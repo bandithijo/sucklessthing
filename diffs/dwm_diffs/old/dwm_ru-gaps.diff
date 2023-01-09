@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index e5efb6a..bbc11f4 100644
+index 03baf42..bbc11f4 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -87,6 +87,7 @@ typedef struct Client Client;
@@ -36,7 +36,41 @@ index e5efb6a..bbc11f4 100644
  	m->lt[0] = &layouts[0];
  	m->lt[1] = &layouts[1 % LENGTH(layouts)];
  	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
-@@ -1034,6 +1039,7 @@ manage(Window w, XWindowAttributes *wa)
+@@ -955,26 +960,16 @@ grabkeys(void)
+ {
+ 	updatenumlockmask();
+ 	{
+-		unsigned int i, j, k;
++		unsigned int i, j;
+ 		unsigned int modifiers[] = { 0, LockMask, numlockmask, numlockmask|LockMask };
+-		int start, end, skip;
+-		KeySym *syms;
++		KeyCode code;
+ 
+ 		XUngrabKey(dpy, AnyKey, AnyModifier, root);
+-		XDisplayKeycodes(dpy, &start, &end);
+-		syms = XGetKeyboardMapping(dpy, start, end - start + 1, &skip);
+-		if (!syms)
+-			return;
+-		for (k = start; k <= end; k++)
+-			for (i = 0; i < LENGTH(keys); i++)
+-				/* skip modifier codes, we do that ourselves */
+-				if (keys[i].keysym == syms[(k - start) * skip])
+-					for (j = 0; j < LENGTH(modifiers); j++)
+-						XGrabKey(dpy, k,
+-							 keys[i].mod | modifiers[j],
+-							 root, True,
+-							 GrabModeAsync, GrabModeAsync);
+-		XFree(syms);
++		for (i = 0; i < LENGTH(keys); i++)
++			if ((code = XKeysymToKeycode(dpy, keys[i].keysym)))
++				for (j = 0; j < LENGTH(modifiers); j++)
++					XGrabKey(dpy, code, keys[i].mod | modifiers[j], root,
++						True, GrabModeAsync, GrabModeAsync);
+ 	}
+ }
+ 
+@@ -1044,6 +1039,7 @@ manage(Window w, XWindowAttributes *wa)
  	c->w = c->oldw = wa->width;
  	c->h = c->oldh = wa->height;
  	c->oldbw = wa->border_width;
@@ -44,7 +78,7 @@ index e5efb6a..bbc11f4 100644
  
  	updatetitle(c);
  	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
-@@ -1113,7 +1119,7 @@ monocle(Monitor *m)
+@@ -1123,7 +1119,7 @@ monocle(Monitor *m)
  	if (n > 0) /* override layout symbol */
  		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
  	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
@@ -53,7 +87,7 @@ index e5efb6a..bbc11f4 100644
  }
  
  void
-@@ -1283,6 +1289,16 @@ resizeclient(Client *c, int x, int y, int w, int h)
+@@ -1293,6 +1289,16 @@ resizeclient(Client *c, int x, int y, int w, int h)
  	c->oldw = c->w; c->w = wc.width = w;
  	c->oldh = c->h; c->h = wc.height = h;
  	wc.border_width = c->bw;
@@ -70,7 +104,7 @@ index e5efb6a..bbc11f4 100644
  	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
  	configure(c);
  	XSync(dpy, False);
-@@ -1498,6 +1514,16 @@ setfullscreen(Client *c, int fullscreen)
+@@ -1508,6 +1514,16 @@ setfullscreen(Client *c, int fullscreen)
  	}
  }
  
@@ -87,7 +121,7 @@ index e5efb6a..bbc11f4 100644
  void
  setlayout(const Arg *arg)
  {
-@@ -1512,6 +1538,23 @@ setlayout(const Arg *arg)
+@@ -1522,6 +1538,23 @@ setlayout(const Arg *arg)
  		drawbar(selmon);
  }
  
@@ -111,7 +145,16 @@ index e5efb6a..bbc11f4 100644
  /* arg > 1.0 will set mfact absolutely */
  void
  setmfact(const Arg *arg)
-@@ -1669,28 +1712,45 @@ tagmon(const Arg *arg)
+@@ -1649,8 +1682,6 @@ sigchld(int unused)
+ void
+ spawn(const Arg *arg)
+ {
+-	if (arg->v == dmenucmd)
+-		dmenumon[0] = '0' + selmon->num;
+ 	if (fork() == 0) {
+ 		if (dpy)
+ 			close(ConnectionNumber(dpy));
+@@ -1681,28 +1712,45 @@ tagmon(const Arg *arg)
  void
  tile(Monitor *m)
  {
