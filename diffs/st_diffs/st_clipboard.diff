@@ -1,5 +1,5 @@
 diff --git a/FAQ b/FAQ
-index 969b195..0f9609d 100644
+index 6287a27..0f9609d 100644
 --- a/FAQ
 +++ b/FAQ
 @@ -29,8 +29,8 @@ you can manually run `tic -sx st.info`.
@@ -13,6 +13,13 @@ index 969b195..0f9609d 100644
  
  
  ## Why doesn't the Del key work in some programs?
+@@ -248,6 +248,3 @@ fonts:
+ 
+ Please don't bother reporting this bug to st, but notify the upstream Xft
+ developers about fixing this bug.
+-
+-As of 2022-09-05 this now seems to be finally fixed in libXft 2.3.5:
+-https://gitlab.freedesktop.org/xorg/lib/libxft/-/blob/libXft-2.3.5/NEWS
 diff --git a/LICENSE b/LICENSE
 index 3cbf420..d80eb47 100644
 --- a/LICENSE
@@ -52,12 +59,12 @@ index 91ab8ca..6f05dce 100644
  
  /*
 diff --git a/config.mk b/config.mk
-index ddf278a..c070a4a 100644
+index 1e306f8..c070a4a 100644
 --- a/config.mk
 +++ b/config.mk
 @@ -1,5 +1,5 @@
  # st version
--VERSION = 0.8.5
+-VERSION = 0.9
 +VERSION = 0.8.4
  
  # Customize below to fit your system
@@ -71,7 +78,7 @@ index ddf278a..c070a4a 100644
  # compiler and linker
  # CC = c99
 diff --git a/st.c b/st.c
-index 6ba467d..abbbe4b 100644
+index 62def59..abbbe4b 100644
 --- a/st.c
 +++ b/st.c
 @@ -161,7 +161,6 @@ static void csidump(void);
@@ -224,6 +231,15 @@ index 6ba467d..abbbe4b 100644
  #ifdef __OpenBSD__
  		if (pledge("stdio getpw proc exec", NULL) == -1)
  			die("pledge\n");
+@@ -939,7 +943,7 @@ ttyresize(int tw, int th)
+ }
+ 
+ void
+-ttyhangup(void)
++ttyhangup()
+ {
+ 	/* Send SIGHUP to shell */
+ 	kill(pid, SIGHUP);
 @@ -1182,9 +1186,9 @@ tmoveto(int x, int y)
  }
  
@@ -415,7 +431,7 @@ index 6de960d..e6e4369 100644
  void xsettitle(char *);
  int xsetcursor(int);
 diff --git a/x.c b/x.c
-index 2a3bd38..647ed1b 100644
+index aa09997..647ed1b 100644
 --- a/x.c
 +++ b/x.c
 @@ -48,7 +48,7 @@ typedef struct {
@@ -673,3 +689,28 @@ index 2a3bd38..647ed1b 100644
  	XSetWMName(xw.dpy, xw.win, &prop);
  	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmname);
  	XFree(prop.value);
+@@ -1833,7 +1801,7 @@ void
+ kpress(XEvent *ev)
+ {
+ 	XKeyEvent *e = &ev->xkey;
+-	KeySym ksym = NoSymbol;
++	KeySym ksym;
+ 	char buf[64], *customkey;
+ 	int len;
+ 	Rune c;
+@@ -1843,13 +1811,10 @@ kpress(XEvent *ev)
+ 	if (IS_SET(MODE_KBDLOCK))
+ 		return;
+ 
+-	if (xw.ime.xic) {
++	if (xw.ime.xic)
+ 		len = XmbLookupString(xw.ime.xic, e, buf, sizeof buf, &ksym, &status);
+-		if (status == XBufferOverflow)
+-			return;
+-	} else {
++	else
+ 		len = XLookupString(e, buf, sizeof buf, &ksym, NULL);
+-	}
+ 	/* 1. shortcuts */
+ 	for (bp = shortcuts; bp < shortcuts + LEN(shortcuts); bp++) {
+ 		if (ksym == bp->keysym && match(bp->mod, e->state)) {

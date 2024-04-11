@@ -1,3 +1,39 @@
+diff --git a/Makefile b/Makefile
+index ffa69b4..77bcbc0 100644
+--- a/Makefile
++++ b/Makefile
+@@ -6,7 +6,13 @@ include config.mk
+ SRC = drw.c dwm.c util.c
+ OBJ = ${SRC:.c=.o}
+ 
+-all: dwm
++all: options dwm
++
++options:
++	@echo dwm build options:
++	@echo "CFLAGS   = ${CFLAGS}"
++	@echo "LDFLAGS  = ${LDFLAGS}"
++	@echo "CC       = ${CC}"
+ 
+ .c.o:
+ 	${CC} -c ${CFLAGS} $<
+@@ -42,4 +48,4 @@ uninstall:
+ 	rm -f ${DESTDIR}${PREFIX}/bin/dwm\
+ 		${DESTDIR}${MANPREFIX}/man1/dwm.1
+ 
+-.PHONY: all clean dist install uninstall
++.PHONY: all options clean dist install uninstall
+diff --git a/config.mk b/config.mk
+index 8efca9a..ba64d3d 100644
+--- a/config.mk
++++ b/config.mk
+@@ -1,5 +1,5 @@
+ # dwm version
+-VERSION = 6.5
++VERSION = 6.4
+ 
+ # Customize below to fit your system
+ 
 diff --git a/drw.c b/drw.c
 index a58a2b4..f8a82f5 100644
 --- a/drw.c
@@ -25,7 +61,7 @@ index 6471431..bdbf950 100644
  /* Cursor abstraction */
  Cur *drw_cur_create(Drw *drw, int shape);
 diff --git a/dwm.c b/dwm.c
-index 03baf42..2e8f4cb 100644
+index f1d86b2..14f9f7f 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -35,6 +35,7 @@
@@ -66,7 +102,7 @@ index 03baf42..2e8f4cb 100644
  static void manage(Window w, XWindowAttributes *wa);
  static void mappingnotify(XEvent *e);
  static void maprequest(XEvent *e);
-@@ -233,6 +250,7 @@ static Monitor *wintomon(Window w);
+@@ -232,6 +249,7 @@ static Monitor *wintomon(Window w);
  static int xerror(Display *dpy, XErrorEvent *ee);
  static int xerrordummy(Display *dpy, XErrorEvent *ee);
  static int xerrorstart(Display *dpy, XErrorEvent *ee);
@@ -74,41 +110,7 @@ index 03baf42..2e8f4cb 100644
  static void zoom(const Arg *arg);
  
  /* variables */
-@@ -955,26 +973,16 @@ grabkeys(void)
- {
- 	updatenumlockmask();
- 	{
--		unsigned int i, j, k;
-+		unsigned int i, j;
- 		unsigned int modifiers[] = { 0, LockMask, numlockmask, numlockmask|LockMask };
--		int start, end, skip;
--		KeySym *syms;
-+		KeyCode code;
- 
- 		XUngrabKey(dpy, AnyKey, AnyModifier, root);
--		XDisplayKeycodes(dpy, &start, &end);
--		syms = XGetKeyboardMapping(dpy, start, end - start + 1, &skip);
--		if (!syms)
--			return;
--		for (k = start; k <= end; k++)
--			for (i = 0; i < LENGTH(keys); i++)
--				/* skip modifier codes, we do that ourselves */
--				if (keys[i].keysym == syms[(k - start) * skip])
--					for (j = 0; j < LENGTH(modifiers); j++)
--						XGrabKey(dpy, k,
--							 keys[i].mod | modifiers[j],
--							 root, True,
--							 GrabModeAsync, GrabModeAsync);
--		XFree(syms);
-+		for (i = 0; i < LENGTH(keys); i++)
-+			if ((code = XKeysymToKeycode(dpy, keys[i].keysym)))
-+				for (j = 0; j < LENGTH(modifiers); j++)
-+					XGrabKey(dpy, code, keys[i].mod | modifiers[j], root,
-+						True, GrabModeAsync, GrabModeAsync);
- 	}
- }
- 
-@@ -1029,6 +1037,37 @@ killclient(const Arg *arg)
+@@ -1028,6 +1046,37 @@ killclient(const Arg *arg)
  	}
  }
  
@@ -146,16 +148,7 @@ index 03baf42..2e8f4cb 100644
  void
  manage(Window w, XWindowAttributes *wa)
  {
-@@ -1649,8 +1688,6 @@ sigchld(int unused)
- void
- spawn(const Arg *arg)
- {
--	if (arg->v == dmenucmd)
--		dmenumon[0] = '0' + selmon->num;
- 	if (fork() == 0) {
- 		if (dpy)
- 			close(ConnectionNumber(dpy));
-@@ -2122,6 +2159,17 @@ xerrorstart(Display *dpy, XErrorEvent *ee)
+@@ -2128,6 +2177,17 @@ xerrorstart(Display *dpy, XErrorEvent *ee)
  	return -1;
  }
  
@@ -173,7 +166,7 @@ index 03baf42..2e8f4cb 100644
  void
  zoom(const Arg *arg)
  {
-@@ -2146,6 +2194,8 @@ main(int argc, char *argv[])
+@@ -2152,6 +2212,8 @@ main(int argc, char *argv[])
  	if (!(dpy = XOpenDisplay(NULL)))
  		die("dwm: cannot open display");
  	checkotherwm();

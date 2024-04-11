@@ -1,8 +1,8 @@
 diff --git a/dwm.c b/dwm.c
-index 03baf42..7da2902 100644
+index f1d86b2..dccd337 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -228,6 +228,7 @@ static void updatetitle(Client *c);
+@@ -227,6 +227,7 @@ static void updatetitle(Client *c);
  static void updatewindowtype(Client *c);
  static void updatewmhints(Client *c);
  static void view(const Arg *arg);
@@ -10,7 +10,7 @@ index 03baf42..7da2902 100644
  static Client *wintoclient(Window w);
  static Monitor *wintomon(Window w);
  static int xerror(Display *dpy, XErrorEvent *ee);
-@@ -834,6 +835,8 @@ focusmon(const Arg *arg)
+@@ -833,6 +834,8 @@ focusmon(const Arg *arg)
  	unfocus(selmon->sel, 0);
  	selmon = m;
  	focus(NULL);
@@ -19,50 +19,7 @@ index 03baf42..7da2902 100644
  }
  
  void
-@@ -955,26 +958,16 @@ grabkeys(void)
- {
- 	updatenumlockmask();
- 	{
--		unsigned int i, j, k;
-+		unsigned int i, j;
- 		unsigned int modifiers[] = { 0, LockMask, numlockmask, numlockmask|LockMask };
--		int start, end, skip;
--		KeySym *syms;
-+		KeyCode code;
- 
- 		XUngrabKey(dpy, AnyKey, AnyModifier, root);
--		XDisplayKeycodes(dpy, &start, &end);
--		syms = XGetKeyboardMapping(dpy, start, end - start + 1, &skip);
--		if (!syms)
--			return;
--		for (k = start; k <= end; k++)
--			for (i = 0; i < LENGTH(keys); i++)
--				/* skip modifier codes, we do that ourselves */
--				if (keys[i].keysym == syms[(k - start) * skip])
--					for (j = 0; j < LENGTH(modifiers); j++)
--						XGrabKey(dpy, k,
--							 keys[i].mod | modifiers[j],
--							 root, True,
--							 GrabModeAsync, GrabModeAsync);
--		XFree(syms);
-+		for (i = 0; i < LENGTH(keys); i++)
-+			if ((code = XKeysymToKeycode(dpy, keys[i].keysym)))
-+				for (j = 0; j < LENGTH(modifiers); j++)
-+					XGrabKey(dpy, code, keys[i].mod | modifiers[j], root,
-+						True, GrabModeAsync, GrabModeAsync);
- 	}
- }
- 
-@@ -1649,8 +1642,6 @@ sigchld(int unused)
- void
- spawn(const Arg *arg)
- {
--	if (arg->v == dmenucmd)
--		dmenumon[0] = '0' + selmon->num;
- 	if (fork() == 0) {
- 		if (dpy)
- 			close(ConnectionNumber(dpy));
-@@ -2056,6 +2047,35 @@ view(const Arg *arg)
+@@ -2062,6 +2065,35 @@ view(const Arg *arg)
  	arrange(selmon);
  }
  

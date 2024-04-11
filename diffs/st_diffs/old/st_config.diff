@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 91ab8ca..0e11b56 100644
+index 91ab8ca..caf1364 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -5,8 +5,18 @@
@@ -96,8 +96,8 @@ index 91ab8ca..0e11b56 100644
  
 -static unsigned int cols = 80;
 -static unsigned int rows = 24;
-+static unsigned int cols = 84;
-+static unsigned int rows = 26;
++static unsigned int cols = 100;
++static unsigned int rows = 30;
  
  /*
   * Default colour and shape of the mouse cursor

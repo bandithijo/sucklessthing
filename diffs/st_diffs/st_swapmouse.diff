@@ -10,7 +10,7 @@ index 6287a27..969b195 100644
 -As of 2022-09-05 this now seems to be finally fixed in libXft 2.3.5:
 -https://gitlab.freedesktop.org/xorg/lib/libxft/-/blob/libXft-2.3.5/NEWS
 diff --git a/config.mk b/config.mk
-index 1e306f8..4c4c5d5 100644
+index 1e306f8..ddf278a 100644
 --- a/config.mk
 +++ b/config.mk
 @@ -1,5 +1,5 @@
@@ -20,14 +20,6 @@ index 1e306f8..4c4c5d5 100644
  
  # Customize below to fit your system
  
-@@ -30,7 +30,6 @@ STLDFLAGS = $(LIBS) $(LDFLAGS)
- #LIBS = -L$(X11LIB) -lm -lX11 -lutil -lXft \
- #       `$(PKG_CONFIG) --libs fontconfig` \
- #       `$(PKG_CONFIG) --libs freetype2`
--#MANPREFIX = ${PREFIX}/man
- 
- # compiler and linker
- # CC = c99
 diff --git a/st.c b/st.c
 index 62def59..6ba467d 100644
 --- a/st.c
@@ -42,21 +34,44 @@ index 62def59..6ba467d 100644
  	/* Send SIGHUP to shell */
  	kill(pid, SIGHUP);
 diff --git a/x.c b/x.c
-index aa09997..c7c7f68 100644
+index aa09997..8bff509 100644
 --- a/x.c
 +++ b/x.c
-@@ -1412,10 +1412,6 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
- 		bg = &dc.col[base.bg];
- 	}
+@@ -254,6 +254,9 @@ static char *opt_title = NULL;
  
--	/* Change basic system colors [0-7] to bright system colors [8-15] */
--	if ((base.mode & ATTR_BOLD_FAINT) == ATTR_BOLD && BETWEEN(base.fg, 0, 7))
--		fg = &dc.col[base.fg + 8];
--
- 	if (IS_SET(MODE_REVERSE)) {
- 		if (fg == &dc.col[defaultfg]) {
- 			fg = &dc.col[defaultbg];
-@@ -1833,7 +1829,7 @@ void
+ static uint buttons; /* bit field of pressed buttons */
+ 
++static Cursor cursor;
++static XColor xmousefg, xmousebg;
++
+ void
+ clipcopy(const Arg *dummy)
+ {
+@@ -1130,10 +1133,8 @@ void
+ xinit(int cols, int rows)
+ {
+ 	XGCValues gcvalues;
+-	Cursor cursor;
+ 	Window parent;
+ 	pid_t thispid = getpid();
+-	XColor xmousefg, xmousebg;
+ 
+ 	if (!(xw.dpy = XOpenDisplay(NULL)))
+ 		die("can't open display\n");
+@@ -1730,6 +1731,12 @@ xsetmode(int set, unsigned int flags)
+ {
+ 	int mode = win.mode;
+ 	MODBIT(win.mode, set, flags);
++        if (flags & MODE_MOUSE) {
++                if (win.mode & MODE_MOUSE)
++                        XUndefineCursor(xw.dpy, xw.win);
++                else
++                        XDefineCursor(xw.dpy, xw.win, cursor);
++        }
+ 	if ((win.mode & MODE_REVERSE) != (mode & MODE_REVERSE))
+ 		redraw();
+ }
+@@ -1833,7 +1840,7 @@ void
  kpress(XEvent *ev)
  {
  	XKeyEvent *e = &ev->xkey;
@@ -65,7 +80,7 @@ index aa09997..c7c7f68 100644
  	char buf[64], *customkey;
  	int len;
  	Rune c;
-@@ -1843,13 +1839,10 @@ kpress(XEvent *ev)
+@@ -1843,13 +1850,10 @@ kpress(XEvent *ev)
  	if (IS_SET(MODE_KBDLOCK))
  		return;
  

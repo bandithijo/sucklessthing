@@ -91,7 +91,7 @@ index ddc8321..86e73f9 100644
  dwm is customized by creating a custom config.h and (re)compiling the source
  code. This keeps it fast, secure and simple.
 diff --git a/dwm.c b/dwm.c
-index f1d86b2..824a8cf 100644
+index f1d86b2..06369ce 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -29,6 +29,7 @@
@@ -649,7 +649,7 @@ index f1d86b2..824a8cf 100644
  drawbar(Monitor *m)
  {
 -	int x, w, tw = 0;
-+    int x, w, tw = 0, bh = topbarpadding, br = topbarreact;
++	int x, w, tw, bh = topbarpadding, br = topbarreact;
  	int boxs = drw->fonts->h / 9;
  	int boxw = drw->fonts->h / 6 + 2;
  	unsigned int i, occ = 0, urg = 0;
@@ -671,7 +671,7 @@ index f1d86b2..824a8cf 100644
  				m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
  				urg & 1 << i);
  		x += w;
-@@ -734,9 +1115,15 @@ drawbar(Monitor *m)
+@@ -734,9 +1115,18 @@ drawbar(Monitor *m)
  	drw_setscheme(drw, scheme[SchemeNorm]);
  	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
  
@@ -684,11 +684,14 @@ index f1d86b2..824a8cf 100644
  	if ((w = m->ww - tw - x) > bh) {
  		if (m->sel) {
 -			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
-+			drw_setscheme(drw, scheme[m == selmon ? SchemeNorm : SchemeOff]);
++			if (altschemenorm == 0)
++				drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
++			else if (altschemenorm == 1)
++				drw_setscheme(drw, scheme[m == selmon ? SchemeNorm : SchemeOff]);
  			drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
  			if (m->sel->isfloating)
  				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
-@@ -757,25 +1144,6 @@ drawbars(void)
+@@ -757,25 +1147,6 @@ drawbars(void)
  		drawbar(m);
  }
  
@@ -714,7 +717,7 @@ index f1d86b2..824a8cf 100644
  void
  expose(XEvent *e)
  {
-@@ -786,6 +1154,91 @@ expose(XEvent *e)
+@@ -786,6 +1157,91 @@ expose(XEvent *e)
  		drawbar(m);
  }
  
@@ -806,7 +809,7 @@ index f1d86b2..824a8cf 100644
  void
  focus(Client *c)
  {
-@@ -1012,6 +1465,49 @@ keypress(XEvent *e)
+@@ -1012,6 +1468,49 @@ keypress(XEvent *e)
  			keys[i].func(&(keys[i].arg));
  }
  
@@ -856,7 +859,7 @@ index f1d86b2..824a8cf 100644
  void
  killclient(const Arg *arg)
  {
-@@ -1043,6 +1539,7 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1043,6 +1542,7 @@ manage(Window w, XWindowAttributes *wa)
  	c->w = c->oldw = wa->width;
  	c->h = c->oldh = wa->height;
  	c->oldbw = wa->border_width;
@@ -864,7 +867,7 @@ index f1d86b2..824a8cf 100644
  
  	updatetitle(c);
  	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
-@@ -1101,13 +1598,35 @@ mappingnotify(XEvent *e)
+@@ -1101,13 +1601,35 @@ mappingnotify(XEvent *e)
  void
  maprequest(XEvent *e)
  {
@@ -902,7 +905,7 @@ index f1d86b2..824a8cf 100644
  }
  
  void
-@@ -1202,6 +1721,92 @@ movemouse(const Arg *arg)
+@@ -1202,6 +1724,92 @@ movemouse(const Arg *arg)
  	}
  }
  
@@ -995,7 +998,7 @@ index f1d86b2..824a8cf 100644
  Client *
  nexttiled(Client *c)
  {
-@@ -1209,25 +1814,20 @@ nexttiled(Client *c)
+@@ -1209,25 +1817,20 @@ nexttiled(Client *c)
  	return c;
  }
  
@@ -1028,7 +1031,7 @@ index f1d86b2..824a8cf 100644
  		return; /* ignore */
  	else if ((c = wintoclient(ev->window))) {
  		switch(ev->atom) {
-@@ -1249,6 +1849,9 @@ propertynotify(XEvent *e)
+@@ -1249,6 +1852,9 @@ propertynotify(XEvent *e)
  			updatetitle(c);
  			if (c == c->mon->sel)
  				drawbar(c->mon);
@@ -1038,7 +1041,7 @@ index f1d86b2..824a8cf 100644
  		}
  		if (ev->atom == netatom[NetWMWindowType])
  			updatewindowtype(c);
-@@ -1390,6 +1993,83 @@ run(void)
+@@ -1390,6 +1996,83 @@ run(void)
  			handler[ev.type](&ev); /* call handler */
  }
  
@@ -1122,7 +1125,7 @@ index f1d86b2..824a8cf 100644
  void
  scan(void)
  {
-@@ -1521,6 +2201,30 @@ setlayout(const Arg *arg)
+@@ -1521,6 +2204,30 @@ setlayout(const Arg *arg)
  		drawbar(selmon);
  }
  
@@ -1153,7 +1156,7 @@ index f1d86b2..824a8cf 100644
  /* arg > 1.0 will set mfact absolutely */
  void
  setmfact(const Arg *arg)
-@@ -1562,7 +2266,7 @@ setup(void)
+@@ -1562,7 +2269,7 @@ setup(void)
  	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
  		die("no fonts could be loaded.");
  	lrpad = drw->fonts->h;
@@ -1162,7 +1165,7 @@ index f1d86b2..824a8cf 100644
  	updategeom();
  	/* init atoms */
  	utf8string = XInternAtom(dpy, "UTF8_STRING", False);
-@@ -1583,6 +2287,9 @@ setup(void)
+@@ -1583,6 +2290,9 @@ setup(void)
  	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
  	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
  	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
@@ -1172,7 +1175,7 @@ index f1d86b2..824a8cf 100644
  	/* init appearance */
  	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
  	for (i = 0; i < LENGTH(colors); i++)
-@@ -1666,6 +2373,331 @@ spawn(const Arg *arg)
+@@ -1666,6 +2376,331 @@ spawn(const Arg *arg)
  	}
  }
  
@@ -1504,7 +1507,7 @@ index f1d86b2..824a8cf 100644
  void
  tag(const Arg *arg)
  {
-@@ -1688,9 +2720,15 @@ void
+@@ -1688,9 +2723,15 @@ void
  tile(Monitor *m)
  {
  	unsigned int i, n, h, mw, my, ty;
@@ -1521,7 +1524,7 @@ index f1d86b2..824a8cf 100644
  	if (n == 0)
  		return;
  
-@@ -1700,15 +2738,17 @@ tile(Monitor *m)
+@@ -1700,15 +2741,17 @@ tile(Monitor *m)
  		mw = m->ww;
  	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
  		if (i < m->nmaster) {
@@ -1540,7 +1543,7 @@ index f1d86b2..824a8cf 100644
  		}
  }
  
-@@ -1781,6 +2821,9 @@ unmanage(Client *c, int destroyed)
+@@ -1781,6 +2824,9 @@ unmanage(Client *c, int destroyed)
  	Monitor *m = c->mon;
  	XWindowChanges wc;
  
@@ -1550,7 +1553,7 @@ index f1d86b2..824a8cf 100644
  	detach(c);
  	detachstack(c);
  	if (!destroyed) {
-@@ -1806,12 +2849,24 @@ unmapnotify(XEvent *e)
+@@ -1806,12 +2852,24 @@ unmapnotify(XEvent *e)
  {
  	Client *c;
  	XUnmapEvent *ev = &e->xunmap;
@@ -1580,7 +1583,16 @@ index f1d86b2..824a8cf 100644
  	}
  }
  
-@@ -1853,15 +2908,19 @@ updatebarpos(Monitor *m)
+@@ -1844,7 +2902,7 @@ updatebarpos(Monitor *m)
+ 	m->wh = m->mh;
+ 	if (m->showbar) {
+ 		m->wh -= bh;
+-		m->by = m->topbar ? m->wy : m->wy + m->wh;
++		m->by = m->topbar ? m->wy + topbargap : m->wy + m->wh;
+ 		m->wy = m->topbar ? m->wy + bh : m->wy;
+ 	} else
+ 		m->by = -bh;
+@@ -1853,15 +2911,19 @@ updatebarpos(Monitor *m)
  void
  updateclientlist()
  {
@@ -1606,7 +1618,7 @@ index f1d86b2..824a8cf 100644
  }
  
  int
-@@ -2005,9 +3064,11 @@ updatesizehints(Client *c)
+@@ -2005,9 +3067,11 @@ updatesizehints(Client *c)
  void
  updatestatus(void)
  {
@@ -1619,7 +1631,7 @@ index f1d86b2..824a8cf 100644
  }
  
  void
-@@ -2075,6 +3136,43 @@ wintoclient(Window w)
+@@ -2075,6 +3139,43 @@ wintoclient(Window w)
  	return NULL;
  }
  
@@ -1663,7 +1675,7 @@ index f1d86b2..824a8cf 100644
  Monitor *
  wintomon(Window w)
  {
-@@ -2132,12 +3230,37 @@ void
+@@ -2132,12 +3233,37 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;
@@ -1704,7 +1716,7 @@ index f1d86b2..824a8cf 100644
  }
  
  int
-@@ -2158,6 +3281,7 @@ main(int argc, char *argv[])
+@@ -2158,6 +3284,7 @@ main(int argc, char *argv[])
  		die("pledge");
  #endif /* __OpenBSD__ */
  	scan();

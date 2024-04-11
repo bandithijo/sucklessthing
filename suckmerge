@@ -64,7 +64,8 @@ dwm_branches = [
   'dwmlogoleft',           # 44
   'preserveonrestart',     # 45  : netclientliststacking^5, savefloats^1
   'quitprompt',            # 46* : placemouse^12
-  'taglayouts',            # 47* : pertag, ru-gaps^2 <-
+  'taglayouts',            # 47* : pertag, ru-gaps^2
+  'altschemenorm',         # 48* : barheight^8 <-
 ]
 
 # For st

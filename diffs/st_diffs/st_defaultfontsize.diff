@@ -1,7 +1,25 @@
+diff --git a/FAQ b/FAQ
+index 6287a27..969b195 100644
+--- a/FAQ
++++ b/FAQ
+@@ -248,6 +248,3 @@ fonts:
+ 
+ Please don't bother reporting this bug to st, but notify the upstream Xft
+ developers about fixing this bug.
+-
+-As of 2022-09-05 this now seems to be finally fixed in libXft 2.3.5:
+-https://gitlab.freedesktop.org/xorg/lib/libxft/-/blob/libXft-2.3.5/NEWS
 diff --git a/config.mk b/config.mk
-index ddf278a..4c4c5d5 100644
+index 1e306f8..4c4c5d5 100644
 --- a/config.mk
 +++ b/config.mk
+@@ -1,5 +1,5 @@
+ # st version
+-VERSION = 0.9
++VERSION = 0.8.5
+ 
+ # Customize below to fit your system
+ 
 @@ -30,7 +30,6 @@ STLDFLAGS = $(LIBS) $(LDFLAGS)
  #LIBS = -L$(X11LIB) -lm -lX11 -lutil -lXft \
  #       `$(PKG_CONFIG) --libs fontconfig` \
@@ -43,8 +61,21 @@ index 39120b4..57ddfb8 100644
  .BI \-l " line"
  use a tty
  .I line
+diff --git a/st.c b/st.c
+index 62def59..6ba467d 100644
+--- a/st.c
++++ b/st.c
+@@ -939,7 +939,7 @@ ttyresize(int tw, int th)
+ }
+ 
+ void
+-ttyhangup(void)
++ttyhangup()
+ {
+ 	/* Send SIGHUP to shell */
+ 	kill(pid, SIGHUP);
 diff --git a/x.c b/x.c
-index 2a3bd38..575c1f5 100644
+index aa09997..575c1f5 100644
 --- a/x.c
 +++ b/x.c
 @@ -4,6 +4,7 @@
@@ -64,7 +95,32 @@ index 2a3bd38..575c1f5 100644
  
  	/* colors */
  	xw.cmap = XDefaultColormap(xw.dpy, xw.scr);
-@@ -2071,6 +2072,11 @@ main(int argc, char *argv[])
+@@ -1833,7 +1834,7 @@ void
+ kpress(XEvent *ev)
+ {
+ 	XKeyEvent *e = &ev->xkey;
+-	KeySym ksym = NoSymbol;
++	KeySym ksym;
+ 	char buf[64], *customkey;
+ 	int len;
+ 	Rune c;
+@@ -1843,13 +1844,10 @@ kpress(XEvent *ev)
+ 	if (IS_SET(MODE_KBDLOCK))
+ 		return;
+ 
+-	if (xw.ime.xic) {
++	if (xw.ime.xic)
+ 		len = XmbLookupString(xw.ime.xic, e, buf, sizeof buf, &ksym, &status);
+-		if (status == XBufferOverflow)
+-			return;
+-	} else {
++	else
+ 		len = XLookupString(e, buf, sizeof buf, &ksym, NULL);
+-	}
+ 	/* 1. shortcuts */
+ 	for (bp = shortcuts; bp < shortcuts + LEN(shortcuts); bp++) {
+ 		if (ksym == bp->keysym && match(bp->mod, e->state)) {
+@@ -2074,6 +2072,11 @@ main(int argc, char *argv[])
  	case 'v':
  		die("%s " VERSION "\n", argv0);
  		break;

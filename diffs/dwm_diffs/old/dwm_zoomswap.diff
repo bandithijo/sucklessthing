@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 03baf42..c2e7537 100644
+index f1d86b2..cf9acef 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -165,6 +165,7 @@ static void drawbar(Monitor *m);
@@ -18,7 +18,7 @@ index 03baf42..c2e7537 100644
  static void propertynotify(XEvent *e);
  static void quit(const Arg *arg);
  static Monitor *recttomon(int x, int y, int w, int h);
-@@ -236,6 +236,7 @@ static int xerrorstart(Display *dpy, XErrorEvent *ee);
+@@ -235,6 +235,7 @@ static int xerrorstart(Display *dpy, XErrorEvent *ee);
  static void zoom(const Arg *arg);
  
  /* variables */
@@ -26,7 +26,7 @@ index 03baf42..c2e7537 100644
  static const char broken[] = "broken";
  static char stext[256];
  static int screen;
-@@ -787,6 +788,16 @@ expose(XEvent *e)
+@@ -786,6 +787,16 @@ expose(XEvent *e)
  		drawbar(m);
  }
  
@@ -43,41 +43,7 @@ index 03baf42..c2e7537 100644
  void
  focus(Client *c)
  {
-@@ -955,26 +966,16 @@ grabkeys(void)
- {
- 	updatenumlockmask();
- 	{
--		unsigned int i, j, k;
-+		unsigned int i, j;
- 		unsigned int modifiers[] = { 0, LockMask, numlockmask, numlockmask|LockMask };
--		int start, end, skip;
--		KeySym *syms;
-+		KeyCode code;
- 
- 		XUngrabKey(dpy, AnyKey, AnyModifier, root);
--		XDisplayKeycodes(dpy, &start, &end);
--		syms = XGetKeyboardMapping(dpy, start, end - start + 1, &skip);
--		if (!syms)
--			return;
--		for (k = start; k <= end; k++)
--			for (i = 0; i < LENGTH(keys); i++)
--				/* skip modifier codes, we do that ourselves */
--				if (keys[i].keysym == syms[(k - start) * skip])
--					for (j = 0; j < LENGTH(modifiers); j++)
--						XGrabKey(dpy, k,
--							 keys[i].mod | modifiers[j],
--							 root, True,
--							 GrabModeAsync, GrabModeAsync);
--		XFree(syms);
-+		for (i = 0; i < LENGTH(keys); i++)
-+			if ((code = XKeysymToKeycode(dpy, keys[i].keysym)))
-+				for (j = 0; j < LENGTH(modifiers); j++)
-+					XGrabKey(dpy, code, keys[i].mod | modifiers[j], root,
-+						True, GrabModeAsync, GrabModeAsync);
- 	}
- }
- 
-@@ -1210,15 +1211,6 @@ nexttiled(Client *c)
+@@ -1209,15 +1220,6 @@ nexttiled(Client *c)
  	return c;
  }
  
@@ -93,16 +59,7 @@ index 03baf42..c2e7537 100644
  void
  propertynotify(XEvent *e)
  {
-@@ -1649,8 +1641,6 @@ sigchld(int unused)
- void
- spawn(const Arg *arg)
- {
--	if (arg->v == dmenucmd)
--		dmenumon[0] = '0' + selmon->num;
- 	if (fork() == 0) {
- 		if (dpy)
- 			close(ConnectionNumber(dpy));
-@@ -2126,12 +2116,37 @@ void
+@@ -2132,12 +2134,37 @@ void
  zoom(const Arg *arg)
  {
  	Client *c = selmon->sel;

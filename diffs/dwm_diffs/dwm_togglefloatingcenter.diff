@@ -1,5 +1,41 @@
+diff --git a/Makefile b/Makefile
+index ffa69b4..77bcbc0 100644
+--- a/Makefile
++++ b/Makefile
+@@ -6,7 +6,13 @@ include config.mk
+ SRC = drw.c dwm.c util.c
+ OBJ = ${SRC:.c=.o}
+ 
+-all: dwm
++all: options dwm
++
++options:
++	@echo dwm build options:
++	@echo "CFLAGS   = ${CFLAGS}"
++	@echo "LDFLAGS  = ${LDFLAGS}"
++	@echo "CC       = ${CC}"
+ 
+ .c.o:
+ 	${CC} -c ${CFLAGS} $<
+@@ -42,4 +48,4 @@ uninstall:
+ 	rm -f ${DESTDIR}${PREFIX}/bin/dwm\
+ 		${DESTDIR}${MANPREFIX}/man1/dwm.1
+ 
+-.PHONY: all clean dist install uninstall
++.PHONY: all options clean dist install uninstall
+diff --git a/config.mk b/config.mk
+index 8efca9a..ba64d3d 100644
+--- a/config.mk
++++ b/config.mk
+@@ -1,5 +1,5 @@
+ # dwm version
+-VERSION = 6.5
++VERSION = 6.4
+ 
+ # Customize below to fit your system
+ 
 diff --git a/dwm.c b/dwm.c
-index 03baf42..3989a7e 100644
+index f1d86b2..e61b432 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -49,7 +49,7 @@
@@ -41,7 +77,7 @@ index 03baf42..3989a7e 100644
  static void restack(Monitor *m);
  static void run(void);
  static void scan(void);
-@@ -212,6 +215,9 @@ static void tagmon(const Arg *arg);
+@@ -211,6 +214,9 @@ static void tagmon(const Arg *arg);
  static void tile(Monitor *m);
  static void togglebar(const Arg *arg);
  static void togglefloating(const Arg *arg);
@@ -51,7 +87,7 @@ index 03baf42..3989a7e 100644
  static void toggletag(const Arg *arg);
  static void toggleview(const Arg *arg);
  static void unfocus(Client *c, int setfocus);
-@@ -286,6 +292,7 @@ applyrules(Client *c)
+@@ -285,6 +291,7 @@ applyrules(Client *c)
  	XClassHint ch = { NULL, NULL };
  
  	/* rule matching */
@@ -59,7 +95,7 @@ index 03baf42..3989a7e 100644
  	c->isfloating = 0;
  	c->tags = 0;
  	XGetClassHint(dpy, c->win, &ch);
-@@ -298,6 +305,7 @@ applyrules(Client *c)
+@@ -297,6 +304,7 @@ applyrules(Client *c)
  		&& (!r->class || strstr(class, r->class))
  		&& (!r->instance || strstr(instance, r->instance)))
  		{
@@ -67,7 +103,7 @@ index 03baf42..3989a7e 100644
  			c->isfloating = r->isfloating;
  			c->tags |= r->tags;
  			for (m = mons; m && m->num != r->monitor; m = m->next);
-@@ -791,10 +799,14 @@ void
+@@ -790,10 +798,14 @@ void
  focus(Client *c)
  {
  	if (!c || !ISVISIBLE(c))
@@ -82,7 +118,7 @@ index 03baf42..3989a7e 100644
  		if (c->mon != selmon)
  			selmon = c->mon;
  		if (c->isurgent)
-@@ -844,16 +856,16 @@ focusstack(const Arg *arg)
+@@ -843,16 +855,16 @@ focusstack(const Arg *arg)
  	if (!selmon->sel || (selmon->sel->isfullscreen && lockfullscreen))
  		return;
  	if (arg->i > 0) {
@@ -103,41 +139,7 @@ index 03baf42..3989a7e 100644
  					c = i;
  	}
  	if (c) {
-@@ -955,26 +967,16 @@ grabkeys(void)
- {
- 	updatenumlockmask();
- 	{
--		unsigned int i, j, k;
-+		unsigned int i, j;
- 		unsigned int modifiers[] = { 0, LockMask, numlockmask, numlockmask|LockMask };
--		int start, end, skip;
--		KeySym *syms;
-+		KeyCode code;
- 
- 		XUngrabKey(dpy, AnyKey, AnyModifier, root);
--		XDisplayKeycodes(dpy, &start, &end);
--		syms = XGetKeyboardMapping(dpy, start, end - start + 1, &skip);
--		if (!syms)
--			return;
--		for (k = start; k <= end; k++)
--			for (i = 0; i < LENGTH(keys); i++)
--				/* skip modifier codes, we do that ourselves */
--				if (keys[i].keysym == syms[(k - start) * skip])
--					for (j = 0; j < LENGTH(modifiers); j++)
--						XGrabKey(dpy, k,
--							 keys[i].mod | modifiers[j],
--							 root, True,
--							 GrabModeAsync, GrabModeAsync);
--		XFree(syms);
-+		for (i = 0; i < LENGTH(keys); i++)
-+			if ((code = XKeysymToKeycode(dpy, keys[i].keysym)))
-+				for (j = 0; j < LENGTH(modifiers); j++)
-+					XGrabKey(dpy, code, keys[i].mod | modifiers[j], root,
-+						True, GrabModeAsync, GrabModeAsync);
- 	}
- }
- 
-@@ -1069,6 +1071,14 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1068,6 +1080,14 @@ manage(Window w, XWindowAttributes *wa)
  	updatewindowtype(c);
  	updatesizehints(c);
  	updatewmhints(c);
@@ -152,7 +154,7 @@ index 03baf42..3989a7e 100644
  	XSelectInput(dpy, w, EnterWindowMask|FocusChangeMask|PropertyChangeMask|StructureNotifyMask);
  	grabbuttons(c, 0);
  	if (!c->isfloating)
-@@ -1367,6 +1377,17 @@ restack(Monitor *m)
+@@ -1366,6 +1386,17 @@ restack(Monitor *m)
  		return;
  	if (m->sel->isfloating || !m->lt[m->sellt]->arrange)
  		XRaiseWindow(dpy, m->sel->win);
@@ -170,7 +172,7 @@ index 03baf42..3989a7e 100644
  	if (m->lt[m->sellt]->arrange) {
  		wc.stack_mode = Below;
  		wc.sibling = m->barwin;
-@@ -1477,6 +1498,7 @@ setfocus(Client *c)
+@@ -1476,6 +1507,7 @@ setfocus(Client *c)
  			XA_WINDOW, 32, PropModeReplace,
  			(unsigned char *) &(c->win), 1);
  	}
@@ -178,16 +180,7 @@ index 03baf42..3989a7e 100644
  	sendevent(c, wmatom[WMTakeFocus]);
  }
  
-@@ -1649,8 +1671,6 @@ sigchld(int unused)
- void
- spawn(const Arg *arg)
- {
--	if (arg->v == dmenucmd)
--		dmenumon[0] = '0' + selmon->num;
- 	if (fork() == 0) {
- 		if (dpy)
- 			close(ConnectionNumber(dpy));
-@@ -1724,11 +1744,80 @@ togglefloating(const Arg *arg)
+@@ -1730,11 +1762,80 @@ togglefloating(const Arg *arg)
  		return;
  	selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
  	if (selmon->sel->isfloating)
@@ -227,9 +220,9 @@ index 03baf42..3989a7e 100644
 +    if (c->isfloating)
 +      c->cantfocus = 0;
 +
-+	arrange(selmon);
-+}
-+
+ 	arrange(selmon);
+ }
+ 
 +void
 +togglefullscr(const Arg *arg)
 +{
@@ -243,9 +236,9 @@ index 03baf42..3989a7e 100644
 +	if (!selmon->sel)
 +		return;
 +	selmon->sel->issticky = !selmon->sel->issticky;
- 	arrange(selmon);
- }
- 
++	arrange(selmon);
++}
++
 +void
 +togglecanfocusfloating(const Arg *arg)
 +{
@@ -270,7 +263,7 @@ index 03baf42..3989a7e 100644
  void
  toggletag(const Arg *arg)
  {
-@@ -1761,6 +1850,7 @@ unfocus(Client *c, int setfocus)
+@@ -1767,6 +1868,7 @@ unfocus(Client *c, int setfocus)
  {
  	if (!c)
  		return;
@@ -278,7 +271,7 @@ index 03baf42..3989a7e 100644
  	grabbuttons(c, 0);
  	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
  	if (setfocus) {
-@@ -2021,8 +2111,10 @@ updatewindowtype(Client *c)
+@@ -2027,8 +2129,10 @@ updatewindowtype(Client *c)
  
  	if (state == netatom[NetWMFullscreen])
  		setfullscreen(c, 1);

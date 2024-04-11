@@ -1,5 +1,5 @@
 diff --git a/dwm.c b/dwm.c
-index 03baf42..0a8a7f9 100644
+index f1d86b2..ef2cad5 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -49,7 +49,7 @@
@@ -20,7 +20,7 @@ index 03baf42..0a8a7f9 100644
  	Client *next;
  	Client *snext;
  	Monitor *mon;
-@@ -212,6 +212,7 @@ static void tagmon(const Arg *arg);
+@@ -211,6 +211,7 @@ static void tagmon(const Arg *arg);
  static void tile(Monitor *m);
  static void togglebar(const Arg *arg);
  static void togglefloating(const Arg *arg);
@@ -28,7 +28,7 @@ index 03baf42..0a8a7f9 100644
  static void toggletag(const Arg *arg);
  static void toggleview(const Arg *arg);
  static void unfocus(Client *c, int setfocus);
-@@ -791,6 +792,8 @@ void
+@@ -790,6 +791,8 @@ void
  focus(Client *c)
  {
  	if (!c || !ISVISIBLE(c))
@@ -37,41 +37,7 @@ index 03baf42..0a8a7f9 100644
  		for (c = selmon->stack; c && !ISVISIBLE(c); c = c->snext);
  	if (selmon->sel && selmon->sel != c)
  		unfocus(selmon->sel, 0);
-@@ -955,26 +958,16 @@ grabkeys(void)
- {
- 	updatenumlockmask();
- 	{
--		unsigned int i, j, k;
-+		unsigned int i, j;
- 		unsigned int modifiers[] = { 0, LockMask, numlockmask, numlockmask|LockMask };
--		int start, end, skip;
--		KeySym *syms;
-+		KeyCode code;
- 
- 		XUngrabKey(dpy, AnyKey, AnyModifier, root);
--		XDisplayKeycodes(dpy, &start, &end);
--		syms = XGetKeyboardMapping(dpy, start, end - start + 1, &skip);
--		if (!syms)
--			return;
--		for (k = start; k <= end; k++)
--			for (i = 0; i < LENGTH(keys); i++)
--				/* skip modifier codes, we do that ourselves */
--				if (keys[i].keysym == syms[(k - start) * skip])
--					for (j = 0; j < LENGTH(modifiers); j++)
--						XGrabKey(dpy, k,
--							 keys[i].mod | modifiers[j],
--							 root, True,
--							 GrabModeAsync, GrabModeAsync);
--		XFree(syms);
-+		for (i = 0; i < LENGTH(keys); i++)
-+			if ((code = XKeysymToKeycode(dpy, keys[i].keysym)))
-+				for (j = 0; j < LENGTH(modifiers); j++)
-+					XGrabKey(dpy, code, keys[i].mod | modifiers[j], root,
-+						True, GrabModeAsync, GrabModeAsync);
- 	}
- }
- 
-@@ -1367,6 +1360,17 @@ restack(Monitor *m)
+@@ -1366,6 +1369,17 @@ restack(Monitor *m)
  		return;
  	if (m->sel->isfloating || !m->lt[m->sellt]->arrange)
  		XRaiseWindow(dpy, m->sel->win);
@@ -89,7 +55,7 @@ index 03baf42..0a8a7f9 100644
  	if (m->lt[m->sellt]->arrange) {
  		wc.stack_mode = Below;
  		wc.sibling = m->barwin;
-@@ -1477,6 +1481,7 @@ setfocus(Client *c)
+@@ -1476,6 +1490,7 @@ setfocus(Client *c)
  			XA_WINDOW, 32, PropModeReplace,
  			(unsigned char *) &(c->win), 1);
  	}
@@ -97,16 +63,7 @@ index 03baf42..0a8a7f9 100644
  	sendevent(c, wmatom[WMTakeFocus]);
  }
  
-@@ -1649,8 +1654,6 @@ sigchld(int unused)
- void
- spawn(const Arg *arg)
- {
--	if (arg->v == dmenucmd)
--		dmenumon[0] = '0' + selmon->num;
- 	if (fork() == 0) {
- 		if (dpy)
- 			close(ConnectionNumber(dpy));
-@@ -1726,9 +1729,36 @@ togglefloating(const Arg *arg)
+@@ -1732,9 +1747,36 @@ togglefloating(const Arg *arg)
  	if (selmon->sel->isfloating)
  		resize(selmon->sel, selmon->sel->x, selmon->sel->y,
  			selmon->sel->w, selmon->sel->h, 0);
@@ -143,7 +100,7 @@ index 03baf42..0a8a7f9 100644
  void
  toggletag(const Arg *arg)
  {
-@@ -1761,6 +1791,7 @@ unfocus(Client *c, int setfocus)
+@@ -1767,6 +1809,7 @@ unfocus(Client *c, int setfocus)
  {
  	if (!c)
  		return;
